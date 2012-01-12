@@ -3,7 +3,10 @@ using System.Collections;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Threading;
-using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using Binder = Microsoft.CSharp.RuntimeBinder.Binder;
+using System.Dynamic;
+using Microsoft.CSharp.RuntimeBinder;
 
 namespace FastMember
 {
@@ -13,11 +16,11 @@ namespace FastMember
     }
     public abstract class MemberAccess
     {
-        class ObjectWrapper : IObject
+        class StaticWrapper : IObject
         {
             private readonly object target;
             private readonly MemberAccess accessor;
-            public ObjectWrapper(object target, MemberAccess accessor)
+            public StaticWrapper(object target, MemberAccess accessor)
             {
                 this.target = target;
                 this.accessor = accessor;
@@ -28,13 +31,65 @@ namespace FastMember
                 set { accessor[target, name] = value; }
             }
         }
+        class DynamicWrapper : IObject
+        {
+            // note we need to have a call-site per object here, since even for the same type we don't know the members are the same per instance
+            private readonly Hashtable callSites = new Hashtable();
+            private readonly IDynamicMetaObjectProvider target;
+            public DynamicWrapper(IDynamicMetaObjectProvider target)
+            {
+                this.target = target;
+            }
+            object IObject.this[string name]
+            {
+                get
+                {
+                    string key = "get_" + name;
+                    CallSite<Func<CallSite, object, object>> callSite = (CallSite<Func<CallSite, object, object>>)callSites[key];
+                    if(callSite == null)
+                    {
+                        lock (callSites)
+                        {
+                            callSite = (CallSite<Func<CallSite, object, object>>) callSites[key];
+                            if(callSite == null)
+                            {
+                                callSite = CallSite<Func<CallSite, object, object>>.Create(Binder.GetMember(CSharpBinderFlags.None, name, typeof(DynamicWrapper), new CSharpArgumentInfo[] { CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.None, null) }));
+                                callSites[key] = callSite;
+                            }
+                        }
+                    }
+                    return callSite.Target(callSite, target);
+                }
+                set
+                {
+                    string key = "set_" + name;
+                    CallSite<Func<CallSite, object, object, object>> callSite = (CallSite<Func<CallSite, object, object, object>>)callSites[key];
+                    if (callSite == null)
+                    {
+                        lock (callSites)
+                        {
+                            callSite = (CallSite<Func<CallSite, object, object, object>>)callSites[key];
+                            if (callSite == null)
+                            {
+                                callSite = CallSite<Func<CallSite, object, object, object>>.Create(Binder.SetMember(CSharpBinderFlags.None, name, typeof(DynamicWrapper), new CSharpArgumentInfo[] { CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.None, null), CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.UseCompileTimeType, null) }));
+                                callSites[key] = callSite;
+                            }
+                        }
+                    }
+                    callSite.Target(callSite, target, value);
+                }
+            }
+
+        }
         // hash-table has better read-without-locking semantics than dictionary
         private static readonly Hashtable typeLookyp = new Hashtable();
 
         public static IObject Wrap(object target)
         {
             if (target == null) throw new ArgumentNullException("target");
-            return new ObjectWrapper(target, Create(target.GetType()));
+            IDynamicMetaObjectProvider dlr = target as IDynamicMetaObjectProvider;
+            if(dlr != null) return new DynamicWrapper(dlr); // use the DLR
+            return new StaticWrapper(target, Create(target.GetType()));
         }
         public static MemberAccess GetAccessor(Type type)
         {
