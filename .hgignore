@@ -1,0 +1,7 @@
+syntax: glob
+*/bin/*
+*/obj/*
+*.nupkg
+*.suo
+_ReSharper.*
+packages/*
