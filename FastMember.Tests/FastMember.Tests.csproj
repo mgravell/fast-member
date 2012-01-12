@@ -50,7 +50,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BasicTests.cs" />
+    <Compile Include="ChainingPropertyDescriptor.cs" />
     <Compile Include="DynamicTests.cs" />
+    <Compile Include="HyperTypeDescriptionProvider.cs" />
+    <Compile Include="HyperTypeDescriptor.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
