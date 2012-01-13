@@ -118,11 +118,11 @@ namespace FastMember
             // note this region is synchronized; only one is being created at a time so we don't need to stress about the builders
             if(assembly == null)
             {
-                AssemblyName name = new AssemblyName("FastMember_dymamic");
+                AssemblyName name = new AssemblyName("FastMember_dynamic");
                 assembly = AppDomain.CurrentDomain.DefineDynamicAssembly(name, AssemblyBuilderAccess.Run);
                 module = assembly.DefineDynamicModule(name.Name);
             }
-            TypeBuilder tb = module.DefineType("FastMember_dymamic." + type.Name + "_" + Interlocked.Increment(ref counter),
+            TypeBuilder tb = module.DefineType("FastMember_dynamic." + type.Name + "_" + Interlocked.Increment(ref counter),
                 (typeof(MemberAccess).Attributes | TypeAttributes.Sealed) & ~TypeAttributes.Abstract, typeof(MemberAccess) );
 
             tb.DefineDefaultConstructor(MethodAttributes.Public);
