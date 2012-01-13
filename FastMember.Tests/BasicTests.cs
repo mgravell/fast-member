@@ -217,5 +217,25 @@ namespace FastMember.Tests
             public DateTime? C;
             public decimal? D;
         }
+
+
+        public class HasDefaultCtor {}
+        public class HasNoDefaultCtor { public HasNoDefaultCtor(string s) {}}
+        public abstract class IsAbstract {}
+
+        [Test]
+        public void TestCtor()
+        {
+            var accessor = TypeAccessor.Create(typeof(HasNoDefaultCtor));
+            Assert.IsFalse(accessor.CreateNewSupported);
+
+            accessor = TypeAccessor.Create(typeof(IsAbstract));
+            Assert.IsFalse(accessor.CreateNewSupported);
+
+            accessor = TypeAccessor.Create(typeof (HasDefaultCtor));
+            Assert.IsTrue(accessor.CreateNewSupported);
+            object obj = accessor.CreateNew();
+            Assert.IsInstanceOf(typeof(HasDefaultCtor), obj);
+        }
     }
 }

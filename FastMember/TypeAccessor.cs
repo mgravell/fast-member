@@ -16,6 +16,15 @@ namespace FastMember
         private static readonly Hashtable typeLookyp = new Hashtable();
 
         /// <summary>
+        /// Does this type support new instances via a parameterless constructor?
+        /// </summary>
+        public virtual bool CreateNewSupported { get { return false; } }
+        /// <summary>
+        /// Create a new instance of this type
+        /// </summary>
+        public virtual object CreateNew() { throw new NotSupportedException();}
+
+        /// <summary>
         /// Provides a type-specific accessor, allowing by-name access for all objects of that type
         /// </summary>
         /// <remarks>The accessor is cached internally; a pre-existing accessor may be returned</remarks>
@@ -177,6 +186,27 @@ namespace FastMember
                 il.Emit(OpCodes.Throw);
             }
             tb.DefineMethodOverride(body, baseSetter);
+
+            if(type.IsClass && !type.IsAbstract)
+            {
+                ConstructorInfo ctor = type.GetConstructor(Type.EmptyTypes);
+                if(ctor != null)
+                {
+                    MethodInfo baseMethod = typeof (TypeAccessor).GetProperty("CreateNewSupported").GetGetMethod();
+                    body = tb.DefineMethod(baseMethod.Name, baseMethod.Attributes, typeof (bool), Type.EmptyTypes);
+                    il = body.GetILGenerator();
+                    il.Emit(OpCodes.Ldc_I4_1);
+                    il.Emit(OpCodes.Ret);
+                    tb.DefineMethodOverride(body, baseMethod);
+
+                    baseMethod = typeof (TypeAccessor).GetMethod("CreateNew");
+                    body = tb.DefineMethod(baseMethod.Name, baseMethod.Attributes, typeof (object), Type.EmptyTypes);
+                    il = body.GetILGenerator();
+                    il.Emit(OpCodes.Newobj, ctor);
+                    il.Emit(OpCodes.Ret);
+                    tb.DefineMethodOverride(body, baseMethod);
+                }
+            }
 
             return (TypeAccessor)Activator.CreateInstance(tb.CreateType());
         }
