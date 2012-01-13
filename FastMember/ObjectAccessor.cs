@@ -47,13 +47,13 @@ namespace FastMember
             if (target == null) throw new ArgumentNullException("target");
             IDynamicMetaObjectProvider dlr = target as IDynamicMetaObjectProvider;
             if (dlr != null) return new DynamicWrapper(dlr); // use the DLR
-            return new StaticWrapper(target, TypeAccessor.Create(target.GetType()));
+            return new TypeAccessorWrapper(target, TypeAccessor.Create(target.GetType()));
         }
-        sealed class StaticWrapper : ObjectAccessor
+        sealed class TypeAccessorWrapper : ObjectAccessor
         {
             private readonly object target;
             private readonly TypeAccessor accessor;
-            public StaticWrapper(object target, TypeAccessor accessor)
+            public TypeAccessorWrapper(object target, TypeAccessor accessor)
             {
                 this.target = target;
                 this.accessor = accessor;

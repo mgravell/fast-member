@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Anons.cs" />
     <Compile Include="BasicTests.cs" />
     <Compile Include="ChainingPropertyDescriptor.cs" />
     <Compile Include="DynamicTests.cs" />

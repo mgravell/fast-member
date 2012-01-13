@@ -219,9 +219,9 @@ namespace FastMember.Tests
         }
 
 
-        public class HasDefaultCtor {}
-        public class HasNoDefaultCtor { public HasNoDefaultCtor(string s) {}}
-        public abstract class IsAbstract {}
+        public class HasDefaultCtor { }
+        public class HasNoDefaultCtor { public HasNoDefaultCtor(string s) { } }
+        public abstract class IsAbstract { }   
 
         [Test]
         public void TestCtor()
@@ -231,6 +231,9 @@ namespace FastMember.Tests
 
             accessor = TypeAccessor.Create(typeof(IsAbstract));
             Assert.IsFalse(accessor.CreateNewSupported);
+
+            Assert.AreNotEqual("DynamicAccessor", accessor.GetType().Name);
+            Assert.AreNotEqual("DelegateAccessor", accessor.GetType().Name);
 
             accessor = TypeAccessor.Create(typeof (HasDefaultCtor));
             Assert.IsTrue(accessor.CreateNewSupported);
