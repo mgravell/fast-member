@@ -10,13 +10,13 @@ using Microsoft.CSharp.RuntimeBinder;
 
 namespace FastMember
 {
-    public interface IObject
+    public abstract class ObjectAccessor
     {
-        object this[string name] {get; set;}
+        public abstract object this[string name] {get; set;}
     }
     public abstract class MemberAccess
     {
-        class StaticWrapper : IObject
+        class StaticWrapper : ObjectAccessor
         {
             private readonly object target;
             private readonly MemberAccess accessor;
@@ -25,22 +25,21 @@ namespace FastMember
                 this.target = target;
                 this.accessor = accessor;
             }
-            object IObject.this[string name]
+            public override object this[string name]
             {
                 get { return accessor[target, name]; }
                 set { accessor[target, name] = value; }
             }
         }
-        class DynamicWrapper : IObject
+        class DynamicWrapper : ObjectAccessor
         {
-            // note we need to have a call-site per object here, since even for the same type we don't know the members are the same per instance
-            private readonly Hashtable callSites = new Hashtable();
+            private static readonly Hashtable callSites = new Hashtable();
             private readonly IDynamicMetaObjectProvider target;
             public DynamicWrapper(IDynamicMetaObjectProvider target)
             {
                 this.target = target;
             }
-            object IObject.this[string name]
+            public override object this[string name]
             {
                 get
                 {
@@ -48,13 +47,13 @@ namespace FastMember
                     CallSite<Func<CallSite, object, object>> callSite = (CallSite<Func<CallSite, object, object>>)callSites[key];
                     if(callSite == null)
                     {
+                        CallSite<Func<CallSite, object, object>> newSite = CallSite<Func<CallSite, object, object>>.Create(Binder.GetMember(CSharpBinderFlags.None, name, typeof(DynamicWrapper), new CSharpArgumentInfo[] { CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.None, null) }));
                         lock (callSites)
                         {
                             callSite = (CallSite<Func<CallSite, object, object>>) callSites[key];
                             if(callSite == null)
                             {
-                                callSite = CallSite<Func<CallSite, object, object>>.Create(Binder.GetMember(CSharpBinderFlags.None, name, typeof(DynamicWrapper), new CSharpArgumentInfo[] { CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.None, null) }));
-                                callSites[key] = callSite;
+                                callSites[key] = callSite = newSite;
                             }
                         }
                     }
@@ -66,13 +65,13 @@ namespace FastMember
                     CallSite<Func<CallSite, object, object, object>> callSite = (CallSite<Func<CallSite, object, object, object>>)callSites[key];
                     if (callSite == null)
                     {
+                        CallSite<Func<CallSite, object, object, object>> newSite = CallSite<Func<CallSite, object, object, object>>.Create(Binder.SetMember(CSharpBinderFlags.None, name, typeof(DynamicWrapper), new CSharpArgumentInfo[] { CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.None, null), CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.UseCompileTimeType, null) }));
                         lock (callSites)
                         {
                             callSite = (CallSite<Func<CallSite, object, object, object>>)callSites[key];
                             if (callSite == null)
                             {
-                                callSite = CallSite<Func<CallSite, object, object, object>>.Create(Binder.SetMember(CSharpBinderFlags.None, name, typeof(DynamicWrapper), new CSharpArgumentInfo[] { CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.None, null), CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.UseCompileTimeType, null) }));
-                                callSites[key] = callSite;
+                                callSites[key] = callSite = newSite;
                             }
                         }
                     }
@@ -84,7 +83,7 @@ namespace FastMember
         // hash-table has better read-without-locking semantics than dictionary
         private static readonly Hashtable typeLookyp = new Hashtable();
 
-        public static IObject Wrap(object target)
+        public static ObjectAccessor Wrap(object target)
         {
             if (target == null) throw new ArgumentNullException("target");
             IDynamicMetaObjectProvider dlr = target as IDynamicMetaObjectProvider;
