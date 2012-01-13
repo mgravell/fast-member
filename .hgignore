@@ -5,3 +5,4 @@ syntax: glob
 *.suo
 _ReSharper.*
 packages/*
+*.user

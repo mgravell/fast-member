@@ -63,7 +63,7 @@ namespace FastMember.Tests
             //watch.Stop();
             //Console.WriteLine("HyperPropertyDescriptor: {0}ms", watch.ElapsedMilliseconds);
 
-            var accessor = MemberAccess.GetAccessor(typeof (Program));
+            var accessor = TypeAccessor.Create(typeof (Program));
             watch = Stopwatch.StartNew();
             for (int i = 0; i < loop; i++)
             {
@@ -71,9 +71,9 @@ namespace FastMember.Tests
                 accessor[obj, "Value"] = "abc";
             }
             watch.Stop();
-            Console.WriteLine("MemberAccess.GetAccessor: {0}ms", watch.ElapsedMilliseconds);
+            Console.WriteLine("TypeAccessor.Create: {0}ms", watch.ElapsedMilliseconds);
 
-            var wrapped = MemberAccess.Wrap(obj);
+            var wrapped = ObjectAccessor.Create(obj);
             watch = Stopwatch.StartNew();
             for (int i = 0; i < loop; i++)
             {
@@ -81,7 +81,7 @@ namespace FastMember.Tests
                 wrapped["Value"] = "abc";
             }
             watch.Stop();
-            Console.WriteLine("MemberAccess.Wrap: {0}ms", watch.ElapsedMilliseconds);
+            Console.WriteLine("ObjectAccessor.Create: {0}ms", watch.ElapsedMilliseconds);
             GC.KeepAlive(last);
 
         }

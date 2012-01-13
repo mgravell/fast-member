@@ -13,7 +13,7 @@ namespace FastMember.Tests
 
             var obj = new PropsOnClass() { A = 123, B = "abc", C = now, D = null };
 
-            var access = MemberAccess.GetAccessor(typeof(PropsOnClass));
+            var access = TypeAccessor.Create(typeof(PropsOnClass));
 
             Assert.AreEqual(123, access[obj, "A"]);
             Assert.AreEqual("abc", access[obj, "B"]);
@@ -28,7 +28,7 @@ namespace FastMember.Tests
 
             var obj = new PropsOnClass();
 
-            var access = MemberAccess.GetAccessor(typeof(PropsOnClass));
+            var access = TypeAccessor.Create(typeof(PropsOnClass));
 
             access[obj, "A"] = 123;
             access[obj, "B"] = "abc";
@@ -48,7 +48,7 @@ namespace FastMember.Tests
 
             var obj = new PropsOnClass() { A = 123, B = "abc", C = now, D = null };
 
-            var wrapper = MemberAccess.Wrap(obj);
+            var wrapper = ObjectAccessor.Create(obj);
 
             Assert.AreEqual(123, wrapper["A"]);
             Assert.AreEqual("abc", wrapper["B"]);
@@ -63,7 +63,7 @@ namespace FastMember.Tests
 
             var obj = new PropsOnClass();
 
-            var wrapper = MemberAccess.Wrap(obj);
+            var wrapper = ObjectAccessor.Create(obj);
 
             wrapper["A"] = 123;
             wrapper["B"] = "abc";
@@ -83,7 +83,7 @@ namespace FastMember.Tests
 
             var obj = new FieldsOnClass() { A = 123, B = "abc", C = now, D = null };
 
-            var access = MemberAccess.GetAccessor(typeof(FieldsOnClass));
+            var access = TypeAccessor.Create(typeof(FieldsOnClass));
 
             Assert.AreEqual(123, access[obj, "A"]);
             Assert.AreEqual("abc", access[obj, "B"]);
@@ -98,7 +98,7 @@ namespace FastMember.Tests
 
             var obj = new FieldsOnClass();
 
-            var access = MemberAccess.GetAccessor(typeof(FieldsOnClass));
+            var access = TypeAccessor.Create(typeof(FieldsOnClass));
 
             access[obj, "A"] = 123;
             access[obj, "B"] = "abc";
@@ -118,7 +118,7 @@ namespace FastMember.Tests
 
             var obj = new PropsOnStruct() { A = 123, B = "abc", C = now, D = null };
 
-            var access = MemberAccess.GetAccessor(typeof(PropsOnStruct));
+            var access = TypeAccessor.Create(typeof(PropsOnStruct));
 
             Assert.AreEqual(123, access[obj, "A"]);
             Assert.AreEqual("abc", access[obj, "B"]);
@@ -133,7 +133,7 @@ namespace FastMember.Tests
 
             var obj = new PropsOnStruct();
 
-            var access = MemberAccess.GetAccessor(typeof(PropsOnStruct));
+            var access = TypeAccessor.Create(typeof(PropsOnStruct));
 
             access[obj, "A"] = 123;
         }
@@ -145,7 +145,7 @@ namespace FastMember.Tests
 
             var obj = new FieldsOnStruct() { A = 123, B = "abc", C = now, D = null };
 
-            var access = MemberAccess.GetAccessor(typeof(FieldsOnStruct));
+            var access = TypeAccessor.Create(typeof(FieldsOnStruct));
 
             Assert.AreEqual(123, access[obj, "A"]);
             Assert.AreEqual("abc", access[obj, "B"]);
@@ -160,7 +160,7 @@ namespace FastMember.Tests
 
             object obj = new FieldsOnStruct();
             
-            var access = MemberAccess.GetAccessor(typeof(FieldsOnStruct));
+            var access = TypeAccessor.Create(typeof(FieldsOnStruct));
 
             access[obj, "A"] = 123;
         }
@@ -168,7 +168,7 @@ namespace FastMember.Tests
         [Test, ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void WriteInvalidMember()
         {
-            var access = MemberAccess.GetAccessor(typeof(PropsOnClass));
+            var access = TypeAccessor.Create(typeof(PropsOnClass));
             var obj = new PropsOnClass();
             access[obj, "doesnotexist"] = "abc";
         }
@@ -176,7 +176,7 @@ namespace FastMember.Tests
         [Test, ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void ReadInvalidMember()
         {
-            var access = MemberAccess.GetAccessor(typeof(PropsOnClass));
+            var access = TypeAccessor.Create(typeof(PropsOnClass));
             var obj = new PropsOnClass();
             object value = access[obj, "doesnotexist"];
         }
@@ -184,8 +184,8 @@ namespace FastMember.Tests
         [Test]
         public void GetSameAccessor()
         {
-            var x = MemberAccess.GetAccessor(typeof(PropsOnClass));
-            var y = MemberAccess.GetAccessor(typeof(PropsOnClass));
+            var x = TypeAccessor.Create(typeof(PropsOnClass));
+            var y = TypeAccessor.Create(typeof(PropsOnClass));
             Assert.AreSame(x, y);
         }
 

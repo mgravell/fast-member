@@ -3,117 +3,62 @@ using System.Collections;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Threading;
-using System.Runtime.CompilerServices;
-using Binder = Microsoft.CSharp.RuntimeBinder.Binder;
 using System.Dynamic;
-using Microsoft.CSharp.RuntimeBinder;
 
 namespace FastMember
 {
-    public abstract class ObjectAccessor
+    /// <summary>
+    /// Provides by-name member-access to objects of a given type
+    /// </summary>
+    public abstract class TypeAccessor
     {
-        public abstract object this[string name] {get; set;}
-    }
-    public abstract class MemberAccess
-    {
-        class StaticWrapper : ObjectAccessor
-        {
-            private readonly object target;
-            private readonly MemberAccess accessor;
-            public StaticWrapper(object target, MemberAccess accessor)
-            {
-                this.target = target;
-                this.accessor = accessor;
-            }
-            public override object this[string name]
-            {
-                get { return accessor[target, name]; }
-                set { accessor[target, name] = value; }
-            }
-        }
-        class DynamicWrapper : ObjectAccessor
-        {
-            private static readonly Hashtable callSites = new Hashtable();
-            private readonly IDynamicMetaObjectProvider target;
-            public DynamicWrapper(IDynamicMetaObjectProvider target)
-            {
-                this.target = target;
-            }
-            public override object this[string name]
-            {
-                get
-                {
-                    string key = "get_" + name;
-                    CallSite<Func<CallSite, object, object>> callSite = (CallSite<Func<CallSite, object, object>>)callSites[key];
-                    if(callSite == null)
-                    {
-                        CallSite<Func<CallSite, object, object>> newSite = CallSite<Func<CallSite, object, object>>.Create(Binder.GetMember(CSharpBinderFlags.None, name, typeof(DynamicWrapper), new CSharpArgumentInfo[] { CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.None, null) }));
-                        lock (callSites)
-                        {
-                            callSite = (CallSite<Func<CallSite, object, object>>) callSites[key];
-                            if(callSite == null)
-                            {
-                                callSites[key] = callSite = newSite;
-                            }
-                        }
-                    }
-                    return callSite.Target(callSite, target);
-                }
-                set
-                {
-                    string key = "set_" + name;
-                    CallSite<Func<CallSite, object, object, object>> callSite = (CallSite<Func<CallSite, object, object, object>>)callSites[key];
-                    if (callSite == null)
-                    {
-                        CallSite<Func<CallSite, object, object, object>> newSite = CallSite<Func<CallSite, object, object, object>>.Create(Binder.SetMember(CSharpBinderFlags.None, name, typeof(DynamicWrapper), new CSharpArgumentInfo[] { CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.None, null), CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.UseCompileTimeType, null) }));
-                        lock (callSites)
-                        {
-                            callSite = (CallSite<Func<CallSite, object, object, object>>)callSites[key];
-                            if (callSite == null)
-                            {
-                                callSites[key] = callSite = newSite;
-                            }
-                        }
-                    }
-                    callSite.Target(callSite, target, value);
-                }
-            }
-
-        }
         // hash-table has better read-without-locking semantics than dictionary
         private static readonly Hashtable typeLookyp = new Hashtable();
 
-        public static ObjectAccessor Wrap(object target)
-        {
-            if (target == null) throw new ArgumentNullException("target");
-            IDynamicMetaObjectProvider dlr = target as IDynamicMetaObjectProvider;
-            if(dlr != null) return new DynamicWrapper(dlr); // use the DLR
-            return new StaticWrapper(target, Create(target.GetType()));
-        }
-        public static MemberAccess GetAccessor(Type type)
+        /// <summary>
+        /// Provides a type-specific accessor, allowing by-name access for all objects of that type
+        /// </summary>
+        /// <remarks>The accessor is cached internally; a pre-existing accessor may be returned</remarks>
+        public static TypeAccessor Create(Type type)
         {
             if(type == null) throw new ArgumentNullException("type");
-            MemberAccess obj = (MemberAccess)typeLookyp[type];
+            TypeAccessor obj = (TypeAccessor)typeLookyp[type];
             if (obj != null) return obj;
 
             lock(typeLookyp)
             {
                 // double-check
-                obj = (MemberAccess)typeLookyp[type];
+                obj = (TypeAccessor)typeLookyp[type];
                 if (obj != null) return obj;
 
-                obj = Create(type);
+                obj = CreateNew(type);
 
                 typeLookyp[type] = obj;
                 return obj;
             }
         }
 
+        sealed class DynamicAccessor : TypeAccessor
+        {
+            public static readonly DynamicAccessor Singleton = new DynamicAccessor();
+            private DynamicAccessor(){}
+            public override object this[object target, string name]
+            {
+                get { return CallSiteCache.GetValue(name, target); }
+                set { CallSiteCache.SetValue(name, target, value); }
+            }
+        }
+
         private static AssemblyBuilder assembly;
         private static ModuleBuilder module;
         private static int counter;
-        static MemberAccess Create(Type type)
+        static TypeAccessor CreateNew(Type type)
         {
+            if (typeof(IDynamicMetaObjectProvider).IsAssignableFrom(type))
+            {
+                return DynamicAccessor.Singleton;
+            }
+
             // note this region is synchronized; only one is being created at a time so we don't need to stress about the builders
             if(assembly == null)
             {
@@ -122,10 +67,10 @@ namespace FastMember
                 module = assembly.DefineDynamicModule(name.Name);
             }
             TypeBuilder tb = module.DefineType("FastMember_dynamic." + type.Name + "_" + Interlocked.Increment(ref counter),
-                (typeof(MemberAccess).Attributes | TypeAttributes.Sealed) & ~TypeAttributes.Abstract, typeof(MemberAccess) );
+                (typeof(TypeAccessor).Attributes | TypeAttributes.Sealed) & ~TypeAttributes.Abstract, typeof(TypeAccessor) );
 
             tb.DefineDefaultConstructor(MethodAttributes.Public);
-            PropertyInfo indexer = typeof (MemberAccess).GetProperty("Item");
+            PropertyInfo indexer = typeof (TypeAccessor).GetProperty("Item");
             MethodInfo baseGetter = indexer.GetGetMethod(), baseSetter = indexer.GetSetMethod();
 
             MethodBuilder body = tb.DefineMethod(baseGetter.Name, baseGetter.Attributes & ~MethodAttributes.Abstract, typeof(object), new Type[] {typeof(object), typeof(string)});
@@ -233,7 +178,7 @@ namespace FastMember
             }
             tb.DefineMethodOverride(body, baseSetter);
 
-            return (MemberAccess)Activator.CreateInstance(tb.CreateType());
+            return (TypeAccessor)Activator.CreateInstance(tb.CreateType());
         }
 
         private static void Cast(ILGenerator il, Type type, LocalBuilder addr)
@@ -269,7 +214,9 @@ namespace FastMember
                     return -1;
             }
         }
-
+        /// <summary>
+        /// Get or set the value of a named member on the target instance
+        /// </summary>
         public abstract object this[object target, string name]
         {
             get; set;
