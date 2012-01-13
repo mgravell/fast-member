@@ -82,7 +82,44 @@ namespace FastMember.Tests
             }
             watch.Stop();
             Console.WriteLine("ObjectAccessor.Create: {0}ms", watch.ElapsedMilliseconds);
+
+
+            object lastObj = null;
+            GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced);
+            GC.WaitForPendingFinalizers();
+            watch = Stopwatch.StartNew();
+            for (int i = 0; i < loop; i++)
+            {
+                lastObj = new Program();
+            }
+            watch.Stop();
+            Console.WriteLine("c# new(): {0}ms", watch.ElapsedMilliseconds);
+
+            Type type = typeof (Program);
+            GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced);
+            GC.WaitForPendingFinalizers();
+            watch = Stopwatch.StartNew();
+            for (int i = 0; i < loop; i++)
+            {
+                lastObj = Activator.CreateInstance(type);
+            }
+            watch.Stop();
+            Console.WriteLine("Activator.CreateInstance: {0}ms", watch.ElapsedMilliseconds);
+
+            GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced);
+            GC.WaitForPendingFinalizers();
+            watch = Stopwatch.StartNew();
+            for (int i = 0; i < loop; i++)
+            {
+                lastObj = accessor.CreateNew();
+            }
+            watch.Stop();
+            Console.WriteLine("TypeAccessor.CreateNew: {0}ms", watch.ElapsedMilliseconds);
+
             GC.KeepAlive(last);
+            GC.KeepAlive(lastObj);
+
+
 
         }
     }
