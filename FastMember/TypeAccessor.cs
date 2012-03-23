@@ -68,7 +68,8 @@ namespace FastMember
             OpCode propName = isStatic ? OpCodes.Ldarg_1 : OpCodes.Ldarg_2, target = isStatic ? OpCodes.Ldarg_0 : OpCodes.Ldarg_1;
             foreach (PropertyInfo prop in props)
             {
-                if (prop.GetIndexParameters().Length != 0 || !prop.CanRead) continue;
+                MethodInfo getter;
+                if (prop.GetIndexParameters().Length != 0 || !prop.CanRead || (getter = prop.GetGetMethod(false)) == null) continue;
 
                 Label next = il.DefineLabel();
                 il.Emit(propName);
@@ -78,7 +79,7 @@ namespace FastMember
                 // match:
                 il.Emit(target);
                 Cast(il, type, loc);
-                il.EmitCall(type.IsValueType ? OpCodes.Call : OpCodes.Callvirt, prop.GetGetMethod(), null);
+                il.EmitCall(type.IsValueType ? OpCodes.Call : OpCodes.Callvirt, getter, null);
                 if (prop.PropertyType.IsValueType)
                 {
                     il.Emit(OpCodes.Box, prop.PropertyType);
@@ -126,7 +127,8 @@ namespace FastMember
                 LocalBuilder loc = type.IsValueType ? il.DeclareLocal(type) : null;
                 foreach (PropertyInfo prop in props)
                 {
-                    if (prop.GetIndexParameters().Length != 0 || !prop.CanWrite) continue;
+                    MethodInfo setter;
+                    if (prop.GetIndexParameters().Length != 0 || !prop.CanWrite || (setter = prop.GetSetMethod(false)) == null) continue;
 
                     Label next = il.DefineLabel();
                     il.Emit(propName);
@@ -138,7 +140,7 @@ namespace FastMember
                     Cast(il, type, loc);
                     il.Emit(value);
                     Cast(il, prop.PropertyType, null);
-                    il.EmitCall(type.IsValueType ? OpCodes.Call : OpCodes.Callvirt, prop.GetSetMethod(), null);
+                    il.EmitCall(type.IsValueType ? OpCodes.Call : OpCodes.Callvirt, setter, null);
                     il.Emit(OpCodes.Ret);
                     // not match:
                     il.MarkLabel(next);

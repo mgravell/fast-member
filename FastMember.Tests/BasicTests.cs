@@ -240,5 +240,30 @@ namespace FastMember.Tests
             object obj = accessor.CreateNew();
             Assert.IsInstanceOf(typeof(HasDefaultCtor), obj);
         }
+
+        public class HasGetterNoSetter
+        {
+            public int Foo { get { return 5; } }
+        }
+        [Test]
+        public void TestHasGetterNoSetter()
+        {
+            var obj = new HasGetterNoSetter();
+            var acc = TypeAccessor.Create(typeof (HasGetterNoSetter));
+            Assert.AreEqual(5, acc[obj, "Foo"]);
+        }
+        public class HasGetterPrivateSetter
+        {
+            public int Foo { get; private set; }
+            public HasGetterPrivateSetter(int value) { Foo = value; }
+        }
+        [Test]
+        public void TestHasGetterPrivateSetter()
+        {
+            var obj = new HasGetterPrivateSetter(5);
+            var acc = TypeAccessor.Create(typeof(HasGetterPrivateSetter));
+            Assert.AreEqual(5, acc[obj, "Foo"]);
+        }
+        
     }
 }
