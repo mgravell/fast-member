@@ -6,3 +6,4 @@ syntax: glob
 _ReSharper.*
 packages/*
 *.user
+Nuget/lib

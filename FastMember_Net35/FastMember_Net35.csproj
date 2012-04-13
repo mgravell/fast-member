@@ -8,8 +8,8 @@
     <ProjectGuid>{7C5CF865-41CF-4E3E-BCAD-987872A23237}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>FastMember_Net20</RootNamespace>
-    <AssemblyName>FastMember_Net20</AssemblyName>
+    <RootNamespace>FastMember</RootNamespace>
+    <AssemblyName>FastMember</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -26,10 +26,11 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\Nuget\lib\net35\</OutputPath>
     <DefineConstants>TRACE;NO_DYNAMIC</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>..\Nuget\lib\net35\FastMember.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
