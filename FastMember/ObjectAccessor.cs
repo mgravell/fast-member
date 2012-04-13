@@ -1,5 +1,7 @@
 ﻿using System;
+#if !NO_DYNAMIC
 using System.Dynamic;
+#endif
 
 
 namespace FastMember
@@ -45,8 +47,10 @@ namespace FastMember
         public static ObjectAccessor Create(object target)
         {
             if (target == null) throw new ArgumentNullException("target");
+#if !NO_DYNAMIC
             IDynamicMetaObjectProvider dlr = target as IDynamicMetaObjectProvider;
             if (dlr != null) return new DynamicWrapper(dlr); // use the DLR
+#endif
             return new TypeAccessorWrapper(target, TypeAccessor.Create(target.GetType()));
         }
         sealed class TypeAccessorWrapper : ObjectAccessor
@@ -68,6 +72,7 @@ namespace FastMember
                 get { return target; }
             }
         }
+#if !NO_DYNAMIC
         sealed class DynamicWrapper : ObjectAccessor
         {
             private readonly IDynamicMetaObjectProvider target;
@@ -86,6 +91,7 @@ namespace FastMember
             }
 
         }
+#endif
     }
 
 }

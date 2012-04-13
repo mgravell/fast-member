@@ -3,7 +3,9 @@ using System.Collections;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Threading;
+#if !NO_DYNAMIC
 using System.Dynamic;
+#endif
 
 namespace FastMember
 {
@@ -46,7 +48,7 @@ namespace FastMember
                 return obj;
             }
         }
-
+#if !NO_DYNAMIC
         sealed class DynamicAccessor : TypeAccessor
         {
             public static readonly DynamicAccessor Singleton = new DynamicAccessor();
@@ -57,6 +59,7 @@ namespace FastMember
                 set { CallSiteCache.SetValue(name, target, value); }
             }
         }
+#endif
 
         private static AssemblyBuilder assembly;
         private static ModuleBuilder module;
@@ -198,10 +201,12 @@ namespace FastMember
         }
         static TypeAccessor CreateNew(Type type)
         {
+#if !NO_DYNAMIC
             if (typeof(IDynamicMetaObjectProvider).IsAssignableFrom(type))
             {
                 return DynamicAccessor.Singleton;
             }
+#endif
 
             PropertyInfo[] props = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
             FieldInfo[] fields = type.GetFields(BindingFlags.Public | BindingFlags.Instance);
