@@ -46,6 +46,13 @@ namespace FastMember
         /// </summary>
         public static ObjectAccessor Create(object target)
         {
+            return Create(target, false);
+        }
+        /// <summary>
+        /// Wraps an individual object, allowing by-name access to that instance
+        /// </summary>
+        public static ObjectAccessor Create(object target, bool allowNonPublicAccessors)
+        {
             if (target == null) throw new ArgumentNullException("target");
 #if !NO_DYNAMIC
             IDynamicMetaObjectProvider dlr = target as IDynamicMetaObjectProvider;

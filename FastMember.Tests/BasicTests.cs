@@ -277,6 +277,53 @@ namespace FastMember.Tests
             var acc = TypeAccessor.Create(typeof(HasGetterPrivateSetter));
             Assert.AreEqual(5, acc[obj, "Foo"]);
         }
-        
+
+        public class MixedAccess
+        {
+            public MixedAccess()
+            {
+                Foo = Bar = 2;
+            }
+            public int Foo { get; private set; }
+            public int Bar { private get; set; }
+        }
+
+        [Test]
+        public void TestMixedAccess()
+        {
+            TypeAccessor acc0 = TypeAccessor.Create(typeof(MixedAccess)),
+                         acc1 = TypeAccessor.Create(typeof(MixedAccess), false),
+                         acc2 = TypeAccessor.Create(typeof(MixedAccess), true);
+
+            Assert.AreSame(acc0, acc1);
+            Assert.AreNotSame(acc0, acc2);
+
+            var obj = new MixedAccess();
+            Assert.AreEqual(2, acc0[obj, "Foo"]);
+            Assert.AreEqual(2, acc2[obj, "Foo"]);
+            Assert.AreEqual(2, acc2[obj, "Bar"]);
+
+            acc0[obj, "Bar"] = 3;
+            Assert.AreEqual(3, acc2[obj, "Bar"]);
+            acc2[obj, "Bar"] = 4;
+            Assert.AreEqual(4, acc2[obj, "Bar"]);
+            acc2[obj, "Foo"] = 5;
+            Assert.AreEqual(5, acc0[obj, "Foo"]);
+
+            try
+            {
+                int i = (int)acc0[obj, "Bar"];
+                Assert.Fail();
+            }
+            catch (ArgumentOutOfRangeException)
+            { } // fine
+            try
+            {
+                acc0[obj, "Foo"] = 6;
+                Assert.Fail();
+            }
+            catch (ArgumentOutOfRangeException)
+            { } // fine
+        }
     }
 }

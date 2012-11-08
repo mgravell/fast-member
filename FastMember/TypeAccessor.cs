@@ -15,7 +15,7 @@ namespace FastMember
     public abstract class TypeAccessor
     {
         // hash-table has better read-without-locking semantics than dictionary
-        private static readonly Hashtable typeLookyp = new Hashtable();
+        private static readonly Hashtable publicAccessorsOnly = new Hashtable(), nonPublicAccessors = new Hashtable();
 
         /// <summary>
         /// Does this type support new instances via a parameterless constructor?
@@ -41,19 +41,29 @@ namespace FastMember
         /// <remarks>The accessor is cached internally; a pre-existing accessor may be returned</remarks>
         public static TypeAccessor Create(Type type)
         {
+            return Create(type, false);
+        }
+
+        /// <summary>
+        /// Provides a type-specific accessor, allowing by-name access for all objects of that type
+        /// </summary>
+        /// <remarks>The accessor is cached internally; a pre-existing accessor may be returned</remarks>
+        public static TypeAccessor Create(Type type, bool allowNonPublicAccessors)
+        {
             if(type == null) throw new ArgumentNullException("type");
-            TypeAccessor obj = (TypeAccessor)typeLookyp[type];
+            var lookup = allowNonPublicAccessors ? nonPublicAccessors : publicAccessorsOnly;
+            TypeAccessor obj = (TypeAccessor)lookup[type];
             if (obj != null) return obj;
 
-            lock(typeLookyp)
+            lock (lookup)
             {
                 // double-check
-                obj = (TypeAccessor)typeLookyp[type];
+                obj = (TypeAccessor)lookup[type];
                 if (obj != null) return obj;
 
-                obj = CreateNew(type);
+                obj = CreateNew(type, allowNonPublicAccessors);
 
-                typeLookyp[type] = obj;
+                lookup[type] = obj;
                 return obj;
             }
         }
@@ -74,14 +84,14 @@ namespace FastMember
         private static ModuleBuilder module;
         private static int counter;
 
-        private static void WriteGetter(ILGenerator il, Type type, PropertyInfo[] props, FieldInfo[] fields, bool isStatic)
+        private static void WriteGetter(ILGenerator il, Type type, PropertyInfo[] props, FieldInfo[] fields, bool isStatic, bool allowNonPublicAccessors)
         {
             LocalBuilder loc = type.IsValueType ? il.DeclareLocal(type) : null;
             OpCode propName = isStatic ? OpCodes.Ldarg_1 : OpCodes.Ldarg_2, target = isStatic ? OpCodes.Ldarg_0 : OpCodes.Ldarg_1;
             foreach (PropertyInfo prop in props)
             {
                 MethodInfo getter;
-                if (prop.GetIndexParameters().Length != 0 || !prop.CanRead || (getter = prop.GetGetMethod(false)) == null) continue;
+                if (prop.GetIndexParameters().Length != 0 || !prop.CanRead || (getter = prop.GetGetMethod(allowNonPublicAccessors)) == null) continue;
 
                 Label next = il.DefineLabel();
                 il.Emit(propName);
@@ -123,7 +133,7 @@ namespace FastMember
             il.Emit(OpCodes.Newobj, typeof(ArgumentOutOfRangeException).GetConstructor(new Type[] { typeof(string) }));
             il.Emit(OpCodes.Throw);
         }
-        private static void WriteSetter(ILGenerator il, Type type, PropertyInfo[] props, FieldInfo[] fields, bool isStatic)
+        private static void WriteSetter(ILGenerator il, Type type, PropertyInfo[] props, FieldInfo[] fields, bool isStatic, bool allowNonPublicAccessors)
         {
             if (type.IsValueType)
             {
@@ -140,7 +150,7 @@ namespace FastMember
                 foreach (PropertyInfo prop in props)
                 {
                     MethodInfo setter;
-                    if (prop.GetIndexParameters().Length != 0 || !prop.CanWrite || (setter = prop.GetSetMethod(false)) == null) continue;
+                    if (prop.GetIndexParameters().Length != 0 || !prop.CanWrite || (setter = prop.GetSetMethod(allowNonPublicAccessors)) == null) continue;
 
                     Label next = il.DefineLabel();
                     il.Emit(propName);
@@ -232,12 +242,23 @@ namespace FastMember
                 set { setter(target, name, value); }
             }
         }
-        private static bool IsFullyPublic(Type type)
+        private static bool IsFullyPublic(Type type, PropertyInfo[] props, bool allowNonPublicAccessors)
         {
             while (type.IsNestedPublic) type = type.DeclaringType;
-            return type.IsPublic;
+            if (!type.IsPublic) return false;
+
+            if (allowNonPublicAccessors)
+            {
+                for (int i = 0; i < props.Length; i++)
+                {
+                    if (props[i].GetGetMethod(true) != null && props[i].GetGetMethod(false) == null) return false; // non-public getter
+                    if (props[i].GetSetMethod(true) != null && props[i].GetSetMethod(false) == null) return false; // non-public setter
+                }
+            }
+
+            return true;
         }
-        static TypeAccessor CreateNew(Type type)
+        static TypeAccessor CreateNew(Type type, bool allowNonPublicAccessors)
         {
 #if !NO_DYNAMIC
             if (typeof(IDynamicMetaObjectProvider).IsAssignableFrom(type))
@@ -254,12 +275,12 @@ namespace FastMember
                 ctor = type.GetConstructor(Type.EmptyTypes);
             }
             ILGenerator il;
-            if(!IsFullyPublic(type))
+            if(!IsFullyPublic(type, props, allowNonPublicAccessors))
             {
                 DynamicMethod dynGetter = new DynamicMethod(type.FullName + "_get", typeof(object), new Type[] { typeof(object), typeof(string) }, type, true),
                               dynSetter = new DynamicMethod(type.FullName + "_set", null, new Type[] { typeof(object), typeof(string), typeof(object) }, type, true);
-                WriteGetter(dynGetter.GetILGenerator(), type, props, fields, true);
-                WriteSetter(dynSetter.GetILGenerator(), type, props, fields, true);
+                WriteGetter(dynGetter.GetILGenerator(), type, props, fields, true, allowNonPublicAccessors);
+                WriteSetter(dynSetter.GetILGenerator(), type, props, fields, true, allowNonPublicAccessors);
                 DynamicMethod dynCtor = null;
                 if(ctor != null)
                 {
@@ -289,12 +310,12 @@ namespace FastMember
             MethodInfo baseGetter = indexer.GetGetMethod(), baseSetter = indexer.GetSetMethod();
             MethodBuilder body = tb.DefineMethod(baseGetter.Name, baseGetter.Attributes & ~MethodAttributes.Abstract, typeof(object), new Type[] {typeof(object), typeof(string)});
             il = body.GetILGenerator();
-            WriteGetter(il, type, props, fields, false);
+            WriteGetter(il, type, props, fields, false, allowNonPublicAccessors);
             tb.DefineMethodOverride(body, baseGetter);
 
             body = tb.DefineMethod(baseSetter.Name, baseSetter.Attributes & ~MethodAttributes.Abstract, null, new Type[] { typeof(object), typeof(string), typeof(object) });
             il = body.GetILGenerator();
-            WriteSetter(il, type, props, fields, false);
+            WriteSetter(il, type, props, fields, false, allowNonPublicAccessors);
             tb.DefineMethodOverride(body, baseSetter);
 
             MethodInfo baseMethod;
