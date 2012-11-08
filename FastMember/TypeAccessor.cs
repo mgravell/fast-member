@@ -27,6 +27,15 @@ namespace FastMember
         public virtual object CreateNew() { throw new NotSupportedException();}
 
         /// <summary>
+        /// Can this type be queried for member availability?
+        /// </summary>
+        public virtual bool GetMembersSupported { get { return false; } }
+        /// <summary>
+        /// Query the members available for this type
+        /// </summary>
+        public virtual MemberSet GetMembers() { throw new NotSupportedException(); }
+
+        /// <summary>
         /// Provides a type-specific accessor, allowing by-name access for all objects of that type
         /// </summary>
         /// <remarks>The accessor is cached internally; a pre-existing accessor may be returned</remarks>
@@ -172,16 +181,45 @@ namespace FastMember
         }
         private static readonly MethodInfo strinqEquals = typeof(string).GetMethod("op_Equality", new Type[] { typeof(string), typeof(string) });
 
-        sealed class DelegateAccessor : TypeAccessor
+        /// <summary>
+        /// A TypeAccessor based on a Type implementation, with available member metadata
+        /// </summary>
+        protected abstract class RuntimeTypeAccessor : TypeAccessor
+        {
+            /// <summary>
+            /// Returns the Type represented by this accessor
+            /// </summary>
+            protected abstract Type Type { get; }
+
+            /// <summary>
+            /// Can this type be queried for member availability?
+            /// </summary>
+            public override bool GetMembersSupported { get { return true; } }
+            private MemberSet members;
+            /// <summary>
+            /// Query the members available for this type
+            /// </summary>
+            public override MemberSet GetMembers()
+            {
+                return members ?? (members = new MemberSet(Type));
+            }
+        }
+        sealed class DelegateAccessor : RuntimeTypeAccessor
         {
             private readonly Func<object, string, object> getter;
             private readonly Action<object, string, object> setter;
             private readonly Func<object> ctor;
-            public DelegateAccessor(Func<object, string, object> getter, Action<object, string, object> setter, Func<object> ctor)
+            private readonly Type type;
+            protected override Type Type
+            {
+                get { return type; }
+            }
+            public DelegateAccessor(Func<object, string, object> getter, Action<object, string, object> setter, Func<object> ctor, Type type)
             {
                 this.getter = getter;
                 this.setter = setter;
                 this.ctor = ctor;
+                this.type = type;
             }
             public override bool CreateNewSupported { get { return ctor != null; } }
             public override object CreateNew()
@@ -233,7 +271,7 @@ namespace FastMember
                 return new DelegateAccessor(
                     (Func<object,string,object>)dynGetter.CreateDelegate(typeof(Func<object,string,object>)),
                     (Action<object,string,object>)dynSetter.CreateDelegate(typeof(Action<object,string,object>)),
-                    dynCtor == null ? null : (Func<object>)dynCtor.CreateDelegate(typeof(Func<object>)));
+                    dynCtor == null ? null : (Func<object>)dynCtor.CreateDelegate(typeof(Func<object>)), type);
             }
 
             // note this region is synchronized; only one is being created at a time so we don't need to stress about the builders
@@ -244,7 +282,7 @@ namespace FastMember
                 module = assembly.DefineDynamicModule(name.Name);
             }
             TypeBuilder tb = module.DefineType("FastMember_dynamic." + type.Name + "_" + Interlocked.Increment(ref counter),
-                (typeof(TypeAccessor).Attributes | TypeAttributes.Sealed) & ~TypeAttributes.Abstract, typeof(TypeAccessor) );
+                (typeof(TypeAccessor).Attributes | TypeAttributes.Sealed | TypeAttributes.Public) & ~(TypeAttributes.Abstract | TypeAttributes.NotPublic), typeof(RuntimeTypeAccessor) );
 
             tb.DefineDefaultConstructor(MethodAttributes.Public);
             PropertyInfo indexer = typeof (TypeAccessor).GetProperty("Item");
@@ -259,22 +297,31 @@ namespace FastMember
             WriteSetter(il, type, props, fields, false);
             tb.DefineMethodOverride(body, baseSetter);
 
+            MethodInfo baseMethod;
             if(ctor != null)
             {
-                MethodInfo baseMethod = typeof (TypeAccessor).GetProperty("CreateNewSupported").GetGetMethod();
-                body = tb.DefineMethod(baseMethod.Name, baseMethod.Attributes, typeof (bool), Type.EmptyTypes);
+                baseMethod = typeof (TypeAccessor).GetProperty("CreateNewSupported").GetGetMethod();
+                body = tb.DefineMethod(baseMethod.Name, baseMethod.Attributes, baseMethod.ReturnType, Type.EmptyTypes);
                 il = body.GetILGenerator();
                 il.Emit(OpCodes.Ldc_I4_1);
                 il.Emit(OpCodes.Ret);
                 tb.DefineMethodOverride(body, baseMethod);
 
                 baseMethod = typeof (TypeAccessor).GetMethod("CreateNew");
-                body = tb.DefineMethod(baseMethod.Name, baseMethod.Attributes, typeof (object), Type.EmptyTypes);
+                body = tb.DefineMethod(baseMethod.Name, baseMethod.Attributes, baseMethod.ReturnType, Type.EmptyTypes);
                 il = body.GetILGenerator();
                 il.Emit(OpCodes.Newobj, ctor);
                 il.Emit(OpCodes.Ret);
                 tb.DefineMethodOverride(body, baseMethod);
             }
+
+            baseMethod = typeof(RuntimeTypeAccessor).GetProperty("Type", BindingFlags.NonPublic | BindingFlags.Instance).GetGetMethod(true);
+            body = tb.DefineMethod(baseMethod.Name, baseMethod.Attributes & ~MethodAttributes.Abstract, baseMethod.ReturnType, Type.EmptyTypes);
+            il = body.GetILGenerator();
+            il.Emit(OpCodes.Ldtoken, type);
+            il.Emit(OpCodes.Call, typeof(Type).GetMethod("GetTypeFromHandle"));
+            il.Emit(OpCodes.Ret);
+            tb.DefineMethodOverride(body, baseMethod);            
 
             return (TypeAccessor)Activator.CreateInstance(tb.CreateType());
         }

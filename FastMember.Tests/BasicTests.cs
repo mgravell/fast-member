@@ -42,6 +42,19 @@ namespace FastMember.Tests
         }
 
         [Test]
+        public void Getmembers()
+        {
+            var access = TypeAccessor.Create(typeof(PropsOnClass));
+            Assert.IsTrue(access.GetMembersSupported);
+            var members = access.GetMembers();
+            Assert.AreEqual(4, members.Count);
+            Assert.AreEqual("A", members[0].Name);
+            Assert.AreEqual("B", members[1].Name);
+            Assert.AreEqual("C", members[2].Name);
+            Assert.AreEqual("D", members[3].Name);
+        }
+
+        [Test]
         public void BasicReadTest_PropsOnClass_ViaWrapper()
         {
             var now = DateTime.Now;

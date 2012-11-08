@@ -10,6 +10,8 @@ namespace FastMember.Tests
         static void Main()
         {
             var obj = new Program();
+            obj.Value = "abc";
+            GC.KeepAlive(obj.Value);
             const int loop = 5000000;
             string last = null;
             var watch = Stopwatch.StartNew();

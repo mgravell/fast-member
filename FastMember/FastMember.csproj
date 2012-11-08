@@ -22,7 +22,8 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>ISO-1</LangVersion>
+    <LangVersion>default</LangVersion>
+    <DocumentationFile>bin\Debug\FastMember.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -39,6 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CallSiteCache.cs" />
+    <Compile Include="MemberSet.cs" />
     <Compile Include="ObjectAccessor.cs" />
     <Compile Include="TypeAccessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
