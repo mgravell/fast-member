@@ -83,6 +83,15 @@ namespace FastMember
             }
         }
 
+        /// <summary>
+        /// Is the attribute specified defined on this type
+        /// </summary>
+        public bool IsDefined(Type attributeType)
+        {
+            if (attributeType == null) throw new ArgumentNullException("attributeType");
+            return Attribute.IsDefined(member, attributeType);
+        }
+
 
     }
 }
