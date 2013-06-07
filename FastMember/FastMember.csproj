@@ -37,11 +37,14 @@
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CallSiteCache.cs" />
     <Compile Include="MemberSet.cs" />
     <Compile Include="ObjectAccessor.cs" />
+    <Compile Include="ObjectReader.cs" />
     <Compile Include="TypeAccessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

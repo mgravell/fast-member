@@ -1,5 +1,6 @@
 ﻿using System;
 using NUnit.Framework;
+using System.Data;
 
 namespace FastMember.Tests
 {
@@ -324,6 +325,95 @@ namespace FastMember.Tests
             }
             catch (ArgumentOutOfRangeException)
             { } // fine
+        }
+
+        public class ObjectReaderType {
+            public int A {get;set;}
+            public string B {get;set;}
+            public byte C {get;set;}
+            public int? D { get; set; }
+        }
+
+        [Test]
+        public void TestReaderAllColumns()
+        {
+            var source = new[] {
+                new ObjectReaderType { A = 123, B = "abc", C = 1, D = 123},
+                new ObjectReaderType { A = 456, B = "def", C = 2, D = null},
+                new ObjectReaderType { A = 789, B = "ghi", C = 3, D = 789}
+            };
+            var table = new DataTable();
+            using (var reader = ObjectReader.Create(source))
+            {
+                table.Load(reader);
+            }
+
+            Assert.AreEqual(4, table.Columns.Count, "col count");
+            Assert.AreEqual("A", table.Columns["A"].ColumnName, "A/name");
+            Assert.AreEqual("B", table.Columns["B"].ColumnName, "B/name");
+            Assert.AreEqual("C", table.Columns["C"].ColumnName, "C/name");
+            Assert.AreEqual("D", table.Columns["D"].ColumnName, "D/name");
+            Assert.AreSame(typeof(int), table.Columns["A"].DataType, "A/type");
+            Assert.AreSame(typeof(string), table.Columns["B"].DataType, "B/type");
+            Assert.AreSame(typeof(byte), table.Columns["C"].DataType, "C/type");
+            Assert.AreSame(typeof(int), table.Columns["D"].DataType, "D/type");
+            Assert.IsFalse(table.Columns["A"].AllowDBNull, "A/null");
+            Assert.IsTrue(table.Columns["B"].AllowDBNull, "B/null");
+            Assert.IsFalse(table.Columns["C"].AllowDBNull, "C/null");
+            Assert.IsTrue(table.Columns["D"].AllowDBNull, "D/null");
+
+            Assert.AreEqual(3, table.Rows.Count, "row count");
+            Assert.AreEqual(123, table.Rows[0]["A"], "0,A");
+            Assert.AreEqual("abc", table.Rows[0]["B"], "0,B");
+            Assert.AreEqual((byte)1, table.Rows[0]["C"], "0,C");
+            Assert.AreEqual(123, table.Rows[0]["D"], "0,D");
+            Assert.AreEqual(456, table.Rows[1]["A"], "1,A");
+            Assert.AreEqual("def", table.Rows[1]["B"], "1,B");
+            Assert.AreEqual((byte)2, table.Rows[1]["C"], "1,C");
+            Assert.AreEqual(DBNull.Value, table.Rows[1]["D"], "1,D");
+            Assert.AreEqual(789, table.Rows[2]["A"], "2,A");
+            Assert.AreEqual("ghi", table.Rows[2]["B"], "2,B");
+            Assert.AreEqual((byte)3, table.Rows[2]["C"], "2,C");
+            Assert.AreEqual(789, table.Rows[2]["D"], "2,D");
+        }
+
+        [Test]
+        public void TestReaderSpecifiedColumns()
+        {
+            var source = new[] {
+                new ObjectReaderType { A = 123, B = "abc", C = 1, D = 123},
+                new ObjectReaderType { A = 456, B = "def", C = 2, D = null},
+                new ObjectReaderType { A = 789, B = "ghi", C = 3, D = 789}
+            };
+            var table = new DataTable();
+            using (var reader = ObjectReader.Create(source, "B", "A", "D"))
+            {
+                table.Load(reader);
+            }
+
+            Assert.AreEqual(3, table.Columns.Count, "col count");
+            Assert.AreEqual("B", table.Columns[0].ColumnName, "B/name");
+            Assert.AreEqual("A", table.Columns[1].ColumnName, "A/name");
+            Assert.AreEqual("D", table.Columns[2].ColumnName, "D/name");
+            Assert.AreSame(typeof(string), table.Columns[0].DataType, "B/type");
+            Assert.AreSame(typeof(int), table.Columns[1].DataType, "A/type");
+            Assert.AreSame(typeof(int), table.Columns[2].DataType, "D/type");
+            Assert.IsTrue(table.Columns[0].AllowDBNull, "B/null");
+            Assert.IsFalse(table.Columns[1].AllowDBNull, "A/null");
+            Assert.IsTrue(table.Columns[2].AllowDBNull, "D/null");
+
+
+            Assert.AreEqual(3, table.Rows.Count, "row count");
+            Assert.AreEqual("abc", table.Rows[0][0],"0,0");
+            Assert.AreEqual(123, table.Rows[0][1], "0,1");
+            Assert.AreEqual(123, table.Rows[0][2], "0,2");
+            Assert.AreEqual("def", table.Rows[1][0], "1,0");
+            Assert.AreEqual(456, table.Rows[1][1], "1,1");
+            Assert.AreEqual(DBNull.Value, table.Rows[1][2], "1,2");
+            Assert.AreEqual("ghi", table.Rows[2][0], "2,0");
+            Assert.AreEqual(789, table.Rows[2][1], "2,1");
+            Assert.AreEqual(789, table.Rows[2][2], "2,2");
+
         }
     }
 }

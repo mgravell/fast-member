@@ -46,7 +46,9 @@ namespace Hyper.ComponentModel {
                 return descriptor;
             }
         }
+#pragma warning disable 0618
         [ReflectionPermission( SecurityAction.Assert, Flags = ReflectionPermissionFlag.AllFlags)]
+#pragma warning restore 0618
         private ICustomTypeDescriptor BuildDescriptor(Type objectType)
         {
             // NOTE: "descriptors" already locked here
