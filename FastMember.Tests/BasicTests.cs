@@ -1,8 +1,9 @@
 ﻿using System;
 using NUnit.Framework;
 using System.Data;
+using FastMember;
 
-namespace FastMember.Tests
+namespace FastMemberTests
 {
     [TestFixture]
     public class BasicTests

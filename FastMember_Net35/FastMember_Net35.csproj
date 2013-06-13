@@ -22,6 +22,7 @@
     <DefineConstants>TRACE;DEBUG;NO_DYNAMIC</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -31,9 +32,12 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>..\Nuget\lib\net35\FastMember.XML</DocumentationFile>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
@@ -44,6 +48,9 @@
     </Compile>
     <Compile Include="..\FastMember\ObjectAccessor.cs">
       <Link>ObjectAccessor.cs</Link>
+    </Compile>
+    <Compile Include="..\FastMember\ObjectReader.cs">
+      <Link>ObjectReader.cs</Link>
     </Compile>
     <Compile Include="..\FastMember\Properties\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>

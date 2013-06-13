@@ -1,0 +1,181 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>FastMember</name>
+    </assembly>
+    <members>
+        <member name="T:FastMember.MemberSet">
+            <summary>
+            Represents an abstracted view of the members defined for a type
+            </summary>
+        </member>
+        <member name="M:FastMember.MemberSet.GetEnumerator">
+            <summary>
+            Return a sequence of all defined members
+            </summary>
+        </member>
+        <member name="P:FastMember.MemberSet.Item(System.Int32)">
+            <summary>
+            Get a member by index
+            </summary>
+        </member>
+        <member name="P:FastMember.MemberSet.Count">
+            <summary>
+            The number of members defined for this type
+            </summary>
+        </member>
+        <member name="T:FastMember.Member">
+            <summary>
+            Represents an abstracted view of an individual member defined for a type
+            </summary>
+        </member>
+        <member name="M:FastMember.Member.IsDefined(System.Type)">
+            <summary>
+            Is the attribute specified defined on this type
+            </summary>
+        </member>
+        <member name="P:FastMember.Member.Name">
+            <summary>
+            The name of this member
+            </summary>
+        </member>
+        <member name="P:FastMember.Member.Type">
+            <summary>
+            The type of value stored in this member
+            </summary>
+        </member>
+        <member name="T:FastMember.ObjectAccessor">
+            <summary>
+            Represents an individual object, allowing access to members by-name
+            </summary>
+        </member>
+        <member name="M:FastMember.ObjectAccessor.Equals(System.Object)">
+            <summary>
+            Use the target types definition of equality
+            </summary>
+        </member>
+        <member name="M:FastMember.ObjectAccessor.GetHashCode">
+            <summary>
+            Obtain the hash of the target object
+            </summary>
+        </member>
+        <member name="M:FastMember.ObjectAccessor.ToString">
+            <summary>
+            Use the target's definition of a string representation
+            </summary>
+        </member>
+        <member name="M:FastMember.ObjectAccessor.Create(System.Object)">
+            <summary>
+            Wraps an individual object, allowing by-name access to that instance
+            </summary>
+        </member>
+        <member name="M:FastMember.ObjectAccessor.Create(System.Object,System.Boolean)">
+            <summary>
+            Wraps an individual object, allowing by-name access to that instance
+            </summary>
+        </member>
+        <member name="P:FastMember.ObjectAccessor.Item(System.String)">
+            <summary>
+            Get or Set the value of a named member for the underlying object
+            </summary>
+        </member>
+        <member name="P:FastMember.ObjectAccessor.Target">
+            <summary>
+            The object represented by this instance
+            </summary>
+        </member>
+        <member name="T:FastMember.ObjectReader">
+            <summary>
+            Provides a means of reading a sequence of objects as a data-reader, for example
+            for use with SqlBulkCopy or other data-base oriented code
+            </summary>
+        </member>
+        <member name="M:FastMember.ObjectReader.Create``1(System.Collections.Generic.IEnumerable{``0},System.String[])">
+            <summary>
+            Creates a new ObjectReader instance for reading the supplied data
+            </summary>
+            <param name="source">The sequence of objects to represent</param>
+            <param name="members">The members that should be exposed to the reader</param>
+        </member>
+        <member name="M:FastMember.ObjectReader.#ctor(System.Type,System.Collections.IEnumerable,System.String[])">
+            <summary>
+            Creates a new ObjectReader instance for reading the supplied data
+            </summary>
+            <param name="type">The expected Type of the information to be read</param>
+            <param name="source">The sequence of objects to represent</param>
+            <param name="members">The members that should be exposed to the reader</param>
+        </member>
+        <member name="M:FastMember.ObjectReader.Dispose">
+            <summary>
+            Releases all resources used by the ObjectReader
+            </summary>
+        </member>
+        <member name="P:FastMember.ObjectReader.Item(System.Int32)">
+            <summary>
+            Gets the value of the current object in the member specified
+            </summary>
+        </member>
+        <member name="T:FastMember.TypeAccessor">
+            <summary>
+            Provides by-name member-access to objects of a given type
+            </summary>
+        </member>
+        <member name="M:FastMember.TypeAccessor.CreateNew">
+            <summary>
+            Create a new instance of this type
+            </summary>
+        </member>
+        <member name="M:FastMember.TypeAccessor.GetMembers">
+            <summary>
+            Query the members available for this type
+            </summary>
+        </member>
+        <member name="M:FastMember.TypeAccessor.Create(System.Type)">
+            <summary>
+            Provides a type-specific accessor, allowing by-name access for all objects of that type
+            </summary>
+            <remarks>The accessor is cached internally; a pre-existing accessor may be returned</remarks>
+        </member>
+        <member name="M:FastMember.TypeAccessor.Create(System.Type,System.Boolean)">
+            <summary>
+            Provides a type-specific accessor, allowing by-name access for all objects of that type
+            </summary>
+            <remarks>The accessor is cached internally; a pre-existing accessor may be returned</remarks>
+        </member>
+        <member name="P:FastMember.TypeAccessor.CreateNewSupported">
+            <summary>
+            Does this type support new instances via a parameterless constructor?
+            </summary>
+        </member>
+        <member name="P:FastMember.TypeAccessor.GetMembersSupported">
+            <summary>
+            Can this type be queried for member availability?
+            </summary>
+        </member>
+        <member name="P:FastMember.TypeAccessor.Item(System.Object,System.String)">
+            <summary>
+            Get or set the value of a named member on the target instance
+            </summary>
+        </member>
+        <member name="T:FastMember.TypeAccessor.RuntimeTypeAccessor">
+            <summary>
+            A TypeAccessor based on a Type implementation, with available member metadata
+            </summary>
+        </member>
+        <member name="M:FastMember.TypeAccessor.RuntimeTypeAccessor.GetMembers">
+            <summary>
+            Query the members available for this type
+            </summary>
+        </member>
+        <member name="P:FastMember.TypeAccessor.RuntimeTypeAccessor.Type">
+            <summary>
+            Returns the Type represented by this accessor
+            </summary>
+        </member>
+        <member name="P:FastMember.TypeAccessor.RuntimeTypeAccessor.GetMembersSupported">
+            <summary>
+            Can this type be queried for member availability?
+            </summary>
+        </member>
+    </members>
+</doc>

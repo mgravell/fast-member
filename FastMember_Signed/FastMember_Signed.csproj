@@ -1,11 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{4C19BCAD-C12C-4574-BAC0-9DD5C6D12D0B}</ProjectGuid>
+    <ProjectGuid>{9D0D7E3B-4937-49CD-B288-F53F97D4268C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>FastMember</RootNamespace>
@@ -22,33 +21,56 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>default</LangVersion>
     <DocumentationFile>bin\Debug\FastMember.XML</DocumentationFile>
     <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\Nuget\lib\net40\</OutputPath>
+    <OutputPath>..\NugetSigned\lib\net40\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\Nuget\lib\net40\FastMember.XML</DocumentationFile>
+    <DocumentationFile>..\NugetSigned\lib\net40\FastMember.XML</DocumentationFile>
     <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>FastMember.pfx</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
-    <Reference Include="System.XML" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CallSiteCache.cs" />
-    <Compile Include="MemberSet.cs" />
-    <Compile Include="ObjectAccessor.cs" />
-    <Compile Include="ObjectReader.cs" />
-    <Compile Include="TypeAccessor.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="..\FastMember\CallSiteCache.cs">
+      <Link>CallSiteCache.cs</Link>
+    </Compile>
+    <Compile Include="..\FastMember\MemberSet.cs">
+      <Link>MemberSet.cs</Link>
+    </Compile>
+    <Compile Include="..\FastMember\ObjectAccessor.cs">
+      <Link>ObjectAccessor.cs</Link>
+    </Compile>
+    <Compile Include="..\FastMember\ObjectReader.cs">
+      <Link>ObjectReader.cs</Link>
+    </Compile>
+    <Compile Include="..\FastMember\Properties\AssemblyInfo.cs">
+      <Link>AssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\FastMember\TypeAccessor.cs">
+      <Link>TypeAccessor.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="FastMember.pfx" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

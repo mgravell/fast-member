@@ -1,8 +1,9 @@
 ﻿using System.Dynamic;
 using Microsoft.CSharp.RuntimeBinder;
 using NUnit.Framework;
+using FastMember;
 
-namespace FastMember.Tests
+namespace FastMemberTests
 {
     [TestFixture]
     public class DynamicTests

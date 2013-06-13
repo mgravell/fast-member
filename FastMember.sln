@@ -8,6 +8,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{165A9D79-C307-45E9-A70E-826459FCFC10}"
 	ProjectSection(SolutionItems) = preProject
 		Nuget\FastMember.nuspec = Nuget\FastMember.nuspec
+		NugetSigned\FastMember.Signed.nuspec = NugetSigned\FastMember.Signed.nuspec
+		pack.cmd = pack.cmd
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastMember_Net35", "FastMember_Net35\FastMember_Net35.csproj", "{7C5CF865-41CF-4E3E-BCAD-987872A23237}"
@@ -16,6 +18,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{289AB4
 	ProjectSection(SolutionItems) = preProject
 		.nuget\packages.config = .nuget\packages.config
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastMember_Signed", "FastMember_Signed\FastMember_Signed.csproj", "{9D0D7E3B-4937-49CD-B288-F53F97D4268C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastMember_Signed.Tests", "FastMember_Signed.Tests\FastMember_Signed.Tests.csproj", "{0C3084A5-6688-450A-B705-0DAA6D7395E4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,6 +63,26 @@ Global
 		{7C5CF865-41CF-4E3E-BCAD-987872A23237}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{7C5CF865-41CF-4E3E-BCAD-987872A23237}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{7C5CF865-41CF-4E3E-BCAD-987872A23237}.Release|x86.ActiveCfg = Release|Any CPU
+		{9D0D7E3B-4937-49CD-B288-F53F97D4268C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D0D7E3B-4937-49CD-B288-F53F97D4268C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D0D7E3B-4937-49CD-B288-F53F97D4268C}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{9D0D7E3B-4937-49CD-B288-F53F97D4268C}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{9D0D7E3B-4937-49CD-B288-F53F97D4268C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9D0D7E3B-4937-49CD-B288-F53F97D4268C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D0D7E3B-4937-49CD-B288-F53F97D4268C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9D0D7E3B-4937-49CD-B288-F53F97D4268C}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{9D0D7E3B-4937-49CD-B288-F53F97D4268C}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{9D0D7E3B-4937-49CD-B288-F53F97D4268C}.Release|x86.ActiveCfg = Release|Any CPU
+		{0C3084A5-6688-450A-B705-0DAA6D7395E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C3084A5-6688-450A-B705-0DAA6D7395E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C3084A5-6688-450A-B705-0DAA6D7395E4}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{0C3084A5-6688-450A-B705-0DAA6D7395E4}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{0C3084A5-6688-450A-B705-0DAA6D7395E4}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0C3084A5-6688-450A-B705-0DAA6D7395E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C3084A5-6688-450A-B705-0DAA6D7395E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0C3084A5-6688-450A-B705-0DAA6D7395E4}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{0C3084A5-6688-450A-B705-0DAA6D7395E4}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{0C3084A5-6688-450A-B705-0DAA6D7395E4}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

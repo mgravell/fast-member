@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
+using FastMember;
 
-namespace FastMember.Tests
+namespace FastMemberTests
 {
     [TestFixture]
     public class Anons

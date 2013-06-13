@@ -2,7 +2,8 @@
 using System;
 using System.Diagnostics;
 using System.ComponentModel;
-namespace FastMember.Tests
+using FastMember;
+namespace FastMemberTests
 {
     public class Program
     {
