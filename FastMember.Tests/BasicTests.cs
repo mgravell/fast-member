@@ -141,16 +141,18 @@ namespace FastMemberTests
             Assert.AreEqual(null, access[obj, "D"]);
         }
 
-        [Test, ExpectedException(typeof(NotSupportedException))]
+        [Test]
         public void BasicWriteTest_PropsOnStruct()
         {
             var now = DateTime.Now;
 
-            var obj = new PropsOnStruct();
+            object obj = new PropsOnStruct { A = 1 };
 
             var access = TypeAccessor.Create(typeof(PropsOnStruct));
 
             access[obj, "A"] = 123;
+            
+            Assert.AreEqual(123, ((PropsOnStruct)obj).A);
         }
 
         [Test]
@@ -168,7 +170,7 @@ namespace FastMemberTests
             Assert.AreEqual(null, access[obj, "D"]);
         }
 
-        [Test, ExpectedException(typeof(NotSupportedException))]
+        [Test]
         public void BasicWriteTest_FieldsOnStruct()
         {
             var now = DateTime.Now;
@@ -178,6 +180,7 @@ namespace FastMemberTests
             var access = TypeAccessor.Create(typeof(FieldsOnStruct));
 
             access[obj, "A"] = 123;
+            Assert.AreEqual(123, ((FieldsOnStruct)obj).A);
         }
 
         [Test, ExpectedException(typeof(ArgumentOutOfRangeException))]

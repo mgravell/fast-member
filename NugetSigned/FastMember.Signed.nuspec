@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>FastMember.Signed</id>
-    <version>1.0.0.10</version>
+    <version>1.0.0.11</version>
     <authors>Marc Gravell</authors>
     <owners>Marc Gravell</owners>
     <description>See the FastMember package... just: signed</description>
