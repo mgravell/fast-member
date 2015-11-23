@@ -40,24 +40,7 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="..\FastMember\MemberSet.cs">
-      <Link>MemberSet.cs</Link>
-    </Compile>
-    <Compile Include="..\FastMember\ObjectAccessor.cs">
-      <Link>ObjectAccessor.cs</Link>
-    </Compile>
-    <Compile Include="..\FastMember\ObjectReader.cs">
-      <Link>ObjectReader.cs</Link>
-    </Compile>
-    <Compile Include="..\FastMember\Properties\AssemblyInfo.cs">
-      <Link>AssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="..\FastMember\TypeAccessor.cs">
-      <Link>TypeAccessor.cs</Link>
-    </Compile>
+    <Compile Include="..\FastMember\**\*.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

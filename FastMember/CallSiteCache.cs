@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿#if !NO_DYNAMIC
+using System.Collections;
 using System.Runtime.CompilerServices;
 using System;
 using Microsoft.CSharp.RuntimeBinder;
@@ -46,3 +47,4 @@ namespace FastMember
         
     }
 }
+#endif
