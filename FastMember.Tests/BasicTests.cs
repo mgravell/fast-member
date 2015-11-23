@@ -183,20 +183,26 @@ namespace FastMemberTests
             Assert.AreEqual(123, ((FieldsOnStruct)obj).A);
         }
 
-        [Test, ExpectedException(typeof(ArgumentOutOfRangeException))]
+        [Test]
         public void WriteInvalidMember()
         {
-            var access = TypeAccessor.Create(typeof(PropsOnClass));
-            var obj = new PropsOnClass();
-            access[obj, "doesnotexist"] = "abc";
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                var access = TypeAccessor.Create(typeof(PropsOnClass));
+                var obj = new PropsOnClass();
+                access[obj, "doesnotexist"] = "abc";
+            });
         }
 
-        [Test, ExpectedException(typeof(ArgumentOutOfRangeException))]
+        [Test]
         public void ReadInvalidMember()
         {
-            var access = TypeAccessor.Create(typeof(PropsOnClass));
-            var obj = new PropsOnClass();
-            object value = access[obj, "doesnotexist"];
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                var access = TypeAccessor.Create(typeof(PropsOnClass));
+                var obj = new PropsOnClass();
+                object value = access[obj, "doesnotexist"];
+            });
         }
 
         [Test]

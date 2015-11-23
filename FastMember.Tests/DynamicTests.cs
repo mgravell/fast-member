@@ -19,12 +19,15 @@ namespace FastMemberTests
             Assert.AreEqual(123, wrap["A"]);
             Assert.AreEqual("def", wrap["B"]);
         }
-        [Test, ExpectedException(typeof(RuntimeBinderException))]
+        [Test]
         public void TestReadInvalid()
         {
-            dynamic expando = new ExpandoObject();
-            var wrap = ObjectAccessor.Create((object)expando);
-            Assert.AreEqual(123, wrap["C"]);
+            Assert.Throws<RuntimeBinderException>(() =>
+            {
+                dynamic expando = new ExpandoObject();
+                var wrap = ObjectAccessor.Create((object)expando);
+                Assert.AreEqual(123, wrap["C"]);
+            });
         }
         [Test]
         public void TestWrite()
