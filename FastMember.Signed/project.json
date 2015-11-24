@@ -18,6 +18,21 @@
       "frameworkAssemblies": {
         "System.Data": "4.0.0.0"
       }
+    },
+    "dnxcore50": {
+      "dependencies": {
+        "Microsoft.CSharp": "4.0.1-*",
+        "System.Collections.NonGeneric": "4.0.1-*",
+        "System.Data.Common": "4.0.1-*",
+        "System.Data.SqlClient": "4.0.0-*",
+        "System.Linq": "4.0.1-*",
+        "System.Reflection": "4.1.0-*",
+        "System.Reflection.Emit": "4.0.1-*",
+        "System.Reflection.Emit.ILGeneration": "4.0.1-*",
+        "System.Reflection.Emit.Lightweight": "4.0.1-*",
+        "System.Reflection.TypeExtensions": "4.1.0-*",
+        "System.Runtime": "4.0.21-*"
+      }
     }
   }
 }

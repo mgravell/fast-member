@@ -1,8 +1,8 @@
-﻿#if !DNXCORE50
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 
 namespace FastMember
 {
@@ -10,7 +10,7 @@ namespace FastMember
     /// Provides a means of reading a sequence of objects as a data-reader, for example
     /// for use with SqlBulkCopy or other data-base oriented code
     /// </summary>
-    public class ObjectReader : IDataReader
+    public class ObjectReader : DbDataReader
     {
         private IEnumerator source;
         private readonly TypeAccessor accessor;
@@ -99,17 +99,15 @@ namespace FastMember
         }
 
         object current;
-        void IDataReader.Close()
-        {
-            Dispose();
-        }
 
-        int IDataReader.Depth
+
+        public override int Depth
         {
             get { return 0; }
         }
 
-        DataTable IDataReader.GetSchemaTable()
+#if !DNXCORE50
+        public override DataTable GetSchemaTable()
         {
             // these are the columns used by DataTable load
             DataTable table = new DataTable
@@ -135,60 +133,85 @@ namespace FastMember
             }
             return table;
         }
-
-        bool IDataReader.IsClosed
+        public override void Close()
         {
-            get { return source == null; }
+            Dispose(true);
         }
+#endif
 
-        bool IDataReader.NextResult()
+        public override bool HasRows
         {
+            get
+            {
+                return active;
+            }
+        }
+        private bool active = true;
+        public override bool NextResult()
+        {
+            active = false;
             return false;
         }
-
-        bool IDataReader.Read()
+        public override bool Read()
         {
-            var tmp = source;
-            if (tmp != null && tmp.MoveNext())
+            if (active)
             {
-                current = tmp.Current;
-                return true;
+                var tmp = source;
+                if (tmp != null && tmp.MoveNext())
+                {
+                    current = tmp.Current;
+                    return true;
+                }
+                else
+                {
+                    active = false;
+                }
             }
             current = null;
             return false;
         }
 
-        int IDataReader.RecordsAffected
+        public override int RecordsAffected
         {
             get { return 0; }
         }
-        /// <summary>
-        /// Releases all resources used by the ObjectReader
-        /// </summary>
-        public void Dispose()
+
+        protected override void Dispose(bool disposing)
         {
-            current = null;
-            var tmp = source as IDisposable;
-            source = null;
-            if (tmp != null) tmp.Dispose();
+            base.Dispose(disposing);
+            if(disposing)
+            {
+                active = false;
+                current = null;
+                var tmp = source as IDisposable;
+                source = null;
+                if (tmp != null) tmp.Dispose();
+            }
         }
 
-        int IDataRecord.FieldCount
+        public override int FieldCount
         {
             get { return memberNames.Length; }
         }
+        public override bool IsClosed
+        {
+            get
+            {
+                return source != null;
+            }
+        }
 
-        bool IDataRecord.GetBoolean(int i)
+        public override bool GetBoolean(int i)
         {
             return (bool)this[i];
         }
 
-        byte IDataRecord.GetByte(int i)
+        public override byte GetByte(int i)
         {
             return (byte)this[i];
         }
 
-        long IDataRecord.GetBytes(int i, long fieldOffset, byte[] buffer, int bufferoffset, int length)
+        public override long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferoffset, int length)
         {
             byte[] s = (byte[])this[i];
             int available = s.Length - (int)fieldOffset;
@@ -199,12 +222,12 @@ namespace FastMember
             return count;
         }
 
-        char IDataRecord.GetChar(int i)
+        public override char GetChar(int i)
         {
             return (char)this[i];
         }
 
-        long IDataRecord.GetChars(int i, long fieldoffset, char[] buffer, int bufferoffset, int length)
+        public override long GetChars(int i, long fieldoffset, char[] buffer, int bufferoffset, int length)
         {
             string s = (string)this[i];
             int available = s.Length - (int)fieldoffset;
@@ -215,82 +238,91 @@ namespace FastMember
             return count;
         }
 
-        IDataReader IDataRecord.GetData(int i)
+        protected override DbDataReader GetDbDataReader(int i)
         {
             throw new NotSupportedException();
         }
 
-        string IDataRecord.GetDataTypeName(int i)
+        public override string GetDataTypeName(int i)
         {
             return (effectiveTypes == null ? typeof(object) : effectiveTypes[i]).Name;
         }
 
-        DateTime IDataRecord.GetDateTime(int i)
+        public override DateTime GetDateTime(int i)
         {
             return (DateTime)this[i];
         }
 
-        decimal IDataRecord.GetDecimal(int i)
+        public override decimal GetDecimal(int i)
         {
             return (decimal)this[i];
         }
 
-        double IDataRecord.GetDouble(int i)
+        public override double GetDouble(int i)
         {
             return (double)this[i];
         }
 
-        Type IDataRecord.GetFieldType(int i)
+        public override Type GetFieldType(int i)
         {
             return effectiveTypes == null ? typeof(object) : effectiveTypes[i];
         }
 
-        float IDataRecord.GetFloat(int i)
+        public override float GetFloat(int i)
         {
             return (float)this[i];
         }
 
-        Guid IDataRecord.GetGuid(int i)
+        public override Guid GetGuid(int i)
         {
             return (Guid)this[i];
         }
 
-        short IDataRecord.GetInt16(int i)
+        public override short GetInt16(int i)
         {
             return (short)this[i];
         }
 
-        int IDataRecord.GetInt32(int i)
+        public override int GetInt32(int i)
         {
             return (int)this[i];
         }
 
-        long IDataRecord.GetInt64(int i)
+        public override long GetInt64(int i)
         {
             return (long)this[i];
         }
 
-        string IDataRecord.GetName(int i)
+        public override string GetName(int i)
         {
             return memberNames[i];
         }
 
-        int IDataRecord.GetOrdinal(string name)
+        public override int GetOrdinal(string name)
         {
             return Array.IndexOf(memberNames, name);
         }
 
-        string IDataRecord.GetString(int i)
+        public override string GetString(int i)
         {
             return (string)this[i];
         }
 
-        object IDataRecord.GetValue(int i)
+        public override object GetValue(int i)
         {
             return this[i];
         }
 
-        int IDataRecord.GetValues(object[] values)
+        public override IEnumerator GetEnumerator()
+        {
+#if DNXCORE50
+            throw new NotImplementedException(); // https://github.com/dotnet/corefx/issues/4646
+#else
+            return new DbEnumerator(this);
+#endif
+        }
+
+        public override int GetValues(object[] values)
         {
             // duplicate the key fields on the stack
             var members = this.memberNames;
@@ -302,12 +334,12 @@ namespace FastMember
             return count;
         }
 
-        bool IDataRecord.IsDBNull(int i)
+        public override bool IsDBNull(int i)
         {
             return this[i] is DBNull;
         }
 
-        object IDataRecord.this[string name]
+        public override object this[string name]
         {
             get { return accessor[current, name] ?? DBNull.Value; }
 
@@ -315,10 +347,9 @@ namespace FastMember
         /// <summary>
         /// Gets the value of the current object in the member specified
         /// </summary>
-        public object this[int i]
+        public override object this[int i]
         {
             get { return accessor[current, memberNames[i]] ?? DBNull.Value; }
         }
     }
 }
-#endif
