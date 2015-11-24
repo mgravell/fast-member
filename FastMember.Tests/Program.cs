@@ -23,7 +23,7 @@ namespace FastMemberTests
             }
             watch.Stop();
             Console.WriteLine("Static C#: {0}ms", watch.ElapsedMilliseconds);
-
+#if !NO_DYNAMIC
             dynamic dlr = obj;
             watch = Stopwatch.StartNew();
             for (int i = 0; i < loop; i++)
@@ -33,7 +33,7 @@ namespace FastMemberTests
             }
             watch.Stop();
             Console.WriteLine("Dynamic C#: {0}ms", watch.ElapsedMilliseconds);
-
+#endif
             var prop = typeof (Program).GetProperty("Value");
             watch = Stopwatch.StartNew();
             for (int i = 0; i < loop; i++)

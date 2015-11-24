@@ -6,7 +6,7 @@
     "../FastMember.Tests/**/*.cs"
   ],
   "dependencies": {
-    "FastMember": { "target": "project" },
+    "FastMember.Signed": { "target": "project" },
     "NUnit": "3.0.0-*"
   },
   "frameworks": {
