@@ -127,48 +127,47 @@ namespace FastMember
                 il.MarkLabel(labels[i]);
                 var member = members[i];
                 bool isFail = true;
-                switch (member.MemberType)
+                FieldInfo field;
+                PropertyInfo prop;
+                if((field = member as FieldInfo) != null)
                 {
-                    case MemberTypes.Field:
-                        var field = (FieldInfo)member;
+                    il.Emit(obj);
+                    Cast(il, type, true);
+                    if (isGet)
+                    {
+                        il.Emit(OpCodes.Ldfld, field);
+                        if (field.FieldType._IsValueType()) il.Emit(OpCodes.Box, field.FieldType);
+                    }
+                    else
+                    {
+                        il.Emit(value);
+                        Cast(il, field.FieldType, false);
+                        il.Emit(OpCodes.Stfld, field);
+                    }
+                    il.Emit(OpCodes.Ret);
+                    isFail = false;
+                }
+                else if ((prop = member as PropertyInfo) != null)
+                {
+                    MethodInfo accessor;
+                    if (prop.CanRead && (accessor = isGet ? prop.GetGetMethod(allowNonPublicAccessors) : prop.GetSetMethod(allowNonPublicAccessors)) != null)
+                    {
                         il.Emit(obj);
                         Cast(il, type, true);
                         if (isGet)
                         {
-                            il.Emit(OpCodes.Ldfld, field);
-                            if (field.FieldType.IsValueType) il.Emit(OpCodes.Box, field.FieldType);
+                            il.EmitCall(type._IsValueType() ? OpCodes.Call : OpCodes.Callvirt, accessor, null);
+                            if (prop.PropertyType._IsValueType()) il.Emit(OpCodes.Box, prop.PropertyType);
                         }
                         else
                         {
                             il.Emit(value);
-                            Cast(il, field.FieldType, false);
-                            il.Emit(OpCodes.Stfld, field);
+                            Cast(il, prop.PropertyType, false);
+                            il.EmitCall(type._IsValueType() ? OpCodes.Call : OpCodes.Callvirt, accessor, null);
                         }
                         il.Emit(OpCodes.Ret);
                         isFail = false;
-                        break;
-                    case MemberTypes.Property:
-                        var prop = (PropertyInfo)member;
-                        MethodInfo accessor;
-                        if (prop.CanRead && (accessor = isGet ? prop.GetGetMethod(allowNonPublicAccessors) : prop.GetSetMethod(allowNonPublicAccessors)) != null)
-                        {
-                            il.Emit(obj);
-                            Cast(il, type, true);
-                            if (isGet)
-                            {
-                                il.EmitCall(type.IsValueType ? OpCodes.Call : OpCodes.Callvirt, accessor, null);
-                                if (prop.PropertyType.IsValueType) il.Emit(OpCodes.Box, prop.PropertyType);
-                            }
-                            else
-                            {
-                                il.Emit(value);
-                                Cast(il, prop.PropertyType, false);
-                                il.EmitCall(type.IsValueType ? OpCodes.Call : OpCodes.Callvirt, accessor, null);
-                            }
-                            il.Emit(OpCodes.Ret);
-                            isFail = false;
-                        }
-                        break;
+                    }
                 }
                 if (isFail) il.Emit(OpCodes.Br, fail);
             }
@@ -241,8 +240,8 @@ namespace FastMember
         }
         private static bool IsFullyPublic(Type type, PropertyInfo[] props, bool allowNonPublicAccessors)
         {
-            while (type.IsNestedPublic) type = type.DeclaringType;
-            if (!type.IsPublic) return false;
+            while (type._IsNestedPublic()) type = type.DeclaringType;
+            if (!type._IsPublic()) return false;
 
             if (allowNonPublicAccessors)
             {
@@ -280,7 +279,7 @@ namespace FastMember
             foreach (var field in fields) if (!map.ContainsKey(field.Name)) { map.Add(field.Name, i++); members.Add(field); }
 
             ConstructorInfo ctor = null;
-            if (type.IsClass && !type.IsAbstract)
+            if (type._IsClass() && !type._IsAbstract())
             {
                 ctor = type.GetConstructor(Type.EmptyTypes);
             }
@@ -310,11 +309,20 @@ namespace FastMember
             if (assembly == null)
             {
                 AssemblyName name = new AssemblyName("FastMember_dynamic");
+#if DNXCORE50
+                assembly = AssemblyBuilder.DefineDynamicAssembly(name, AssemblyBuilderAccess.Run);
+#else
                 assembly = AppDomain.CurrentDomain.DefineDynamicAssembly(name, AssemblyBuilderAccess.Run);
+#endif
                 module = assembly.DefineDynamicModule(name.Name);
             }
+#if DNXCORE50
+            TypeAttributes attribs = typeof(TypeAccessor).GetTypeInfo().Attributes;
+#else
+            TypeAttributes attribs = typeof(TypeAccessor).Attributes;
+#endif
             TypeBuilder tb = module.DefineType("FastMember_dynamic." + type.Name + "_" + Interlocked.Increment(ref counter),
-                (typeof(TypeAccessor).Attributes | TypeAttributes.Sealed | TypeAttributes.Public) & ~(TypeAttributes.Abstract | TypeAttributes.NotPublic), typeof(RuntimeTypeAccessor));
+                (attribs | TypeAttributes.Sealed | TypeAttributes.Public) & ~(TypeAttributes.Abstract | TypeAttributes.NotPublic), typeof(RuntimeTypeAccessor));
 
             il = tb.DefineConstructor(MethodAttributes.Public, CallingConventions.Standard, new[] {
                 typeof(Dictionary<string,int>)
@@ -364,14 +372,14 @@ namespace FastMember
             il.Emit(OpCodes.Ret);
             tb.DefineMethodOverride(body, baseMethod);
 
-            var accessor = (TypeAccessor)Activator.CreateInstance(tb.CreateType(), map);
+            var accessor = (TypeAccessor)Activator.CreateInstance(tb._CreateType(), map);
             return accessor;
         }
 
         private static void Cast(ILGenerator il, Type type, bool valueAsPointer)
         {
             if (type == typeof(object)) { }
-            else if (type.IsValueType)
+            else if (type._IsValueType())
             {
                 if (valueAsPointer)
                 {

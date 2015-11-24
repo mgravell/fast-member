@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !DNXCORE50
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
@@ -71,7 +72,7 @@ namespace FastMember
                                 var tmp = member.Type;
                                 memberType = Nullable.GetUnderlyingType(tmp) ?? tmp;
 
-                                allowNull = !(memberType.IsValueType && memberType == tmp);
+                                allowNull = !(memberType._IsValueType() && memberType == tmp);
 
                                 // but keep checking, in case of duplicates
                             }
@@ -320,3 +321,4 @@ namespace FastMember
         }
     }
 }
+#endif

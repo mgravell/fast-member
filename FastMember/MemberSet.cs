@@ -13,7 +13,7 @@ namespace FastMember
         Member[] members;
         internal MemberSet(Type type)
         {
-            members = type.GetProperties().Cast<MemberInfo>().Concat(type.GetFields().Cast<MemberInfo>()).OrderBy(x => x.Name, StringComparer.InvariantCulture)
+            members = type.GetProperties().Cast<MemberInfo>().Concat(type.GetFields().Cast<MemberInfo>()).OrderBy(x => x.Name, StringComparer.Ordinal)
                 .Select(member => new Member(member)).ToArray();
         }
         /// <summary>
@@ -74,12 +74,9 @@ namespace FastMember
         {
             get
             {
-                switch (member.MemberType)
-                {
-                    case MemberTypes.Field: return ((FieldInfo)member).FieldType;
-                    case MemberTypes.Property: return ((PropertyInfo)member).PropertyType;
-                    default: throw new NotSupportedException(member.MemberType.ToString());
-                }
+                if(member is FieldInfo) return ((FieldInfo)member).FieldType;
+                if (member is PropertyInfo) return ((PropertyInfo)member).PropertyType;
+                throw new NotSupportedException(member.GetType().Name);
             }
         }
 
@@ -89,7 +86,11 @@ namespace FastMember
         public bool IsDefined(Type attributeType)
         {
             if (attributeType == null) throw new ArgumentNullException("attributeType");
+#if DNXCORE50
+            return member.IsDefined(attributeType);
+#else
             return Attribute.IsDefined(member, attributeType);
+#endif
         }
 
 
