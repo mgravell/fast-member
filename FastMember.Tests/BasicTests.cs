@@ -343,7 +343,7 @@ namespace FastMemberTests
             public byte C {get;set;}
             public int? D { get; set; }
         }
-#if !DNXCORE50
+#if !COREFX
         [Test]
         public void TestReaderAllColumns()
         {

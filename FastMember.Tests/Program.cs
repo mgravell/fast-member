@@ -45,7 +45,7 @@ namespace FastMemberTests
             watch.Stop();
             Console.WriteLine("PropertyInfo: {0}ms", watch.ElapsedMilliseconds);
 
-#if !DNXCORE50
+#if !COREFX
             var descriptor = TypeDescriptor.GetProperties(obj)["Value"];
             watch = Stopwatch.StartNew();
             for (int i = 0; i < loop; i++)

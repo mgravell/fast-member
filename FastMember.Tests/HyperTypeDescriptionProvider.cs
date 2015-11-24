@@ -1,4 +1,4 @@
-#if !DNXCORE50
+#if !COREFX
 using System;
 using System.Collections.Generic;
 using System.Text;

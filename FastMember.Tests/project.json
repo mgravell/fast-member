@@ -38,12 +38,13 @@
       }
     },
     "dnxcore50": {
-      "compilationOptions": { "define": [ "XUNIT" ] },
+      "compilationOptions": { "define": [ "XUNIT", "COREFX" ] },
       "dependencies": {
         "xunit": "2.1.0",
         "xunit.runner.dnx": "2.1.0-*",
         "System.Reflection.TypeExtensions": "4.0.1-*",
-        "System.Runtime": "4.0.21-*"
+        "System.Runtime": "4.0.21-*",
+        "System.Console": "4.0.0-*"
       }
     }
   }
