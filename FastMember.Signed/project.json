@@ -19,6 +19,11 @@
         "System.Data": "4.0.0.0"
       }
     },
+    "dnx451": {
+      "frameworkAssemblies": {
+        "System.Data": "4.0.0.0"
+      }
+    },
     "dnxcore50": {
       "dependencies": {
         "Microsoft.CSharp": "4.0.1-*",

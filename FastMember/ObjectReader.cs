@@ -135,7 +135,7 @@ namespace FastMember
         }
         public override void Close()
         {
-            Dispose(true);
+            Shutdown();
         }
 #endif
 
@@ -179,14 +179,15 @@ namespace FastMember
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
-            if(disposing)
-            {
-                active = false;
-                current = null;
-                var tmp = source as IDisposable;
-                source = null;
-                if (tmp != null) tmp.Dispose();
-            }
+            if (disposing) Shutdown();
+        }
+        private void Shutdown()
+        {
+            active = false;
+            current = null;
+            var tmp = source as IDisposable;
+            source = null;
+            if (tmp != null) tmp.Dispose();
         }
 
         public override int FieldCount
@@ -197,7 +198,7 @@ namespace FastMember
         {
             get
             {
-                return source != null;
+                return source == null;
             }
         }
 
