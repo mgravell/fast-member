@@ -3,6 +3,7 @@ using System;
 using System.Diagnostics;
 using System.ComponentModel;
 using FastMember;
+using System.Reflection;
 namespace FastMemberTests
 {
     public class Program
@@ -44,6 +45,7 @@ namespace FastMemberTests
             watch.Stop();
             Console.WriteLine("PropertyInfo: {0}ms", watch.ElapsedMilliseconds);
 
+#if !DNXCORE50
             var descriptor = TypeDescriptor.GetProperties(obj)["Value"];
             watch = Stopwatch.StartNew();
             for (int i = 0; i < loop; i++)
@@ -55,7 +57,7 @@ namespace FastMemberTests
             Console.WriteLine("PropertyDescriptor: {0}ms", watch.ElapsedMilliseconds);
 
             Hyper.ComponentModel.HyperTypeDescriptionProvider.Add(typeof(Program));
-
+#endif
             //descriptor = TypeDescriptor.GetProperties(obj)["Value"];
             //watch = Stopwatch.StartNew();
             //for (int i = 0; i < loop; i++)

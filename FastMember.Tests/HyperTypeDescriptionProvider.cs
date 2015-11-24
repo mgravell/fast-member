@@ -1,3 +1,4 @@
+#if !DNXCORE50
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -74,3 +75,4 @@ namespace Hyper.ComponentModel {
         }
     }
 }
+#endif

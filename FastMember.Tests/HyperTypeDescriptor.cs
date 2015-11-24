@@ -1,3 +1,4 @@
+#if !DNXCORE50
 using System;
 using System.ComponentModel;
 using System.Reflection.Emit;
@@ -216,3 +217,4 @@ namespace Hyper.ComponentModel {
         }
     }
 }
+#endif

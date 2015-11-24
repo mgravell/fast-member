@@ -343,7 +343,7 @@ namespace FastMemberTests
             public byte C {get;set;}
             public int? D { get; set; }
         }
-
+#if !DNXCORE50
         [Test]
         public void TestReaderAllColumns()
         {
@@ -425,5 +425,6 @@ namespace FastMemberTests
             Assert.AreEqual(789, table.Rows[2][2], "2,2");
 
         }
+#endif
     }
 }
