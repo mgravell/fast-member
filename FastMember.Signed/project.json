@@ -4,7 +4,7 @@
   "owners": [ "marc.gravell" ],
   "tags": [ "Reflection", "Dynamic", "Member", "Access" ],
   "releaseNotes": "core-clr support (rc1)",
-  "copyright": "Copyright © Marc Gravell 2012-2015",
+  "copyright": "Copyright Â© Marc Gravell 2012-2015",
   "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0",
   "projectUrl": "https://github.com/mgravell/fast-member/",
   "description": "In .NET reflection is slow... well, kinda slow. If you need access to the members of an arbitrary type, with the type and member-names known only at runtime - then it is frankly hard (especially for DLR types). This library makes such access easy and fast.",
