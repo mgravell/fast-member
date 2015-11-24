@@ -8,7 +8,7 @@ namespace FastMember
     {
         public static bool _IsValueType(this Type type)
         {
-#if DNXCORE50
+#if COREFX
             return type.GetTypeInfo().IsValueType;
 #else
             return type.IsValueType;
@@ -16,7 +16,7 @@ namespace FastMember
         }
         public static bool _IsPublic(this Type type)
         {
-#if DNXCORE50
+#if COREFX
             return type.GetTypeInfo().IsPublic;
 #else
             return type.IsPublic;
@@ -25,7 +25,7 @@ namespace FastMember
 
         public static bool _IsNestedPublic(this Type type)
         {
-#if DNXCORE50
+#if COREFX
             return type.GetTypeInfo().IsNestedPublic;
 #else
             return type.IsNestedPublic;
@@ -33,7 +33,7 @@ namespace FastMember
         }
         public static bool _IsClass(this Type type)
         {
-#if DNXCORE50
+#if COREFX
             return type.GetTypeInfo().IsClass;
 #else
             return type.IsClass;
@@ -42,7 +42,7 @@ namespace FastMember
 
         public static bool _IsAbstract(this Type type)
         {
-#if DNXCORE50
+#if COREFX
             return type.GetTypeInfo().IsAbstract;
 #else
             return type.IsAbstract;
@@ -50,7 +50,7 @@ namespace FastMember
         }
         public static Type _CreateType(this TypeBuilder type)
         {
-#if DNXCORE50
+#if COREFX
             return type.CreateTypeInfo().AsType();
 #else
             return type.CreateType();

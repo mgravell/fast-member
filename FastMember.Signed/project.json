@@ -24,7 +24,10 @@
         "System.Data": "4.0.0.0"
       }
     },
-    "dnxcore50": {
+    "dotnet5.4": {
+      "compilationOptions": {
+        "define": [ "COREFX" ]
+      },
       "dependencies": {
         "Microsoft.CSharp": "4.0.1-*",
         "System.Collections.NonGeneric": "4.0.1-*",

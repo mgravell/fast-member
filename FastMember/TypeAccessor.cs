@@ -309,14 +309,14 @@ namespace FastMember
             if (assembly == null)
             {
                 AssemblyName name = new AssemblyName("FastMember_dynamic");
-#if DNXCORE50
+#if COREFX
                 assembly = AssemblyBuilder.DefineDynamicAssembly(name, AssemblyBuilderAccess.Run);
 #else
                 assembly = AppDomain.CurrentDomain.DefineDynamicAssembly(name, AssemblyBuilderAccess.Run);
 #endif
                 module = assembly.DefineDynamicModule(name.Name);
             }
-#if DNXCORE50
+#if COREFX
             TypeAttributes attribs = typeof(TypeAccessor).GetTypeInfo().Attributes;
 #else
             TypeAttributes attribs = typeof(TypeAccessor).Attributes;

@@ -86,7 +86,7 @@ namespace FastMember
         public bool IsDefined(Type attributeType)
         {
             if (attributeType == null) throw new ArgumentNullException("attributeType");
-#if DNXCORE50
+#if COREFX
             return member.IsDefined(attributeType);
 #else
             return Attribute.IsDefined(member, attributeType);

@@ -106,7 +106,7 @@ namespace FastMember
             get { return 0; }
         }
 
-#if !DNXCORE50
+#if !COREFX
         public override DataTable GetSchemaTable()
         {
             // these are the columns used by DataTable load
@@ -316,7 +316,7 @@ namespace FastMember
 
         public override IEnumerator GetEnumerator()
         {
-#if DNXCORE50
+#if COREFX
             throw new NotImplementedException(); // https://github.com/dotnet/corefx/issues/4646
 #else
             return new DbEnumerator(this);
