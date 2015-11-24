@@ -13,7 +13,7 @@ namespace FastMember
         Member[] members;
         internal MemberSet(Type type)
         {
-            members = type.GetProperties().Cast<MemberInfo>().Concat(type.GetFields().Cast<MemberInfo>()).OrderBy(x => x.Name, StringComparer.Ordinal)
+            members = type.GetProperties().Cast<MemberInfo>().Concat(type.GetFields().Cast<MemberInfo>()).OrderBy(x => x.Name)
                 .Select(member => new Member(member)).ToArray();
         }
         /// <summary>
@@ -87,7 +87,11 @@ namespace FastMember
         {
             if (attributeType == null) throw new ArgumentNullException("attributeType");
 #if COREFX
-            return member.IsDefined(attributeType);
+            foreach(var attrib in member.CustomAttributes)
+            {
+                if (attrib.AttributeType == attributeType) return true;
+            }
+            return false;
 #else
             return Attribute.IsDefined(member, attributeType);
 #endif

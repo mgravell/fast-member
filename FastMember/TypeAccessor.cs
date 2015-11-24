@@ -85,6 +85,21 @@ namespace FastMember
         private static ModuleBuilder module;
         private static int counter;
 
+#if COREFX
+        private static readonly object counterLock = new object();
+#endif
+        private static int GetNextCounterValue()
+        {
+#if COREFX
+            lock(counterLock)
+            {
+                return counter++;
+            }
+#else
+            return Interlocked.Increment(ref counter);
+#endif
+        }
+
         static readonly MethodInfo tryGetValue = typeof(Dictionary<string, int>).GetMethod("TryGetValue");
         private static void WriteMapImpl(ILGenerator il, Type type, List<MemberInfo> members, FieldBuilder mapField, bool allowNonPublicAccessors, bool isGet)
         {
@@ -265,7 +280,7 @@ namespace FastMember
 
             PropertyInfo[] props = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
             FieldInfo[] fields = type.GetFields(BindingFlags.Public | BindingFlags.Instance);
-            Dictionary<string, int> map = new Dictionary<string, int>(StringComparer.Ordinal);
+            Dictionary<string, int> map = new Dictionary<string, int>();
             List<MemberInfo> members = new List<MemberInfo>(props.Length + fields.Length);
             int i = 0;
             foreach (var prop in props)
@@ -281,7 +296,7 @@ namespace FastMember
             ConstructorInfo ctor = null;
             if (type._IsClass() && !type._IsAbstract())
             {
-                ctor = type.GetConstructor(Type.EmptyTypes);
+                ctor = type.GetConstructor(TypeHelpers.EmptyTypes);
             }
             ILGenerator il;
             if (!IsFullyPublic(type, props, allowNonPublicAccessors))
@@ -293,7 +308,7 @@ namespace FastMember
                 DynamicMethod dynCtor = null;
                 if (ctor != null)
                 {
-                    dynCtor = new DynamicMethod(type.FullName + "_ctor", typeof(object), Type.EmptyTypes, type, true);
+                    dynCtor = new DynamicMethod(type.FullName + "_ctor", typeof(object), TypeHelpers.EmptyTypes, type, true);
                     il = dynCtor.GetILGenerator();
                     il.Emit(OpCodes.Newobj, ctor);
                     il.Emit(OpCodes.Ret);
@@ -321,7 +336,7 @@ namespace FastMember
 #else
             TypeAttributes attribs = typeof(TypeAccessor).Attributes;
 #endif
-            TypeBuilder tb = module.DefineType("FastMember_dynamic." + type.Name + "_" + Interlocked.Increment(ref counter),
+            TypeBuilder tb = module.DefineType("FastMember_dynamic." + type.Name + "_" + GetNextCounterValue(),
                 (attribs | TypeAttributes.Sealed | TypeAttributes.Public) & ~(TypeAttributes.Abstract | TypeAttributes.NotPublic), typeof(RuntimeTypeAccessor));
 
             il = tb.DefineConstructor(MethodAttributes.Public, CallingConventions.Standard, new[] {
@@ -350,14 +365,14 @@ namespace FastMember
             if (ctor != null)
             {
                 baseMethod = typeof(TypeAccessor).GetProperty("CreateNewSupported").GetGetMethod();
-                body = tb.DefineMethod(baseMethod.Name, baseMethod.Attributes, baseMethod.ReturnType, Type.EmptyTypes);
+                body = tb.DefineMethod(baseMethod.Name, baseMethod.Attributes, baseMethod.ReturnType, TypeHelpers.EmptyTypes);
                 il = body.GetILGenerator();
                 il.Emit(OpCodes.Ldc_I4_1);
                 il.Emit(OpCodes.Ret);
                 tb.DefineMethodOverride(body, baseMethod);
 
                 baseMethod = typeof(TypeAccessor).GetMethod("CreateNew");
-                body = tb.DefineMethod(baseMethod.Name, baseMethod.Attributes, baseMethod.ReturnType, Type.EmptyTypes);
+                body = tb.DefineMethod(baseMethod.Name, baseMethod.Attributes, baseMethod.ReturnType, TypeHelpers.EmptyTypes);
                 il = body.GetILGenerator();
                 il.Emit(OpCodes.Newobj, ctor);
                 il.Emit(OpCodes.Ret);
@@ -365,7 +380,7 @@ namespace FastMember
             }
 
             baseMethod = typeof(RuntimeTypeAccessor).GetProperty("Type", BindingFlags.NonPublic | BindingFlags.Instance).GetGetMethod(true);
-            body = tb.DefineMethod(baseMethod.Name, baseMethod.Attributes & ~MethodAttributes.Abstract, baseMethod.ReturnType, Type.EmptyTypes);
+            body = tb.DefineMethod(baseMethod.Name, baseMethod.Attributes & ~MethodAttributes.Abstract, baseMethod.ReturnType, TypeHelpers.EmptyTypes);
             il = body.GetILGenerator();
             il.Emit(OpCodes.Ldtoken, type);
             il.Emit(OpCodes.Call, typeof(Type).GetMethod("GetTypeFromHandle"));

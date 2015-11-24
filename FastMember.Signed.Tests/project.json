@@ -48,7 +48,8 @@
       "dependencies": {
         "xunit": "2.1.0",
         "xunit.runner.dnx": "2.1.0-*",
-        "System.Reflection.TypeExtensions": "4.0.1-*"
+        "System.Reflection.TypeExtensions": "4.0.1-*",
+        "System.Runtime": "4.0.21-*"
       }
     }
   }

@@ -218,7 +218,7 @@ namespace FastMember
             int available = s.Length - (int)fieldOffset;
             if (available <= 0) return 0;
 
-            int count = Math.Min(length, available);
+            int count = TypeHelpers.Min(length, available);
             Buffer.BlockCopy(s, (int)fieldOffset, buffer, bufferoffset, count);
             return count;
         }
@@ -234,7 +234,7 @@ namespace FastMember
             int available = s.Length - (int)fieldoffset;
             if (available <= 0) return 0;
 
-            int count = Math.Min(length, available);
+            int count = TypeHelpers.Min(length, available);
             s.CopyTo((int)fieldoffset, buffer, bufferoffset, count);
             return count;
         }
@@ -330,7 +330,7 @@ namespace FastMember
             var current = this.current;
             var accessor = this.accessor;
 
-            int count = Math.Min(values.Length, members.Length);
+            int count = TypeHelpers.Min(values.Length, members.Length);
             for (int i = 0; i < count; i++) values[i] = accessor[current, members[i]] ?? DBNull.Value;
             return count;
         }

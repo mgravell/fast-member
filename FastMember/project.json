@@ -18,7 +18,7 @@
         "System.Data": "4.0.0.0"
       }
     },
-    "dotnet5.4": {
+    "dotnet5.2": {
       "compilationOptions": {
         "define": [ "COREFX" ]
       },
@@ -33,7 +33,8 @@
         "System.Reflection.Emit.ILGeneration": "4.0.1-*",
         "System.Reflection.Emit.Lightweight": "4.0.1-*",
         "System.Reflection.TypeExtensions": "4.1.0-*",
-        "System.Runtime": "4.0.21-*"
+        "System.Runtime": "4.0.21-*",
+        "System.Threading": "4.0.11-*"
       }
     }
   }

@@ -6,6 +6,12 @@ namespace FastMember
 {
     internal static class TypeHelpers
     {
+#if COREFX
+        public static readonly Type[] EmptyTypes = new Type[0];
+#else
+        public static readonly Type[] EmptyTypes = Type.EmptyTypes;
+#endif
+    
         public static bool _IsValueType(this Type type)
         {
 #if COREFX
@@ -55,6 +61,11 @@ namespace FastMember
 #else
             return type.CreateType();
 #endif
+        }
+
+        public static int Min(int x, int y)
+        {
+            return x < y ? x : y;
         }
     }
 }
