@@ -6,7 +6,7 @@
     <authors>Marc Gravell</authors>
     <owners>Marc Gravell</owners>
     <description>In .NET reflection is slow... well, kinda slow. If you need access to the members of an arbitrary type, with the type and member-names known only at runtime - then it is frankly hard (especially for DLR types). This library makes such access easy and fast.</description>
-    <projectUrl>http://code.google.com/p/fast-member/</projectUrl>
+    <projectUrl>https://github.com/mgravell/fast-member</projectUrl>
     <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
     <tags>Reflection Dynamic Member Access</tags>
     <language>en-US</language>
