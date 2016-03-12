@@ -58,7 +58,7 @@ namespace FastMember
             IDynamicMetaObjectProvider dlr = target as IDynamicMetaObjectProvider;
             if (dlr != null) return new DynamicWrapper(dlr); // use the DLR
 #endif
-            return new TypeAccessorWrapper(target, TypeAccessor.Create(target.GetType()));
+            return new TypeAccessorWrapper(target, TypeAccessor.Create(target.GetType(), allowNonPublicAccessors));
         }
         sealed class TypeAccessorWrapper : ObjectAccessor
         {
