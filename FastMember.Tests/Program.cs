@@ -1,131 +1,134 @@
-﻿
-using System;
-using System.Diagnostics;
+﻿using System;
 using System.ComponentModel;
-using FastMember;
+using System.Linq;
 using System.Reflection;
+using FastMember;
+using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Columns;
+using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Jobs;
+using BenchmarkDotNet.Loggers;
+using BenchmarkDotNet.Running;
+using BenchmarkDotNet.Exporters;
+
 namespace FastMemberTests
 {
     public class Program
     {
-        public string Value { get; set; }
-        static void Main()
+        public class FastMemberPerformance
         {
-            var obj = new Program();
-            obj.Value = "abc";
-            GC.KeepAlive(obj.Value);
-            const int loop = 5000000;
-            string last = null;
-            var watch = Stopwatch.StartNew();
-            for (int i = 0; i < loop; i++)
+            public string Value { get; set; }
+
+            private FastMemberPerformance obj;
+            private dynamic dlr;
+            private PropertyInfo prop;
+            private PropertyDescriptor descriptor;
+
+            private TypeAccessor accessor;
+            private ObjectAccessor wrapped;
+
+            private Type type;
+
+            public static void Main(string[] args)
             {
-                last = obj.Value;
+                var summary = BenchmarkRunner.Run<FastMemberPerformance>(new Config());
+                Console.WriteLine();
+                // Display a summary to match the output of the original Performance test
+                foreach (var report in summary.Reports.OrderBy(r => r.Key.Target.MethodTitle))
+                {
+                    Console.WriteLine("{0}: {1:N2} ns", report.Key.Target.MethodTitle, report.Value.ResultStatistics.Median);
+                }
+                Console.WriteLine();
+            }
+
+            [Setup]
+            public void Setup()
+            {
+                obj = new FastMemberPerformance();
+                dlr = obj;
+                prop = typeof(FastMemberPerformance).GetProperty("Value");
+                descriptor = TypeDescriptor.GetProperties(obj)["Value"];
+
+                // FastMember specific code
+                accessor = FastMember.TypeAccessor.Create(typeof(FastMemberPerformance));
+                wrapped = FastMember.ObjectAccessor.Create(obj);
+
+                type = typeof(FastMemberPerformance);
+            }
+
+            [Benchmark(Description = "1. Static C#", Baseline = true)]
+            public string StaticCSharp()
+            {
                 obj.Value = "abc";
+                return obj.Value;
             }
-            watch.Stop();
-            Console.WriteLine("Static C#: {0}ms", watch.ElapsedMilliseconds);
-#if !NO_DYNAMIC
-            dynamic dlr = obj;
-            watch = Stopwatch.StartNew();
-            for (int i = 0; i < loop; i++)
+
+            [Benchmark(Description = "2. Dynamic C#")]
+            public string DynamicCSharp()
             {
-                last = dlr.Value;
                 dlr.Value = "abc";
+                return dlr.Value;
             }
-            watch.Stop();
-            Console.WriteLine("Dynamic C#: {0}ms", watch.ElapsedMilliseconds);
-#endif
-            var prop = typeof (Program).GetProperty("Value");
-            watch = Stopwatch.StartNew();
-            for (int i = 0; i < loop; i++)
+
+            [Benchmark(Description = "3. PropertyInfo")]
+            public string PropertyInfo()
             {
-                last = (string)prop.GetValue(obj, null);
                 prop.SetValue(obj, "abc", null);
+                return (string)prop.GetValue(obj, null);
             }
-            watch.Stop();
-            Console.WriteLine("PropertyInfo: {0}ms", watch.ElapsedMilliseconds);
 
-#if !COREFX
-            var descriptor = TypeDescriptor.GetProperties(obj)["Value"];
-            watch = Stopwatch.StartNew();
-            for (int i = 0; i < loop; i++)
+            [Benchmark(Description = "4. PropertyDescriptor")]
+            public string PropertyDescriptor()
             {
-                last = (string)descriptor.GetValue(obj);
                 descriptor.SetValue(obj, "abc");
+                return (string)descriptor.GetValue(obj);
             }
-            watch.Stop();
-            Console.WriteLine("PropertyDescriptor: {0}ms", watch.ElapsedMilliseconds);
 
-            Hyper.ComponentModel.HyperTypeDescriptionProvider.Add(typeof(Program));
-#endif
-            //descriptor = TypeDescriptor.GetProperties(obj)["Value"];
-            //watch = Stopwatch.StartNew();
-            //for (int i = 0; i < loop; i++)
-            //{
-            //    last = (string)descriptor.GetValue(obj);
-            //    descriptor.SetValue(obj, "abc");
-            //}
-            //watch.Stop();
-            //Console.WriteLine("HyperPropertyDescriptor: {0}ms", watch.ElapsedMilliseconds);
-
-            var accessor = TypeAccessor.Create(typeof (Program));
-            watch = Stopwatch.StartNew();
-            for (int i = 0; i < loop; i++)
+            [Benchmark(Description = "5. TypeAccessor.Create")]
+            public string TypeAccessor()
             {
-                last = (string)accessor[obj, "Value"];
                 accessor[obj, "Value"] = "abc";
+                return (string)accessor[obj, "Value"];
             }
-            watch.Stop();
-            Console.WriteLine("TypeAccessor.Create: {0}ms", watch.ElapsedMilliseconds);
 
-            var wrapped = ObjectAccessor.Create(obj);
-            watch = Stopwatch.StartNew();
-            for (int i = 0; i < loop; i++)
+            [Benchmark(Description = "6. ObjectAccessor.Create")]
+            public string ObjectAccessor()
             {
-                last = (string)wrapped["Value"];
                 wrapped["Value"] = "abc";
+                return (string)wrapped["Value"];
             }
-            watch.Stop();
-            Console.WriteLine("ObjectAccessor.Create: {0}ms", watch.ElapsedMilliseconds);
 
-
-            object lastObj = null;
-            GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced);
-            GC.WaitForPendingFinalizers();
-            watch = Stopwatch.StartNew();
-            for (int i = 0; i < loop; i++)
+            [Benchmark(Description = "7. c# new()")]
+            public FastMemberPerformance CSharpNew()
             {
-                lastObj = new Program();
+                return new FastMemberPerformance();
             }
-            watch.Stop();
-            Console.WriteLine("c# new(): {0}ms", watch.ElapsedMilliseconds);
 
-            Type type = typeof (Program);
-            GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced);
-            GC.WaitForPendingFinalizers();
-            watch = Stopwatch.StartNew();
-            for (int i = 0; i < loop; i++)
+            [Benchmark(Description = "8. Activator.CreateInstance")]
+            public object ActivatorCreateInstance()
             {
-                lastObj = Activator.CreateInstance(type);
+                return Activator.CreateInstance(type);
             }
-            watch.Stop();
-            Console.WriteLine("Activator.CreateInstance: {0}ms", watch.ElapsedMilliseconds);
 
-            GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced);
-            GC.WaitForPendingFinalizers();
-            watch = Stopwatch.StartNew();
-            for (int i = 0; i < loop; i++)
+            [Benchmark(Description = "9. TypeAccessor.CreateNew")]
+            public object TypeAccessorCreateNew()
             {
-                lastObj = accessor.CreateNew();
+                return accessor.CreateNew();
             }
-            watch.Stop();
-            Console.WriteLine("TypeAccessor.CreateNew: {0}ms", watch.ElapsedMilliseconds);
+        }
 
-            GC.KeepAlive(last);
-            GC.KeepAlive(lastObj);
-
-
-
+        // BenchmarkDotNet settings (you can use the defaults, but these are tailored for this benchmark)
+        private class Config : ManualConfig
+        {
+            public Config()
+            {
+                Add(Job.Default.WithLaunchCount(1));
+                Add(PropertyColumn.Method);
+                Add(StatisticColumn.Median, StatisticColumn.StdDev);
+                Add(BaselineDiffColumn.Scaled);
+                Add(CsvExporter.Default, MarkdownExporter.Default, MarkdownExporter.GitHub);
+                Add(new ConsoleLogger());
+            }
         }
     }
 }
