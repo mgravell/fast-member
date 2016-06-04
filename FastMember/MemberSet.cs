@@ -97,6 +97,42 @@ namespace FastMember
 #endif
         }
 
+        /// <summary>
+        /// Getting Attribute Type
+        /// </summary>
+        public Attribute GetAttribute(Type attributeType, bool Inhirit)
+        {
+            return Attribute.GetCustomAttribute(member, attributeType, Inhirit);
+        }
 
+        /// <summary>
+        /// Property Can Write
+        /// </summary>
+        public bool CanWrite
+        {
+            get
+            {
+                switch (member.MemberType)
+                {
+                    case MemberTypes.Property: return ((PropertyInfo)member).CanWrite;
+                    default: throw new NotSupportedException(member.MemberType.ToString());
+                }
+            }
+        }
+
+        /// <summary>
+        /// Property Can Read
+        /// </summary>
+        public bool CanRead
+        {
+            get
+            {
+                switch (member.MemberType)
+                {
+                    case MemberTypes.Property: return ((PropertyInfo)member).CanRead;
+                    default: throw new NotSupportedException(member.MemberType.ToString());
+                }
+            }
+        }
     }
 }
