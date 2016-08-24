@@ -34,9 +34,9 @@ namespace FastMemberTests
                 var summary = BenchmarkRunner.Run<FastMemberPerformance>(new Config());
                 Console.WriteLine();
                 // Display a summary to match the output of the original Performance test
-                foreach (var report in summary.Reports.OrderBy(r => r.Key.Target.MethodTitle))
+                foreach (var report in summary.Reports.OrderBy(r => r.Benchmark.Target.MethodTitle))
                 {
-                    Console.WriteLine("{0}: {1:N2} ns", report.Key.Target.MethodTitle, report.Value.ResultStatistics.Median);
+                    Console.WriteLine("{0}: {1:N2} ns", report.Benchmark.Target.MethodTitle, report.ResultStatistics.Median);
                 }
                 Console.WriteLine();
             }
@@ -125,7 +125,6 @@ namespace FastMemberTests
                 Add(Job.Default.WithLaunchCount(1));
                 Add(PropertyColumn.Method);
                 Add(StatisticColumn.Median, StatisticColumn.StdDev);
-                Add(BaselineDiffColumn.Scaled);
                 Add(CsvExporter.Default, MarkdownExporter.Default, MarkdownExporter.GitHub);
                 Add(new ConsoleLogger());
             }
