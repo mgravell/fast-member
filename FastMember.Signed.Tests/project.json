@@ -1,56 +1,30 @@
 {
-  "compilationOptions": {
+  "dependencies": {
+    "FastMember.Signed": {
+      "target": "project"
+    },
+    "NUnit": "3.4.1",
+    "dotnet-test-nunit": "3.4.0-beta-2",
+    "BenchmarkDotNet": "0.9.9"
+  },
+  "buildOptions": {
     "keyFile": "../FastMember.snk"
   },
-  "compile": [
-    "../FastMember.Tests/**/*.cs"
-  ],
-  "dependencies": {
-    "FastMember.Signed": { "target": "project" }
-  },
-  "commands": {
-    "test": "xunit.runner.dnx",
-    "perf": "FastMember.Signed.Tests"
-  },
+  "testRunner": "nunit",
   "frameworks": {
-    "net35": {
-      "frameworkAssemblies": {
-        "System.Data": "2.0.0.0"
-      },
-      "dependencies": {
-        "NUnit": "3.0.0-*"
-      },
-      "compilationOptions": {
-        "define": [ "NO_DYNAMIC" ]
-      }
-    },
-    "net40": {
-      "compilationOptions": { "define": [ "XUNIT" ] },
+    "net451": {
+      "buildOptions": { "define": [ "XUNIT" ] },
       "frameworkAssemblies": {
         "System.Data": "4.0.0.0"
-      },
-      "dependencies": {
-        "xunit": "1.9.2"
       }
     },
-    "dnx451": {
-      "compilationOptions": { "define": [ "XUNIT" ] },
-      "frameworkAssemblies": {
-        "System.Data": "4.0.0.0"
-      },
+    "netcoreapp1.0": {
+      "imports": "portable-net45+win8",
       "dependencies": {
-        "xunit": "2.1.0",
-        "xunit.runner.dnx": "2.1.0-*"
-      }
-    },
-    "dnxcore50": {
-      "compilationOptions": { "define": [ "XUNIT", "COREFX" ] },
-      "dependencies": {
-        "xunit": "2.1.0",
-        "xunit.runner.dnx": "2.1.0-*",
-        "System.Reflection.TypeExtensions": "4.0.1-*",
-        "System.Runtime": "4.0.21-*",
-        "System.Console": "4.0.0-*"
+        "Microsoft.NETCore.App": {
+          "version": "1.0.0-*",
+          "type": "platform"
+        }
       }
     }
   }
