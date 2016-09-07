@@ -2,6 +2,15 @@
 using System.Reflection;
 using System.Reflection.Emit;
 
+#if NET20
+namespace System.Runtime.CompilerServices
+{
+    [AttributeUsage(AttributeTargets.Assembly | AttributeTargets.Class | AttributeTargets.Method)]
+    internal class ExtensionAttribute : Attribute { }
+}
+#endif
+
+
 namespace FastMember
 {
     internal static class TypeHelpers
