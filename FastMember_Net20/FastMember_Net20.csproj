@@ -31,7 +31,7 @@
     <DefineConstants>TRACE;NO_DYNAMIC;NET20</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\Nuget\lib\net35\FastMember.XML</DocumentationFile>
+    <DocumentationFile>..\Nuget\lib\net20\FastMember.XML</DocumentationFile>
     <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <ItemGroup>
