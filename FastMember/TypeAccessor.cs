@@ -4,12 +4,21 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Threading;
 using System.Collections.Generic;
+
+using static FastMember.TypeHelpers;
+
 #if !NO_DYNAMIC
 using System.Dynamic;
 #endif
 
 namespace FastMember
 {
+#if NET20
+    public delegate TResult Func<TResult>();
+    public delegate TResult Func<T1, T2, TResult>(T1 arg1, T2 arg2);
+    public delegate void Action<T1, T2, T3>(T1 arg1, T2 arg2, T3 arg3);
+#endif
+
     /// <summary>
     /// Provides by-name member-access to objects of a given type
     /// </summary>
@@ -151,7 +160,7 @@ namespace FastMember
                     if (isGet)
                     {
                         il.Emit(OpCodes.Ldfld, field);
-                        if (field.FieldType._IsValueType()) il.Emit(OpCodes.Box, field.FieldType);
+                        if (_IsValueType(field.FieldType)) il.Emit(OpCodes.Box, field.FieldType);
                     }
                     else
                     {
@@ -171,14 +180,14 @@ namespace FastMember
                         Cast(il, type, true);
                         if (isGet)
                         {
-                            il.EmitCall(type._IsValueType() ? OpCodes.Call : OpCodes.Callvirt, accessor, null);
-                            if (prop.PropertyType._IsValueType()) il.Emit(OpCodes.Box, prop.PropertyType);
+                            il.EmitCall(_IsValueType(type) ? OpCodes.Call : OpCodes.Callvirt, accessor, null);
+                            if (_IsValueType(prop.PropertyType)) il.Emit(OpCodes.Box, prop.PropertyType);
                         }
                         else
                         {
                             il.Emit(value);
                             Cast(il, prop.PropertyType, false);
-                            il.EmitCall(type._IsValueType() ? OpCodes.Call : OpCodes.Callvirt, accessor, null);
+                            il.EmitCall(_IsValueType(type) ? OpCodes.Call : OpCodes.Callvirt, accessor, null);
                         }
                         il.Emit(OpCodes.Ret);
                         isFail = false;
@@ -255,8 +264,8 @@ namespace FastMember
         }
         private static bool IsFullyPublic(Type type, PropertyInfo[] props, bool allowNonPublicAccessors)
         {
-            while (type._IsNestedPublic()) type = type.DeclaringType;
-            if (!type._IsPublic()) return false;
+            while (_IsNestedPublic(type)) type = type.DeclaringType;
+            if (!_IsPublic(type)) return false;
 
             if (allowNonPublicAccessors)
             {
@@ -294,7 +303,7 @@ namespace FastMember
             foreach (var field in fields) if (!map.ContainsKey(field.Name)) { map.Add(field.Name, i++); members.Add(field); }
 
             ConstructorInfo ctor = null;
-            if (type._IsClass() && !type._IsAbstract())
+            if (_IsClass(type) && !_IsAbstract(type))
             {
                 ctor = type.GetConstructor(TypeHelpers.EmptyTypes);
             }
@@ -387,14 +396,14 @@ namespace FastMember
             il.Emit(OpCodes.Ret);
             tb.DefineMethodOverride(body, baseMethod);
 
-            var accessor = (TypeAccessor)Activator.CreateInstance(tb._CreateType(), map);
+            var accessor = (TypeAccessor)Activator.CreateInstance(_CreateType(tb), map);
             return accessor;
         }
 
         private static void Cast(ILGenerator il, Type type, bool valueAsPointer)
         {
             if (type == typeof(object)) { }
-            else if (type._IsValueType())
+            else if (_IsValueType(type))
             {
                 if (valueAsPointer)
                 {

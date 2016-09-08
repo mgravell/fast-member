@@ -4,6 +4,7 @@ using System.Reflection.Emit;
 
 namespace FastMember
 {
+
     internal static class TypeHelpers
     {
 #if COREFX
@@ -11,8 +12,8 @@ namespace FastMember
 #else
         public static readonly Type[] EmptyTypes = Type.EmptyTypes;
 #endif
-    
-        public static bool _IsValueType(this Type type)
+
+        public static bool _IsValueType(Type type)
         {
 #if COREFX
             return type.GetTypeInfo().IsValueType;
@@ -20,7 +21,7 @@ namespace FastMember
             return type.IsValueType;
 #endif
         }
-        public static bool _IsPublic(this Type type)
+        public static bool _IsPublic(Type type)
         {
 #if COREFX
             return type.GetTypeInfo().IsPublic;
@@ -29,7 +30,7 @@ namespace FastMember
 #endif
         }
 
-        public static bool _IsNestedPublic(this Type type)
+        public static bool _IsNestedPublic(Type type)
         {
 #if COREFX
             return type.GetTypeInfo().IsNestedPublic;
@@ -37,7 +38,7 @@ namespace FastMember
             return type.IsNestedPublic;
 #endif
         }
-        public static bool _IsClass(this Type type)
+        public static bool _IsClass(Type type)
         {
 #if COREFX
             return type.GetTypeInfo().IsClass;
@@ -46,7 +47,7 @@ namespace FastMember
 #endif
         }
 
-        public static bool _IsAbstract(this Type type)
+        public static bool _IsAbstract(Type type)
         {
 #if COREFX
             return type.GetTypeInfo().IsAbstract;
@@ -54,7 +55,7 @@ namespace FastMember
             return type.IsAbstract;
 #endif
         }
-        public static Type _CreateType(this TypeBuilder type)
+        public static Type _CreateType(TypeBuilder type)
         {
 #if COREFX
             return type.CreateTypeInfo().AsType();

@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 
+using static FastMember.TypeHelpers;
+
 namespace FastMember
 {
     /// <summary>
@@ -72,7 +74,7 @@ namespace FastMember
                                 var tmp = member.Type;
                                 memberType = Nullable.GetUnderlyingType(tmp) ?? tmp;
 
-                                allowNull = !(memberType._IsValueType() && memberType == tmp);
+                                allowNull = !(_IsValueType(memberType) && memberType == tmp);
 
                                 // but keep checking, in case of duplicates
                             }
