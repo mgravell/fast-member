@@ -39,8 +39,8 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="nunit.framework, Version=3.0.5797.27539, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
-      <HintPath>..\packages\NUnit.3.0.0\lib\net40\nunit.framework.dll</HintPath>
+    <Reference Include="nunit.framework, Version=3.5.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\NUnit.3.5.0\lib\net40\nunit.framework.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -48,15 +48,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\FastMember.Tests\**\*.cs" />
+    <Compile Include="..\FastMember.Tests\*.cs" />
+    <Compile Include="..\FastMember.Tests\Properties\*.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FastMember_Net40\FastMember_Net40.csproj">
-      <Project>{4C19BCAD-C12C-4574-BAC0-9DD5C6D12D0B}</Project>
+      <Project>{4c19bcad-c12c-4574-bac0-9dd5c6d12d0b}</Project>
       <Name>FastMember_Net40</Name>
     </ProjectReference>
   </ItemGroup>
