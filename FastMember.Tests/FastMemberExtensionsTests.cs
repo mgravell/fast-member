@@ -6,6 +6,9 @@ using FastMember;
 
 namespace FastMemberTests
 {
+    /// <summary> for testing access to nested things. 
+    ///  <para /> https://github.com/mgravell/fast-member/issues/21 
+    ///  <para /> http://stackoverflow.com/a/40364078/492 </summary> 
     [TestFixture]
     public class FastMemberExtensionsTests
     {
@@ -26,21 +29,22 @@ namespace FastMemberTests
             Assert.AreEqual(now  , access[obj, "C"]);
             Assert.AreEqual(null , access[obj, "D"]);
 
-            Assert.AreEqual(123  , nesterAccessor.GetValueOfNestedProperty("PropsOnClass.A"));
-            Assert.AreEqual("abc", nesterAccessor.GetValueOfNestedProperty("PropsOnClass.B"));
-            Assert.AreEqual(now  , nesterAccessor.GetValueOfNestedProperty("PropsOnClass.C"));
-            Assert.AreEqual(null , nesterAccessor.GetValueOfNestedProperty("PropsOnClass.D"));
+            Assert.AreEqual(123  , nesterAccessor.GetValueOfDeepestNestedProperty("PropsOnClass.A"));
+            Assert.AreEqual("abc", nesterAccessor.GetValueOfDeepestNestedProperty("PropsOnClass.B"));
+            Assert.AreEqual(now  , nesterAccessor.GetValueOfDeepestNestedProperty("PropsOnClass.C"));
+            Assert.AreEqual(null , nesterAccessor.GetValueOfDeepestNestedProperty("PropsOnClass.D"));
 
-            Assert.AreEqual(nesterAccessor.GetValueOfNestedProperty("PropsOnClass.A")?.GetType(), typeof(int));
-            Assert.AreEqual(nesterAccessor.GetValueOfNestedProperty("PropsOnClass.B")?.GetType(), obj.B?.GetType());
-            Assert.AreEqual(nesterAccessor.GetValueOfNestedProperty("PropsOnClass.C")?.GetType(), obj.C?.GetType());
-            Assert.AreEqual(nesterAccessor.GetValueOfNestedProperty("PropsOnClass.D")?.GetType(), obj.D?.GetType());
+            Assert.AreEqual(nesterAccessor.GetValueOfDeepestNestedProperty("PropsOnClass.A")?.GetType(), typeof(int));
+            Assert.AreEqual(nesterAccessor.GetValueOfDeepestNestedProperty("PropsOnClass.B")?.GetType(), obj.B?.GetType());
+            Assert.AreEqual(nesterAccessor.GetValueOfDeepestNestedProperty("PropsOnClass.C")?.GetType(), obj.C?.GetType());
+            Assert.AreEqual(nesterAccessor.GetValueOfDeepestNestedProperty("PropsOnClass.D")?.GetType(), obj.D?.GetType());
         }
 
         [Test]
         public void WriteTest_NestedPropsOnClass_ViaWrapperExtension()
         {
             var now = DateTime.Now;
+            var Neil = DateTime.Parse("July 20 1969 20:18");
 
             var obj = new PropsOnClass();
 
@@ -48,7 +52,6 @@ namespace FastMemberTests
 
             var nester = new NestedPropsOnClass() { PropsOnClass =   obj };
             var nesterAccessor = ObjectAccessor.Create(nester);
-            var Neil = DateTime.Parse("July 20 1969 20:18");
 
             access[obj, "A"] = 123;
             access[obj, "B"] = "abc";
@@ -56,32 +59,37 @@ namespace FastMemberTests
             access[obj, "D"] = null;
 
 
-            Assert.AreEqual(123, obj.A);
+            Assert.AreEqual(123  , obj.A);
             Assert.AreEqual("abc", obj.B);
-            Assert.AreEqual(now, obj.C);
-            Assert.AreEqual(null, obj.D);
+            Assert.AreEqual(now  , obj.C);
+            Assert.AreEqual(null , obj.D);
 
-            Assert.IsNotNull(nesterAccessor.GetValueOfNestedProperty("PropsOnClass"));
+            Assert.IsNotNull(nesterAccessor.GetValueOfDeepestNestedProperty("PropsOnClass"));
 
-            Assert.AreEqual(123, nesterAccessor.GetValueOfNestedProperty("PropsOnClass.A"));
-            Assert.AreEqual("abc", nesterAccessor.GetValueOfNestedProperty("PropsOnClass.B"));
-            Assert.AreEqual(now, nesterAccessor.GetValueOfNestedProperty("PropsOnClass.C"));
-            Assert.AreEqual(null, nesterAccessor.GetValueOfNestedProperty("PropsOnClass.D"));
+            Assert.AreEqual(123  , nesterAccessor.GetValueOfDeepestNestedProperty("PropsOnClass.A"));
+            Assert.AreEqual("abc", nesterAccessor.GetValueOfDeepestNestedProperty("PropsOnClass.B"));
+            Assert.AreEqual(now  , nesterAccessor.GetValueOfDeepestNestedProperty("PropsOnClass.C"));
+            Assert.AreEqual(null , nesterAccessor.GetValueOfDeepestNestedProperty("PropsOnClass.D"));
 
-            nesterAccessor.SetValueOfNestedProperty("PropsOnClass.A", 456);
-            nesterAccessor.SetValueOfNestedProperty("PropsOnClass.B", "cde");
-            nesterAccessor.SetValueOfNestedProperty("PropsOnClass.C", Neil);
-            nesterAccessor.SetValueOfNestedProperty("PropsOnClass.D", 3.14d);
+            nesterAccessor.SetValueOfDeepestNestedProperty("PropsOnClass.A", 456);
+            nesterAccessor.SetValueOfDeepestNestedProperty("PropsOnClass.B", "cde");
+            nesterAccessor.SetValueOfDeepestNestedProperty("PropsOnClass.C", Neil);
+            nesterAccessor.SetValueOfDeepestNestedProperty("PropsOnClass.D", 3.14m);
 
-            Assert.AreEqual(456, nesterAccessor.GetValueOfNestedProperty("PropsOnClass.A"));
-            Assert.AreEqual("cde", nesterAccessor.GetValueOfNestedProperty("PropsOnClass.B"));
-            Assert.AreEqual(Neil, nesterAccessor.GetValueOfNestedProperty("PropsOnClass.C"));
-            Assert.AreEqual(3.14d, nesterAccessor.GetValueOfNestedProperty("PropsOnClass.D"));
+            Assert.AreEqual(456  , obj.A);
+            Assert.AreEqual("cde", obj.B);
+            Assert.AreEqual(Neil , obj.C);
+            Assert.AreEqual(3.14m, obj.D);
 
-            Assert.AreEqual(nesterAccessor.GetValueOfNestedProperty("PropsOnClass.A")?.GetType(), typeof(int));
-            Assert.AreEqual(nesterAccessor.GetValueOfNestedProperty("PropsOnClass.B")?.GetType(), obj.B?.GetType());
-            Assert.AreEqual(nesterAccessor.GetValueOfNestedProperty("PropsOnClass.C")?.GetType(), obj.C?.GetType());
-            Assert.AreEqual(nesterAccessor.GetValueOfNestedProperty("PropsOnClass.D")?.GetType(), obj.D?.GetType());
+            Assert.AreEqual(456  , nesterAccessor.GetValueOfDeepestNestedProperty("PropsOnClass.A"));
+            Assert.AreEqual("cde", nesterAccessor.GetValueOfDeepestNestedProperty("PropsOnClass.B"));
+            Assert.AreEqual(Neil , nesterAccessor.GetValueOfDeepestNestedProperty("PropsOnClass.C"));
+            Assert.AreEqual(3.14m, nesterAccessor.GetValueOfDeepestNestedProperty("PropsOnClass.D"));
+
+            Assert.AreEqual(nesterAccessor.GetValueOfDeepestNestedProperty("PropsOnClass.A")?.GetType(), typeof(int));
+            Assert.AreEqual(nesterAccessor.GetValueOfDeepestNestedProperty("PropsOnClass.B")?.GetType(), obj.B?.GetType());
+            Assert.AreEqual(nesterAccessor.GetValueOfDeepestNestedProperty("PropsOnClass.C")?.GetType(), obj.C?.GetType());
+            Assert.AreEqual(nesterAccessor.GetValueOfDeepestNestedProperty("PropsOnClass.D")?.GetType(), obj.D?.GetType());
         }
 
 
@@ -101,48 +109,127 @@ namespace FastMemberTests
 
             nestedClass.NestedNestedPropsOnClass.PropsOnClass.A = 911;
 
-            Assert.AreEqual(911, access[obj, "A"]);
+            Assert.AreEqual(911  , access[obj, "A"]);
             Assert.AreEqual("abc", access[obj, "B"]);
-            Assert.AreEqual(now, access[obj, "C"]);
-            Assert.AreEqual(null, access[obj, "D"]);
+            Assert.AreEqual(now  , access[obj, "C"]);
+            Assert.AreEqual(null , access[obj, "D"]);
 
-            Assert.IsNotNull(nesterAccessor.GetValueOfNestedProperty("NestedNestedPropsOnClass"));
-            Assert.IsNotNull(nesterAccessor.GetValueOfNestedProperty("NestedNestedPropsOnClass.PropsOnClass"));
-            Assert.IsNotNull(nesterAccessor.GetValueOfNestedProperty("NestedNestedPropsOnClass.PropsOnClass.A"));
+            Assert.IsNotNull(nesterAccessor.GetValueOfDeepestNestedProperty("NestedNestedPropsOnClass"));
+            Assert.IsNotNull(nesterAccessor.GetValueOfDeepestNestedProperty("NestedNestedPropsOnClass.PropsOnClass"));
+            Assert.IsNotNull(nesterAccessor.GetValueOfDeepestNestedProperty("NestedNestedPropsOnClass.PropsOnClass.A"));
 
-            Assert.AreEqual(911  , nesterAccessor.GetValueOfNestedProperty("NestedNestedPropsOnClass.PropsOnClass.A"));
-            Assert.AreEqual("abc", nesterAccessor.GetValueOfNestedProperty("NestedNestedPropsOnClass.PropsOnClass.B"));
-            Assert.AreEqual(now  , nesterAccessor.GetValueOfNestedProperty("NestedNestedPropsOnClass.PropsOnClass.C"));
-            Assert.AreEqual(null , nesterAccessor.GetValueOfNestedProperty("NestedNestedPropsOnClass.PropsOnClass.D"));
+            Assert.AreEqual(911  , nesterAccessor.GetValueOfDeepestNestedProperty("NestedNestedPropsOnClass.PropsOnClass.A"));
+            Assert.AreEqual("abc", nesterAccessor.GetValueOfDeepestNestedProperty("NestedNestedPropsOnClass.PropsOnClass.B"));
+            Assert.AreEqual(now  , nesterAccessor.GetValueOfDeepestNestedProperty("NestedNestedPropsOnClass.PropsOnClass.C"));
+            Assert.AreEqual(null , nesterAccessor.GetValueOfDeepestNestedProperty("NestedNestedPropsOnClass.PropsOnClass.D"));
 
-            Assert.AreEqual(nesterAccessor.GetValueOfNestedProperty("NestedNestedPropsOnClass.PropsOnClass.A")?.GetType(), typeof(int));
-            Assert.AreEqual(nesterAccessor.GetValueOfNestedProperty("NestedNestedPropsOnClass.PropsOnClass.B")?.GetType(), obj.B?.GetType());
-            Assert.AreEqual(nesterAccessor.GetValueOfNestedProperty("NestedNestedPropsOnClass.PropsOnClass.C")?.GetType(), obj.C?.GetType());
-            Assert.AreEqual(nesterAccessor.GetValueOfNestedProperty("NestedNestedPropsOnClass.PropsOnClass.D")?.GetType(), obj.D?.GetType());
+            Assert.AreEqual(nesterAccessor.GetValueOfDeepestNestedProperty("NestedNestedPropsOnClass.PropsOnClass.A")?.GetType(), typeof(int));
+            Assert.AreEqual(nesterAccessor.GetValueOfDeepestNestedProperty("NestedNestedPropsOnClass.PropsOnClass.B")?.GetType(), obj.B?.GetType());
+            Assert.AreEqual(nesterAccessor.GetValueOfDeepestNestedProperty("NestedNestedPropsOnClass.PropsOnClass.C")?.GetType(), obj.C?.GetType());
+            Assert.AreEqual(nesterAccessor.GetValueOfDeepestNestedProperty("NestedNestedPropsOnClass.PropsOnClass.D")?.GetType(), obj.D?.GetType());
         }
 
-
-
-
-
-
-
-
-
-
         [Test]
-        public void BasicReadTest_FieldsOnClass()
+        public void ReadWriteTest_NestedNestedNestedPropsOnClass_ViaWrapperExtension()
         {
             var now = DateTime.Now;
+            var Neil = DateTime.Parse("July 20 1969 20:18");
 
-            var obj = new FieldsOnClass() { A = 123, B = "abc", C = now, D = null };
+            var obj = new PropsOnClass() { A = 123, B = "abc", C = now, D = null };
 
-            var access = TypeAccessor.Create(typeof(FieldsOnClass));
+            var access = TypeAccessor.Create(typeof(PropsOnClass));
+
+            NestedPropsOnClass nestedProps = new NestedPropsOnClass() { PropsOnClass =   obj };
+            NestedPropsOnClass nestedClass = new NestedPropsOnClass() { NestedNestedPropsOnClass = nestedProps };
+            NestedPropsOnClass nestedNestedClass = new NestedPropsOnClass() { NestedNestedPropsOnClass = nestedClass };
+            ObjectAccessor nesterAccessor = ObjectAccessor.Create(nestedNestedClass);
 
             Assert.AreEqual(123, access[obj, "A"]);
             Assert.AreEqual("abc", access[obj, "B"]);
             Assert.AreEqual(now, access[obj, "C"]);
             Assert.AreEqual(null, access[obj, "D"]);
+
+            nesterAccessor.SetValueOfDeepestNestedProperty("NestedNestedPropsOnClass.NestedNestedPropsOnClass.PropsOnClass.A", 456);
+            nesterAccessor.SetValueOfDeepestNestedProperty("NestedNestedPropsOnClass.NestedNestedPropsOnClass.PropsOnClass.B", "cde");
+            nesterAccessor.SetValueOfDeepestNestedProperty("NestedNestedPropsOnClass.NestedNestedPropsOnClass.PropsOnClass.C", Neil);
+            nesterAccessor.SetValueOfDeepestNestedProperty("NestedNestedPropsOnClass.NestedNestedPropsOnClass.PropsOnClass.D", 3.14m);
+
+            Assert.AreEqual(456  , access[obj, "A"]);
+            Assert.AreEqual("cde", access[obj, "B"]);
+            Assert.AreEqual(Neil , access[obj, "C"]);
+            Assert.AreEqual(3.14m, access[obj, "D"]);
+
+            Assert.IsNotNull(nesterAccessor.GetValueOfDeepestNestedProperty("NestedNestedPropsOnClass.NestedNestedPropsOnClass"));
+            Assert.IsNotNull(nesterAccessor.GetValueOfDeepestNestedProperty("NestedNestedPropsOnClass.NestedNestedPropsOnClass.PropsOnClass"));
+            Assert.IsNotNull(nesterAccessor.GetValueOfDeepestNestedProperty("NestedNestedPropsOnClass.NestedNestedPropsOnClass.PropsOnClass.A"));
+
+            Assert.AreEqual(456  , nesterAccessor.GetValueOfDeepestNestedProperty("NestedNestedPropsOnClass.NestedNestedPropsOnClass.PropsOnClass.A"));
+            Assert.AreEqual("cde", nesterAccessor.GetValueOfDeepestNestedProperty("NestedNestedPropsOnClass.NestedNestedPropsOnClass.PropsOnClass.B"));
+            Assert.AreEqual(Neil , nesterAccessor.GetValueOfDeepestNestedProperty("NestedNestedPropsOnClass.NestedNestedPropsOnClass.PropsOnClass.C"));
+            Assert.AreEqual(3.14m, nesterAccessor.GetValueOfDeepestNestedProperty("NestedNestedPropsOnClass.NestedNestedPropsOnClass.PropsOnClass.D"));
+
+            Assert.AreEqual(nesterAccessor.GetValueOfDeepestNestedProperty("NestedNestedPropsOnClass.NestedNestedPropsOnClass.PropsOnClass.A")?.GetType(), typeof(int));
+            Assert.AreEqual(nesterAccessor.GetValueOfDeepestNestedProperty("NestedNestedPropsOnClass.NestedNestedPropsOnClass.PropsOnClass.B")?.GetType(), obj.B?.GetType());
+            Assert.AreEqual(nesterAccessor.GetValueOfDeepestNestedProperty("NestedNestedPropsOnClass.NestedNestedPropsOnClass.PropsOnClass.C")?.GetType(), obj.C?.GetType());
+            Assert.AreEqual(nesterAccessor.GetValueOfDeepestNestedProperty("NestedNestedPropsOnClass.NestedNestedPropsOnClass.PropsOnClass.D")?.GetType(), obj.D?.GetType());
+        }
+
+
+
+
+        [Test]
+        public void BasicReadTest_NestedNestedFieldsOnClass()
+        {
+            var now = DateTime.Now;
+            var Neil = DateTime.Parse("July 20 1969 20:18");
+
+            var obj = new FieldsOnClass() { A = 123, B = "abc", C = now, D = null };
+
+            var access = TypeAccessor.Create(typeof(FieldsOnClass));
+
+            NestedPropsOnClass nestedProps = new NestedPropsOnClass() { FieldsOnClass =   obj };
+            NestedPropsOnClass nestedClass = new NestedPropsOnClass() { NestedNestedPropsOnClass = nestedProps };
+            NestedPropsOnClass nestedNestedClass = new NestedPropsOnClass() { NestedNestedPropsOnClass = nestedClass };
+            ObjectAccessor nesterAccessor = ObjectAccessor.Create(nestedNestedClass);
+
+            Assert.AreEqual(123, access[obj, "A"]);
+            Assert.AreEqual("abc", access[obj, "B"]);
+            Assert.AreEqual(now, access[obj, "C"]);
+            Assert.AreEqual(null, access[obj, "D"]);
+
+            Assert.AreEqual(123, nesterAccessor.GetValueOfDeepestNestedProperty("NestedNestedPropsOnClass.NestedNestedPropsOnClass.FieldsOnClass.A"));
+            Assert.AreEqual("abc", nesterAccessor.GetValueOfDeepestNestedProperty("NestedNestedPropsOnClass.NestedNestedPropsOnClass.FieldsOnClass.B"));
+            Assert.AreEqual(now, nesterAccessor.GetValueOfDeepestNestedProperty("NestedNestedPropsOnClass.NestedNestedPropsOnClass.FieldsOnClass.C"));
+            Assert.AreEqual(null, nesterAccessor.GetValueOfDeepestNestedProperty("NestedNestedPropsOnClass.NestedNestedPropsOnClass.FieldsOnClass.D"));
+
+
+            // bug: can't set nested fields
+             /*
+            nesterAccessor.SetValueOfDeepestNestedProperty("NestedNestedPropsOnClass.NestedNestedPropsOnClass.FieldsOnClass.A", 456);
+            nesterAccessor.SetValueOfDeepestNestedProperty("NestedNestedPropsOnClass.NestedNestedPropsOnClass.FieldsOnClass.B", "cde");
+            nesterAccessor.SetValueOfDeepestNestedProperty("NestedNestedPropsOnClass.NestedNestedPropsOnClass.FieldsOnClass.C", Neil);
+            nesterAccessor.SetValueOfDeepestNestedProperty("NestedNestedPropsOnClass.NestedNestedPropsOnClass.FieldsOnClass.D", 3.14m);
+            */
+
+           obj.A = 456  ;
+           obj.B = "cde";
+           obj.C = Neil ;
+           obj.D = 3.14m;
+
+            Assert.IsNotNull(nesterAccessor.GetValueOfDeepestNestedProperty("NestedNestedPropsOnClass.NestedNestedPropsOnClass"));
+            Assert.IsNotNull(nesterAccessor.GetValueOfDeepestNestedProperty("NestedNestedPropsOnClass.NestedNestedPropsOnClass.FieldsOnClass"));
+            Assert.IsNotNull(nesterAccessor.GetValueOfDeepestNestedProperty("NestedNestedPropsOnClass.NestedNestedPropsOnClass.FieldsOnClass.A"));
+
+            Assert.AreEqual(456, nesterAccessor.GetValueOfDeepestNestedProperty("NestedNestedPropsOnClass.NestedNestedPropsOnClass.FieldsOnClass.A"));
+            Assert.AreEqual("cde", nesterAccessor.GetValueOfDeepestNestedProperty("NestedNestedPropsOnClass.NestedNestedPropsOnClass.FieldsOnClass.B"));
+            Assert.AreEqual(Neil, nesterAccessor.GetValueOfDeepestNestedProperty("NestedNestedPropsOnClass.NestedNestedPropsOnClass.FieldsOnClass.C"));
+            Assert.AreEqual(3.14m, nesterAccessor.GetValueOfDeepestNestedProperty("NestedNestedPropsOnClass.NestedNestedPropsOnClass.FieldsOnClass.D"));
+
+            Assert.AreEqual(nesterAccessor.GetValueOfDeepestNestedProperty("NestedNestedPropsOnClass.NestedNestedPropsOnClass.FieldsOnClass.A")?.GetType(), typeof(int));
+            Assert.AreEqual(nesterAccessor.GetValueOfDeepestNestedProperty("NestedNestedPropsOnClass.NestedNestedPropsOnClass.FieldsOnClass.B")?.GetType(), obj.B?.GetType());
+            Assert.AreEqual(nesterAccessor.GetValueOfDeepestNestedProperty("NestedNestedPropsOnClass.NestedNestedPropsOnClass.FieldsOnClass.C")?.GetType(), obj.C?.GetType());
+            Assert.AreEqual(nesterAccessor.GetValueOfDeepestNestedProperty("NestedNestedPropsOnClass.NestedNestedPropsOnClass.FieldsOnClass.D")?.GetType(), obj.D?.GetType());
+
         }
 
         [Test]
@@ -284,193 +371,5 @@ namespace FastMemberTests
             public DateTime? C;
             public decimal? D;
         }
-
-        public class HasDefaultCtor { }
-        public class HasNoDefaultCtor { public HasNoDefaultCtor(string s) { } }
-        public abstract class IsAbstract { }
-
-        [Test]
-        public void TestCtor()
-        {
-            var accessor = TypeAccessor.Create(typeof(HasNoDefaultCtor));
-            Assert.IsFalse(accessor.CreateNewSupported);
-
-            accessor = TypeAccessor.Create(typeof(IsAbstract));
-            Assert.IsFalse(accessor.CreateNewSupported);
-
-            Assert.AreNotEqual("DynamicAccessor", accessor.GetType().Name);
-            Assert.AreNotEqual("DelegateAccessor", accessor.GetType().Name);
-
-            accessor = TypeAccessor.Create(typeof(HasDefaultCtor));
-            Assert.IsTrue(accessor.CreateNewSupported);
-            object obj = accessor.CreateNew();
-            Assert.IsInstanceOf(typeof(HasDefaultCtor), obj);
-        }
-
-        public class HasGetterNoSetter
-        {
-            public int Foo { get { return 5; } }
-        }
-
-        [Test]
-        public void TestHasGetterNoSetter()
-        {
-            var obj = new HasGetterNoSetter();
-            var acc = TypeAccessor.Create(typeof(HasGetterNoSetter));
-            Assert.AreEqual(5, acc[obj, "Foo"]);
-        }
-
-        public class HasGetterPrivateSetter
-        {
-            public int Foo { get; private set; }
-            public HasGetterPrivateSetter(int value) { Foo = value; }
-        }
-
-        [Test]
-        public void TestHasGetterPrivateSetter()
-        {
-            var obj = new HasGetterPrivateSetter(5);
-            var acc = TypeAccessor.Create(typeof(HasGetterPrivateSetter));
-            Assert.AreEqual(5, acc[obj, "Foo"]);
-        }
-
-        public class MixedAccess
-        {
-            public MixedAccess()
-            {
-                Foo = Bar = 2;
-            }
-            public int Foo { get; private set; }
-            public int Bar { private get; set; }
-        }
-
-        [Test]
-        public void TestMixedAccess()
-        {
-            TypeAccessor acc0 = TypeAccessor.Create(typeof(MixedAccess)),
-                         acc1 = TypeAccessor.Create(typeof(MixedAccess), false),
-                         acc2 = TypeAccessor.Create(typeof(MixedAccess), true);
-
-            Assert.AreSame(acc0, acc1);
-            Assert.AreNotSame(acc0, acc2);
-
-            var obj = new MixedAccess();
-            Assert.AreEqual(2, acc0[obj, "Foo"]);
-            Assert.AreEqual(2, acc2[obj, "Foo"]);
-            Assert.AreEqual(2, acc2[obj, "Bar"]);
-
-            acc0[obj, "Bar"] = 3;
-            Assert.AreEqual(3, acc2[obj, "Bar"]);
-            acc2[obj, "Bar"] = 4;
-            Assert.AreEqual(4, acc2[obj, "Bar"]);
-            acc2[obj, "Foo"] = 5;
-            Assert.AreEqual(5, acc0[obj, "Foo"]);
-
-            try
-            {
-                int i = (int)acc0[obj, "Bar"];
-                Assert.Fail();
-            }
-            catch (ArgumentOutOfRangeException)
-            { } // fine
-            try
-            {
-                acc0[obj, "Foo"] = 6;
-                Assert.Fail();
-            }
-            catch (ArgumentOutOfRangeException)
-            { } // fine
-        }
-
-        public class ObjectReaderType
-        {
-            public int A { get; set; }
-            public string B { get; set; }
-            public byte C { get; set; }
-            public int? D { get; set; }
-        }
-#if !COREFX
-        [Test]
-        public void TestReaderAllColumns()
-        {
-            var source = new[] {
-                new ObjectReaderType { A = 123, B = "abc", C = 1, D = 123},
-                new ObjectReaderType { A = 456, B = "def", C = 2, D = null},
-                new ObjectReaderType { A = 789, B = "ghi", C = 3, D = 789}
-            };
-            var table = new DataTable();
-
-            using (var reader = ObjectReader.Create(source))
-            {
-                table.Load(reader);
-            }
-
-            Assert.AreEqual(4, table.Columns.Count, "col count");
-            Assert.AreEqual("A", table.Columns["A"].ColumnName, "A/name");
-            Assert.AreEqual("B", table.Columns["B"].ColumnName, "B/name");
-            Assert.AreEqual("C", table.Columns["C"].ColumnName, "C/name");
-            Assert.AreEqual("D", table.Columns["D"].ColumnName, "D/name");
-            Assert.AreSame(typeof(int), table.Columns["A"].DataType, "A/type");
-            Assert.AreSame(typeof(string), table.Columns["B"].DataType, "B/type");
-            Assert.AreSame(typeof(byte), table.Columns["C"].DataType, "C/type");
-            Assert.AreSame(typeof(int), table.Columns["D"].DataType, "D/type");
-            Assert.IsFalse(table.Columns["A"].AllowDBNull, "A/null");
-            Assert.IsTrue(table.Columns["B"].AllowDBNull, "B/null");
-            Assert.IsFalse(table.Columns["C"].AllowDBNull, "C/null");
-            Assert.IsTrue(table.Columns["D"].AllowDBNull, "D/null");
-
-            Assert.AreEqual(3, table.Rows.Count, "row count");
-            Assert.AreEqual(123, table.Rows[0]["A"], "0,A");
-            Assert.AreEqual("abc", table.Rows[0]["B"], "0,B");
-            Assert.AreEqual((byte)1, table.Rows[0]["C"], "0,C");
-            Assert.AreEqual(123, table.Rows[0]["D"], "0,D");
-            Assert.AreEqual(456, table.Rows[1]["A"], "1,A");
-            Assert.AreEqual("def", table.Rows[1]["B"], "1,B");
-            Assert.AreEqual((byte)2, table.Rows[1]["C"], "1,C");
-            Assert.AreEqual(DBNull.Value, table.Rows[1]["D"], "1,D");
-            Assert.AreEqual(789, table.Rows[2]["A"], "2,A");
-            Assert.AreEqual("ghi", table.Rows[2]["B"], "2,B");
-            Assert.AreEqual((byte)3, table.Rows[2]["C"], "2,C");
-            Assert.AreEqual(789, table.Rows[2]["D"], "2,D");
-        }
-
-        [Test]
-        public void TestReaderSpecifiedColumns()
-        {
-            var source = new[] {
-                new ObjectReaderType { A = 123, B = "abc", C = 1, D = 123},
-                new ObjectReaderType { A = 456, B = "def", C = 2, D = null},
-                new ObjectReaderType { A = 789, B = "ghi", C = 3, D = 789}
-            };
-            var table = new DataTable();
-
-            using (var reader = ObjectReader.Create(source, "B", "A", "D"))
-            {
-                table.Load(reader);
-            }
-
-            Assert.AreEqual(3, table.Columns.Count, "col count");
-            Assert.AreEqual("B", table.Columns[0].ColumnName, "B/name");
-            Assert.AreEqual("A", table.Columns[1].ColumnName, "A/name");
-            Assert.AreEqual("D", table.Columns[2].ColumnName, "D/name");
-            Assert.AreSame(typeof(string), table.Columns[0].DataType, "B/type");
-            Assert.AreSame(typeof(int), table.Columns[1].DataType, "A/type");
-            Assert.AreSame(typeof(int), table.Columns[2].DataType, "D/type");
-            Assert.IsTrue(table.Columns[0].AllowDBNull, "B/null");
-            Assert.IsFalse(table.Columns[1].AllowDBNull, "A/null");
-            Assert.IsTrue(table.Columns[2].AllowDBNull, "D/null");
-
-            Assert.AreEqual(3, table.Rows.Count, "row count");
-            Assert.AreEqual("abc", table.Rows[0][0], "0,0");
-            Assert.AreEqual(123, table.Rows[0][1], "0,1");
-            Assert.AreEqual(123, table.Rows[0][2], "0,2");
-            Assert.AreEqual("def", table.Rows[1][0], "1,0");
-            Assert.AreEqual(456, table.Rows[1][1], "1,1");
-            Assert.AreEqual(DBNull.Value, table.Rows[1][2], "1,2");
-            Assert.AreEqual("ghi", table.Rows[2][0], "2,0");
-            Assert.AreEqual(789, table.Rows[2][1], "2,1");
-            Assert.AreEqual(789, table.Rows[2][2], "2,2");
-        }
-#endif
     }
 }
