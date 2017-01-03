@@ -9,7 +9,7 @@ using System.Linq.Expressions;
 namespace FastMember
 {
     /// <summary> for nested property access in FastMember. </summary>
-    public static class FastMemberExtensions
+    public static class FastMemberNestedPropertiesExtensions
     {
         /// <summary> Used internally to return the deepest member in a property chain. </summary>
         private class DeepestObjectAccessor
@@ -66,13 +66,6 @@ namespace FastMember
         public static void SetValueOfDeepestNestedProperty(this ObjectAccessor accessor, string propertyName , object value)
         {
             DeepestObjectAccessor nestedAccessor = GetDeepestNestedObjectAccessor(accessor, propertyName);
-
-            ParameterExpression targetType = Expression.Parameter(nestedAccessor.ObjectAccessor.Target.GetType());
-            MemberExpression property = Expression.Property(targetType, nestedAccessor.DeepestPropertyName);
-
-            Type type = property.Type;
-            type = Nullable.GetUnderlyingType(type) ?? type;
-            value = value == null ? GetDefault(type) : Convert.ChangeType(value, type);
             nestedAccessor.ObjectAccessor[nestedAccessor.DeepestPropertyName] = value;
         }
 
