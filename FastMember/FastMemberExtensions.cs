@@ -2,6 +2,7 @@
 // https://github.com/mgravell/fast-member/issues/21
 
 using System;
+using System.Diagnostics;
 using System.Linq.Expressions;
 
 namespace FastMember
@@ -9,16 +10,16 @@ namespace FastMember
     /// <summary> for nested property access in FastMember. </summary>
     public static class FastMemberExtensions
     {
-        public static void AssignValueToNestedProperty(this ObjectAccessor accessor, string propertyName, object value)
+        public static void SetValueOfNestedProperty(this ObjectAccessor accessor, string propertyName, object value)
         {
-            var index = propertyName.IndexOf('.');
+            int index = propertyName.IndexOf('.');
 
             if (index == -1)
             {
-                var targetType = Expression.Parameter(accessor.Target.GetType());
-                var property = Expression.Property(targetType, propertyName);
+                ParameterExpression targetType = Expression.Parameter(accessor.Target.GetType());
+                MemberExpression property      = Expression.Property(targetType, propertyName);
 
-                var type = property.Type;
+                Type type = property.Type;
                 type = Nullable.GetUnderlyingType(type) ?? type;
                 value = value == null ? GetDefault(type) : Convert.ChangeType(value, type);
                 accessor[propertyName] = value;
@@ -26,7 +27,7 @@ namespace FastMember
             else
             {
                 accessor = ObjectAccessor.Create(accessor[propertyName.Substring(0, index)]);
-                AssignValueToNestedProperty(accessor, propertyName.Substring(index + 1), value);
+                SetValueOfNestedProperty(accessor, propertyName.Substring(index + 1), value);
             }
         }
 
@@ -36,21 +37,31 @@ namespace FastMember
         /// <returns> The value of nested property. </returns>
         public static object GetValueOfNestedProperty (this ObjectAccessor accessor, string propertyName)
         {
-            var index = propertyName.IndexOf('.');
+            int index = propertyName.IndexOf('.');
+
+            Console.WriteLine(index);
 
             if (index == -1)
-            {
-                var targetType = Expression.Parameter(accessor.Target.GetType());
-                var property = Expression.Property(targetType, propertyName);
-
                 return accessor[propertyName];
-            }
-            else
-            {
-                accessor = ObjectAccessor.Create(accessor[propertyName.Substring(0, index)]);
-                return GetValueOfNestedProperty(accessor, propertyName.Substring(index + 1));
-            }
+
+
+            int indexNextDot = propertyName.IndexOf('.', index + 1);
+            if (indexNextDot == -1)
+                indexNextDot = propertyName.Length;
+
+            string newPropertyName = propertyName.Substring(index + 1, indexNextDot - index -1);
+
+            Console.WriteLine();
+            Console.WriteLine(propertyName);
+            Console.Write(propertyName.Substring(0, index) +"    ");
+            Console.WriteLine(newPropertyName);
+
+            var newAccessor = ObjectAccessor.Create(accessor[propertyName.Substring(0, index)]);
+            // 
+            return GetValueOfNestedProperty(newAccessor, newPropertyName);
         }
+
+        
 
         private static object GetDefault(Type type)
         {
