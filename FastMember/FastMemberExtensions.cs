@@ -31,37 +31,50 @@ namespace FastMember
             }
         }
 
+
+
         /// <summary> An ObjectAccessor extension method that gets value of nested property. Maybe. </summary>
         /// <param name="accessor">     The accessor to act on. </param>
         /// <param name="propertyName"> Name of the property. </param>
         /// <returns> The value of nested property. </returns>
         public static object GetValueOfNestedProperty (this ObjectAccessor accessor, string propertyName)
         {
-            int index = propertyName.IndexOf('.');
+            int dot = propertyName.IndexOf('.');
 
-            Console.WriteLine(index);
+                                                                    Console.WriteLine();
+                                                                    Console.WriteLine(dot);
+                                                                    Console.WriteLine("whole property name: "+ propertyName);
+            
 
-            if (index == -1)
+            if (dot == -1)
                 return accessor[propertyName];
 
 
-            int indexNextDot = propertyName.IndexOf('.', index + 1);
+            int indexNextDot = propertyName.IndexOf('.', dot + 1);
             if (indexNextDot == -1)
-                indexNextDot = propertyName.Length;
+                indexNextDot = propertyName.Length ;
 
-            string newPropertyName = propertyName.Substring(index + 1, indexNextDot - index -1);
+                                                                    Console.WriteLine("start next Prop: " + (dot +1));
+                                                                    Console.WriteLine("Next dot: " +indexNextDot);
+                                                                    Console.WriteLine("Length dot: " + (indexNextDot - dot));
 
-            Console.WriteLine();
-            Console.WriteLine(propertyName);
-            Console.Write(propertyName.Substring(0, index) +"    ");
-            Console.WriteLine(newPropertyName);
+            string thisLevelPropertyName = propertyName.Substring(0, dot);
+            string nextLevelNestedPropertyName = propertyName.Substring(dot + 1, indexNextDot - dot -1);
 
-            var newAccessor = ObjectAccessor.Create(accessor[propertyName.Substring(0, index)]);
-            // 
-            return GetValueOfNestedProperty(newAccessor, newPropertyName);
+                                                                    Console.WriteLine("this level property name: **" + thisLevelPropertyName+"**");
+                                                                    Console.WriteLine("next level nested property name: **" + nextLevelNestedPropertyName+"**");
+
+            object nestedProperty = accessor[thisLevelPropertyName];
+
+                                                                    Console.WriteLine("nested property type: "+  (nestedProperty?.GetType().Name ?? "null"));
+
+
+            var nestedAccessor = ObjectAccessor.Create(nestedProperty); 
+
+            return GetValueOfNestedProperty(nestedAccessor, nextLevelNestedPropertyName);
         }
 
-        
+
 
         private static object GetDefault(Type type)
         {
