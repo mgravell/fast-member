@@ -110,7 +110,7 @@ namespace FastMemberTests
             Assert.IsNotNull(nesterAccessor.GetValueOfNestedProperty("NestedNestedPropsOnClass.PropsOnClass"));
             Assert.IsNotNull(nesterAccessor.GetValueOfNestedProperty("NestedNestedPropsOnClass.PropsOnClass.A"));
 
-            // Assert.AreEqual(123  , nesterAccessor.GetValueOfNestedProperty("NestedNestedPropsOnClass.PropsOnClass.A"));
+            Assert.AreEqual(911  , nesterAccessor.GetValueOfNestedProperty("NestedNestedPropsOnClass.PropsOnClass.A"));
             Assert.AreEqual("abc", nesterAccessor.GetValueOfNestedProperty("NestedNestedPropsOnClass.PropsOnClass.B"));
             Assert.AreEqual(now  , nesterAccessor.GetValueOfNestedProperty("NestedNestedPropsOnClass.PropsOnClass.C"));
             Assert.AreEqual(null , nesterAccessor.GetValueOfNestedProperty("NestedNestedPropsOnClass.PropsOnClass.D"));
