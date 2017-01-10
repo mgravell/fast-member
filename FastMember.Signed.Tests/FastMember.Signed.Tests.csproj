@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
-
   <PropertyGroup>
     <TargetFramework>netcoreapp1.0</TargetFramework>
     <DefineConstants>$(DefineConstants);COREFX</DefineConstants>
@@ -11,18 +10,15 @@
     <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
     <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netcoreapp1.0' ">$(PackageTargetFallback);portable-net45+win8</PackageTargetFallback>
   </PropertyGroup>
-
   <ItemGroup>
     <Compile Include="**\*.cs" Exclude="Properties;project.*.json;bin\**;obj\**;**\*.xproj;packages\**" />
     <Compile Include="..\FastMember.Tests\*.cs" Exclude="Properties;project.*.json;bin\**;obj\**;**\*.xproj;packages\**" />
     <EmbeddedResource Include="**\*.resx" />
     <EmbeddedResource Include="compiler\resources\**\*" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\FastMember.Signed\FastMember.Signed.csproj" />
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk">
       <Version>15.0.0-preview-20161024-02</Version>
@@ -43,15 +39,16 @@
       <Version>4.3.0</Version>
     </PackageReference>
   </ItemGroup>
-
   <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp1.0' ">
     <PackageReference Include="Microsoft.NETCore.App">
       <Version>1.0.0-*</Version>
     </PackageReference>
   </ItemGroup>
-
+  <PropertyGroup Label="Configuration">
+    <NoWarn>1701;1702;1705;1591</NoWarn>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <DefineConstants>$(DefineConstants);RELEASE</DefineConstants>
   </PropertyGroup>
-
 </Project>
