@@ -1,0 +1,66 @@
+﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
+  <PropertyGroup>
+    <Description>In .NET reflection is slow... well, kinda slow. If you need access to the members of an arbitrary type, with the type and member-names known only at runtime - then it is frankly hard (especially for DLR types). This library makes such access easy and fast.</Description>
+    <Copyright>Copyright � Marc Gravell 2012-2016</Copyright>
+    <AssemblyTitle>FastMember.Signed</AssemblyTitle>
+    <VersionPrefix>1.1.0.1</VersionPrefix>
+    <Authors>Marc Gravell</Authors>
+    <TargetFramework>netstandard1.5</TargetFramework>
+    <DefineConstants>$(DefineConstants);COREFX</DefineConstants>
+    <AssemblyName>FastMember.Signed</AssemblyName>
+    <AssemblyOriginatorKeyFile>../FastMember.snk</AssemblyOriginatorKeyFile>
+    <SignAssembly>true</SignAssembly>
+    <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
+    <PackageTags>Reflection;Dynamic;Member;Access</PackageTags>
+    <PackageReleaseNotes>core-clr support (rtm)</PackageReleaseNotes>
+    <PackageProjectUrl>https://github.com/mgravell/fast-member</PackageProjectUrl>
+    <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/mgravell/fast-member</RepositoryUrl>
+    <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netstandard1.6' ">$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="**\*.cs" Exclude="Properties;project.*.json;bin\**;obj\**;**\*.xproj;packages\**" />
+    <Compile Include="..\FastMember\*.cs" Exclude="Properties;project.*.json;bin\**;obj\**;**\*.xproj;packages\**" />
+    <EmbeddedResource Include="**\*.resx" />
+    <EmbeddedResource Include="compiler\resources\**\*" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CSharp">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="NETStandard.Library">
+      <Version>1.6.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Collections.NonGeneric">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Data.Common">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Reflection">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Reflection.Emit">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Reflection.Emit.ILGeneration">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Reflection.Emit.Lightweight">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Reflection.TypeExtensions">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Runtime">
+      <Version>4.3.0</Version>
+    </PackageReference>
+  </ItemGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DefineConstants>$(DefineConstants);RELEASE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputType>library</OutputType>
+  </PropertyGroup>
+</Project>
