@@ -5,6 +5,8 @@
     <AssemblyTitle>FastMember.Signed</AssemblyTitle>
     <VersionPrefix>1.1.0.1</VersionPrefix>
     <Authors>Marc Gravell</Authors>
+    <OutputType>library</OutputType>
+    <OutputPath>bin\$(Configuration)\</OutputPath>
     <TargetFramework>netstandard1.5</TargetFramework>
     <DefineConstants>$(DefineConstants);COREFX</DefineConstants>
     <AssemblyName>FastMember.Signed</AssemblyName>
@@ -59,8 +61,5 @@
   </ItemGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <DefineConstants>$(DefineConstants);RELEASE</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputType>library</OutputType>
   </PropertyGroup>
 </Project>

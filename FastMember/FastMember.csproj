@@ -7,6 +7,8 @@
     <Authors>Marc Gravell</Authors>
     <TargetFramework>netstandard1.5</TargetFramework>
     <DefineConstants>$(DefineConstants);COREFX</DefineConstants>
+    <OutputType>library</OutputType>
+    <OutputPath>bin\$(Configuration)\</OutputPath>
     <AssemblyName>FastMember</AssemblyName>
     <PackageTags>Reflection;Dynamic;Member;Access</PackageTags>
     <PackageReleaseNotes>core-clr support (rtm)</PackageReleaseNotes>
