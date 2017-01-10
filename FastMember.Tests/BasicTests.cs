@@ -2,6 +2,7 @@
 using NUnit.Framework;
 using System.Data;
 using FastMember;
+using System.Linq;
 
 namespace FastMemberTests
 {
@@ -426,5 +427,23 @@ namespace FastMemberTests
 
         }
 #endif
+
+        public class HazStaticProperty
+        {
+            public int Foo { get; set; }
+            public static int Bar { get; set; }
+
+            public int Foo2 => 2;
+            public static int Bar2 => 4;
+        }
+
+        [Test]
+        public void IgnoresStaticProperty()
+        {
+            var obj = new HazStaticProperty();
+            var acc = TypeAccessor.Create(typeof(HazStaticProperty));
+            var memberNames = string.Join(",", acc.GetMembers().Select(x => x.Name).OrderBy(_ => _));
+            Assert.AreEqual("Foo,Foo2", memberNames);
+        }
     }
 }

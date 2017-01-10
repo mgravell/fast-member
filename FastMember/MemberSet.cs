@@ -15,13 +15,14 @@ namespace FastMember
         Member[] members;
         internal MemberSet(Type type)
         {
+            const BindingFlags PublicInstance = BindingFlags.Public | BindingFlags.Instance;
 #if NET20
-            List<MemberInfo> properties = new List<MemberInfo>(type.GetProperties());
-            properties.AddRange(new List<MemberInfo>(type.GetFields()));
+            List<MemberInfo> properties = new List<MemberInfo>(type.GetProperties(PublicInstance));
+            properties.AddRange(new List<MemberInfo>(type.GetFields(PublicInstance)));
             properties.Sort((p1, p2) => p1.Name.CompareTo(p2.Name));
             members = properties.ConvertAll<Member>(mi => new Member(mi)).ToArray();
 #else
-            members = type.GetProperties().Cast<MemberInfo>().Concat(type.GetFields().Cast<MemberInfo>()).OrderBy(x => x.Name)
+            members = type.GetProperties(PublicInstance).Cast<MemberInfo>().Concat(type.GetFields(PublicInstance).Cast<MemberInfo>()).OrderBy(x => x.Name)
                 .Select(member => new Member(member)).ToArray();
 #endif
         }
