@@ -1,31 +1,38 @@
 {
-  "dependencies": {
-    "FastMember.Signed": {
+   "dependencies": {
+      "FastMember.Signed": {
       "target": "project"
     },
-    "NUnit": "3.4.1",
-    "dotnet-test-nunit": "3.4.0-beta-2",
-    "BenchmarkDotNet": "0.9.9"
-  },
-  "buildOptions": {
-    "keyFile": "../FastMember.snk"
-  },
-  "testRunner": "nunit",
-  "frameworks": {
-    "net451": {
-      "buildOptions": { "define": [ "XUNIT" ] },
-      "frameworkAssemblies": {
-        "System.Data": "4.0.0.0"
-      }
+        "dotnet-test-nunit": "3.4.0-beta-3",
+        "NETStandard.Library": "1.6.0",
+        "NUnit": "3.5.0",
+    "BenchmarkDotNet": "0.9.9",
+    "System.ComponentModel.TypeConverter": "4.3.0"
     },
-    "netcoreapp1.0": {
-      "imports": "portable-net45+win8",
-      "dependencies": {
-        "Microsoft.NETCore.App": {
-          "version": "1.0.0-*",
-          "type": "platform"
+
+  "testRunner": "nunit",
+
+    "frameworks": {
+        "netcoreapp1.0": {
+            "imports": "portable-net45+win8",
+            "dependencies": {
+                "Microsoft.NETCore.App": {
+                    "version": "1.0.0-*",
+                    "type": "platform"
+                }
+            }
         }
-      }
+    },
+
+    "buildOptions": {
+        "emitEntryPoint": true,
+        "keyFile": "../FastMember.snk",
+        "define": [ "COREFX" ],
+        "compile": {
+            "include": [ "../FastMember.Tests/*.cs" ],
+            "excludeFiles": [],
+            "exclude": [ "Properties", "project.*.json" ]
+        },
+        "xmlDoc": true
     }
-  }
 }

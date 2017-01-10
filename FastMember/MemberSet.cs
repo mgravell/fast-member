@@ -107,7 +107,7 @@ namespace FastMember
         /// </summary>
         public bool IsDefined(Type attributeType)
         {
-            if (attributeType == null) throw new ArgumentNullException("attributeType");
+            if (attributeType == null) throw new ArgumentNullException(nameof(attributeType));
 #if COREFX
             foreach(var attrib in member.CustomAttributes)
             {
@@ -122,15 +122,19 @@ namespace FastMember
         /// <summary>
         /// Getting Attribute Type
         /// </summary>
-        public Attribute GetAttribute(Type attributeType, bool Inhirit)
+        public Attribute GetAttribute(Type attributeType, bool inherit)
         {
-            return Attribute.GetCustomAttribute(member, attributeType, Inhirit);
-        }
+#if COREFX
+	        return attributeType.GetTypeInfo().GetCustomAttribute(attributeType, inherit);
+#else
+			return Attribute.GetCustomAttribute(member, attributeType, inherit);
+#endif
+		}
 
-        /// <summary>
-        /// Property Can Write
-        /// </summary>
-        public bool CanWrite
+		/// <summary>
+		/// Property Can Write
+		/// </summary>
+		public bool CanWrite
         {
             get
             {

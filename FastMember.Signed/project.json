@@ -1,60 +1,44 @@
 {
-  "packOptions": {
-    "tags": [ "Reflection", "Dynamic", "Member", "Access" ],
-    "owners": [ "marc.gravell" ],
-    "releaseNotes": "core-clr support (rtm)",
-    "projectUrl": "https://github.com/mgravell/fast-member",
-    "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0",
-    "repository": {
-      "type": "git",
-      "url": "https://github.com/mgravell/fast-member"
-    }
-  },
-  "version": "1.1.0",
-  "authors": [ "Marc Gravell" ],
-  "description": "In .NET reflection is slow... well, kinda slow. If you need access to the members of an arbitrary type, with the type and member-names known only at runtime - then it is frankly hard (especially for DLR types). This library makes such access easy and fast.",
-  "title": "FastMember.Signed",
-  "copyright": "Copyright © Marc Gravell 2012-2016",
-  "dependencies": {
-  },
-  "buildOptions": {
-    "keyFile": "../FastMember.snk",
-    "compile": {
-      "include": [ "../FastMember/**/*.cs" ]
-    }
-  },
-  "frameworks": {
-    "net35": {
-      "frameworkAssemblies": {
-        "System.Data": "2.0.0.0"
-      },
-      "buildOptions": {
-        "define": [ "NO_DYNAMIC" ]
-      }
+    "packOptions": {
+        "tags": [ "Reflection", "Dynamic", "Member", "Access" ],
+        "owners": [ "marc.gravell" ],
+        "releaseNotes": "core-clr support (rtm)",
+        "projectUrl": "https://github.com/mgravell/fast-member",
+        "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0",
+        "repository": {
+            "type": "git",
+            "url": "https://github.com/mgravell/fast-member"
+        }
     },
-    "net40": {
-      "frameworkAssemblies": {
-        "System.Data": "4.0.0.0"
-      }
+    "version": "1.1.0.1",
+    "authors": [ "Marc Gravell" ],
+    "description": "In .NET reflection is slow... well, kinda slow. If you need access to the members of an arbitrary type, with the type and member-names known only at runtime - then it is frankly hard (especially for DLR types). This library makes such access easy and fast.",
+    "title": "FastMember.Signed",
+    "copyright": "Copyright � Marc Gravell 2012-2016",
+    "dependencies": {
+        "Microsoft.CSharp": "4.3.0",
+        "NETStandard.Library": "1.6.0",
+        "System.Collections.NonGeneric": "4.3.0",
+        "System.Data.Common": "4.3.0",
+        "System.Reflection": "4.3.0",
+        "System.Reflection.Emit": "4.3.0",
+        "System.Reflection.Emit.ILGeneration": "4.3.0",
+        "System.Reflection.Emit.Lightweight": "4.3.0",
+        "System.Reflection.TypeExtensions": "4.3.0",
+        "System.Runtime": "4.3.0"
     },
-    "netstandard1.3": {
-      "buildOptions": {
-        "define": [ "COREFX" ]
-      },
-      "dependencies": {
-        "Microsoft.CSharp": "4.0.1",
-        "System.Collections.NonGeneric": "4.0.1",
-        "System.Data.Common": "4.1.0",
-        "System.Data.SqlClient": "4.1.0",
-        "System.Linq": "4.1.0",
-        "System.Reflection": "4.1.0",
-        "System.Reflection.Emit": "4.0.1",
-        "System.Reflection.Emit.ILGeneration": "4.0.1",
-        "System.Reflection.Emit.Lightweight": "4.0.1",
-        "System.Reflection.TypeExtensions": "4.1.0",
-        "System.Runtime": "4.1.0",
-        "System.Threading": "4.0.11"
-      }
+    "frameworks": {
+        "netstandard1.6": {
+            "imports": "dnxcore50"
+        }
+    },
+    "buildOptions": {
+        "keyFile": "../FastMember.snk",
+        "define": [ "COREFX" ],
+        "compile": {
+            "exclude": [ "Properties", "project.*.json" ],
+            "include": [ "../FastMember/*.cs" ],
+            "excludeFiles": [ ]
+        }
     }
-  }
 }

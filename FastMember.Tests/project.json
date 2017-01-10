@@ -1,29 +1,36 @@
 {
-  "dependencies": {
-    "FastMember": {
+   "dependencies": {
+       "FastMember": {
       "target": "project"
     },
-    "NUnit": "3.4.1",
-    "dotnet-test-nunit": "3.4.0-beta-2",
-    "BenchmarkDotNet": "0.9.9"
-  },
-  "testRunner": "nunit",
-  "frameworks": {
-    "net451": {
-      "frameworkAssemblies": {
-        "System.Data": "4.0.0.0"
-      }
+        "dotnet-test-nunit": "3.4.0-beta-3",
+        "NETStandard.Library": "1.6.0",
+        "NUnit": "3.5.0",
+    "BenchmarkDotNet": "0.9.9",
+    "System.ComponentModel.TypeConverter": "4.3.0"
     },
-    "netcoreapp1.0": {
-      "buildOptions": { "define": [ "COREFX" ] },
-      "imports": "portable-net45+win8",
-      "dependencies": {
-        "Microsoft.NETCore.App": {
-          "version": "1.0.0-*",
-          "type": "platform"
+
+  "testRunner": "nunit",
+
+    "frameworks": {
+        "netcoreapp1.0": {
+            "imports": "portable-net45+win8",
+            "dependencies": {
+                "Microsoft.NETCore.App": {
+                    "version": "1.0.0-*",
+                    "type": "platform"
+                }
+            }
+        }
+    },
+
+    "buildOptions": {
+        "emitEntryPoint": true,
+        "define": [ "COREFX" ],
+        "compile": {
+            "excludeFiles": [],
+            "exclude": [ "Properties", "project.*.json" ]
         },
-        "System.ComponentModel.TypeConverter": "4.1.0"
-      }
+        "xmlDoc": true
     }
-  }
 }
