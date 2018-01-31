@@ -7,11 +7,7 @@ namespace FastMember
 
     internal static class TypeHelpers
     {
-#if COREFX
-        public static readonly Type[] EmptyTypes = new Type[0];
-#else
         public static readonly Type[] EmptyTypes = Type.EmptyTypes;
-#endif
 
         public static bool _IsValueType(Type type)
         {

@@ -94,19 +94,9 @@ namespace FastMember
         private static ModuleBuilder module;
         private static int counter;
 
-#if COREFX
-        private static readonly object counterLock = new object();
-#endif
         private static int GetNextCounterValue()
         {
-#if COREFX
-            lock(counterLock)
-            {
-                return counter++;
-            }
-#else
             return Interlocked.Increment(ref counter);
-#endif
         }
 
         static readonly MethodInfo tryGetValue = typeof(Dictionary<string, int>).GetMethod("TryGetValue");

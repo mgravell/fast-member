@@ -40,6 +40,9 @@
       <Version>1.1.0</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
+  </ItemGroup>
   <PropertyGroup Label="Configuration">
     <NoWarn>1701;1702;1705;1591</NoWarn>
   </PropertyGroup>

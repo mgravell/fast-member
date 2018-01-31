@@ -3,9 +3,9 @@
     <Description>In .NET reflection is slow... well, kinda slow. If you need access to the members of an arbitrary type, with the type and member-names known only at runtime - then it is frankly hard (especially for DLR types). This library makes such access easy and fast.</Description>
     <Copyright>Copyright © Marc Gravell 2012-2016</Copyright>
     <!--<AssemblyTitle>FastMember</AssemblyTitle>-->
-    <VersionPrefix>1.1.0</VersionPrefix>
+    <VersionPrefix>1.2.0</VersionPrefix>
     <Authors>Marc Gravell</Authors>
-    <TargetFrameworks>net45;netstandard1.5</TargetFrameworks>
+    <TargetFrameworks>net40;net45;netstandard1.5;netstandard2.0</TargetFrameworks>
     <!--<RuntimeIdentifiers>win7-x64;win7-x86;osx.10.10-x64;osx.10.11-x64;ubuntu.14.04-x64;ubuntu.16.04-x64;centos.7-x64;rhel.7.2-x64;debian.8-x64;fedora.23-x64;opensuse.13.2-x64</RuntimeIdentifiers>-->
     <AssemblyName>FastMember</AssemblyName>
     <PackageTags>Reflection;Dynamic;Member;Access</PackageTags>
@@ -39,17 +39,25 @@
     <EmbeddedResource Include="**\*.resx" />
     <EmbeddedResource Include="compiler\resources\**\*" />
   </ItemGroup>-->
-  <ItemGroup>
-    <PackageReference Include="NETStandard.Library">
-      <Version>1.6.1</Version>
-    </PackageReference>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net40' ">
+    <Reference Include="System.Data" />
+    <Reference Include="System" />
+    <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
     <Reference Include="System.Data" />
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard1.5'">
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard1.5'">
+    <AddCoreFxLibs>true</AddCoreFxLibs>
+    <DefineConstants>$(DefineConstants);COREFX;NO_SCHEMA_TABLE;NO_DB_ENUMERATOR</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <AddCoreFxLibs>true</AddCoreFxLibs>
+    <DefineConstants>$(DefineConstants);COREFX</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(AddCoreFxLibs)' == 'true'">
     <PackageReference Include="Microsoft.CSharp">
       <Version>4.3.0</Version>
     </PackageReference>
