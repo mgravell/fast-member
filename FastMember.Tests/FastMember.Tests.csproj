@@ -8,7 +8,6 @@
     <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netcoreapp1.0' ">$(PackageTargetFallback);portable-net45+win8</PackageTargetFallback>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="**\*.cs" Exclude="Properties\**\*;project.*.json;bin\**;obj\**;**\*.xproj;packages\**" />
     <EmbeddedResource Include="**\*.resx" />
     <EmbeddedResource Include="compiler\resources\**\*" />
   </ItemGroup>
@@ -29,7 +28,7 @@
       <Version>3.6.0</Version>
     </PackageReference>
     <PackageReference Include="BenchmarkDotNet">
-      <Version>0.9.9</Version>
+      <Version>0.10.13</Version>
     </PackageReference>
     <PackageReference Include="System.ComponentModel.TypeConverter">
       <Version>4.3.0</Version>
