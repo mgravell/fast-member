@@ -22,6 +22,19 @@ namespace FastMemberTests
             Assert.AreEqual("abc", access[obj, "B"]);
             Assert.AreEqual(now, access[obj, "C"]);
             Assert.AreEqual(null, access[obj, "D"]);
+
+            object value;
+
+            Assert.IsTrue(access.TryGetValue(obj, "A", out value));
+            Assert.AreEqual(value, 123);
+            Assert.IsTrue(access.TryGetValue(obj, "B", out value));
+            Assert.AreEqual(value, "abc");
+            Assert.IsTrue(access.TryGetValue(obj, "C", out value));
+            Assert.AreEqual(value, now);
+            Assert.IsTrue(access.TryGetValue(obj, "D", out value));
+            Assert.AreEqual(value, null);
+
+            Assert.IsFalse(access.TryGetValue(obj, "XXX", out value));
         }
 
         [Test]
@@ -70,6 +83,19 @@ namespace FastMemberTests
             Assert.AreEqual("abc", wrapper["B"]);
             Assert.AreEqual(now, wrapper["C"]);
             Assert.AreEqual(null, wrapper["D"]);
+
+            object value;
+
+            Assert.IsTrue(wrapper.TryGetValue("A", out value));
+            Assert.AreEqual(value, 123);
+            Assert.IsTrue(wrapper.TryGetValue("B", out value));
+            Assert.AreEqual(value, "abc");
+            Assert.IsTrue(wrapper.TryGetValue("C", out value));
+            Assert.AreEqual(value, now);
+            Assert.IsTrue(wrapper.TryGetValue("D", out value));
+            Assert.AreEqual(value, null);
+
+            Assert.IsFalse(wrapper.TryGetValue("XXX", out value));
         }
 
         [Test]
