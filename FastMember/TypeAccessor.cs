@@ -82,6 +82,10 @@ namespace FastMember
         {
             public static readonly DynamicAccessor Singleton = new DynamicAccessor();
             private DynamicAccessor() { }
+            public override bool TryGetValue(object target, string name, out object value)
+            {
+                throw new NotSupportedException();
+            }
             public override object this[object target, string name]
             {
                 get { return CallSiteCache.GetValue(name, target); }
@@ -235,6 +239,17 @@ namespace FastMember
             public override object CreateNew()
             {
                 return ctor != null ? ctor() : base.CreateNew();
+            }
+            public override bool TryGetValue(object target, string name, out object value)
+            {
+                int index;
+                if (map.TryGetValue(name, out index))
+                {
+                    value = getter(index, target);
+                    return true;
+                }
+                value = null;
+                return false;
             }
             public override object this[object target, string name]
             {
@@ -409,6 +424,11 @@ namespace FastMember
                 il.Emit(OpCodes.Castclass, type);
             }
         }
+
+        /// <summary>
+        /// Get the value of a named member on the target instance
+        /// </summary>
+        public abstract bool TryGetValue(object target, string name, out object value);
 
         /// <summary>
         /// Get or set the value of a named member on the target instance

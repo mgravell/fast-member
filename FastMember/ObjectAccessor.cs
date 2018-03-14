@@ -12,6 +12,10 @@ namespace FastMember
     public abstract class ObjectAccessor
     {
         /// <summary>
+        /// Try Get the value of a named member for the underlying object
+        /// </summary>
+        public abstract bool TryGetValue(string name, out object value);
+        /// <summary>
         /// Get or Set the value of a named member for the underlying object
         /// </summary>
         public abstract object this[string name] { get; set; }
@@ -69,6 +73,10 @@ namespace FastMember
                 this.target = target;
                 this.accessor = accessor;
             }
+            public override bool TryGetValue(string name, out object value)
+            {
+                return accessor.TryGetValue(target, name, out value);
+            }
             public override object this[string name]
             {
                 get { return accessor[target, name]; }
@@ -90,6 +98,10 @@ namespace FastMember
             public DynamicWrapper(IDynamicMetaObjectProvider target)
             {
                 this.target = target;
+            }
+            public override bool TryGetValue(string name, out object value)
+            {
+                throw new NotSupportedException();
             }
             public override object this[string name]
             {
