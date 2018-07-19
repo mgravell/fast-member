@@ -49,7 +49,7 @@ namespace FastMemberTests
 				Console.WriteLine();
             }
 
-            [Setup]
+            [GlobalSetup]
             public void Setup()
             {
                 obj = new FastMemberPerformance();

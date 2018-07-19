@@ -1,19 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
-  <!--
-  <ItemGroup>
-    <Compile Include="**\*.cs" Exclude="Properties;project.*.json;bin\**;obj\**;**\*.xproj;packages\**" />
-    <Compile Include="..\FastMember\*.cs" Exclude="Properties;project.*.json;bin\**;obj\**;**\*.xproj;packages\**" />
-    <EmbeddedResource Include="**\*.resx" />
-    <EmbeddedResource Include="compiler\resources\**\*" />
-  </ItemGroup>
--->
+﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
   <PropertyGroup>
     <Description>In .NET reflection is slow... well, kinda slow. If you need access to the members of an arbitrary type, with the type and member-names known only at runtime - then it is frankly hard (especially for DLR types). This library makes such access easy and fast.</Description>
     <Copyright>Copyright © Marc Gravell 2012-2016</Copyright>
     <AssemblyTitle>FastMember</AssemblyTitle>
     <Version>1.3.0</Version>
     <Authors>Marc Gravell</Authors>
-    <TargetFrameworks>net40;net45;netstandard1.5;netstandard2.0;netcoreapp2.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <AssemblyName>FastMember</AssemblyName>
     <PackageTags>Reflection;Dynamic;Member;Access</PackageTags>
     <PackageReleaseNotes>core-clr support (rtm)</PackageReleaseNotes>
@@ -26,30 +18,18 @@
     <EmbeddedResource Include="**\*.resx" />
     <EmbeddedResource Include="compiler\resources\**\*" />
   </ItemGroup>
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net40' ">
-    <Reference Include="System.Data" />
-    <Reference Include="System" />
-    <Reference Include="Microsoft.CSharp" />
-  </ItemGroup>
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
-    <Reference Include="System.Data" />
-    <Reference Include="System" />
-    <Reference Include="Microsoft.CSharp" />
-  </ItemGroup>
-  <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard1.5'">
-    <AddStandardFxLibs>true</AddStandardFxLibs>
-    <DefineConstants>$(DefineConstants);COREFX;NO_SCHEMA_TABLE;NO_DB_ENUMERATOR</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <AddStandardFxLibs>true</AddStandardFxLibs>
+  <PropertyGroup>
     <DefineConstants>$(DefineConstants);COREFX</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp2.0'">
-    <AddCoreFxLibs>true</AddCoreFxLibs>
-    <DefineConstants>$(DefineConstants);COREFX</DefineConstants>
-  </PropertyGroup>
-  <ItemGroup Condition="'$(AddStandardFxLibs)' == 'true'">
-    <PackageReference Include="Microsoft.CSharp">
+  <ItemGroup>
+    <PackageReference Include="System.Data.Common" Version="4.3.0" />
+    <PackageReference Include="System.Reflection" Version="4.3.0" />
+    <PackageReference Include="System.Reflection.Emit" Version="4.3.0" />
+    <PackageReference Include="System.Reflection.Emit.ILGeneration" Version="4.3.0" />
+    <PackageReference Include="System.Reflection.Emit.Lightweight" Version="4.3.0" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.3.0" />
+  </ItemGroup>
+    <!--<PackageReference Include="Microsoft.CSharp">
       <Version>4.3.0</Version>
     </PackageReference>
     <PackageReference Include="System.Collections.NonGeneric">
@@ -64,18 +44,8 @@
     <PackageReference Include="System.Linq">
       <Version>4.3.0</Version>
     </PackageReference>
-    <PackageReference Include="System.Reflection">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Reflection.Emit">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Reflection.Emit.ILGeneration">
-      <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Reflection.Emit.Lightweight">
-      <Version>4.3.0</Version>
-    </PackageReference>
+
+   
     <PackageReference Include="System.Reflection.TypeExtensions">
       <Version>4.3.0</Version>
     </PackageReference>
@@ -84,15 +54,5 @@
     </PackageReference>
     <PackageReference Include="System.Threading">
       <Version>4.3.0</Version>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'net35' ">
-    <DefineConstants>$(DefineConstants);NO_DYNAMIC</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <DefineConstants>$(DefineConstants);RELEASE</DefineConstants>
-  </PropertyGroup>
+    </PackageReference>-->
 </Project>

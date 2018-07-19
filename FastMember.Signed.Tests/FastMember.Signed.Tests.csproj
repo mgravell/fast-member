@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
   <PropertyGroup>
-    <TargetFramework>netcoreapp1.1</TargetFramework>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
     <DefineConstants>$(DefineConstants);COREFX</DefineConstants>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <AssemblyName>FastMember.Signed.Tests</AssemblyName>
@@ -8,7 +8,8 @@
     <AssemblyOriginatorKeyFile>../FastMember.snk</AssemblyOriginatorKeyFile>
     <SignAssembly>true</SignAssembly>
     <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
-    <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netcoreapp1.0' ">$(PackageTargetFallback);portable-net45+win8</PackageTargetFallback>
+    
+    <xUnitVersion>2.4.0-beta.2.build3981</xUnitVersion>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="**\*.cs" Exclude="Properties;project.*.json;bin\**;obj\**;**\*.xproj;packages\**" />
@@ -18,40 +19,14 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FastMember.Signed\FastMember.Signed.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk">
-      <Version>15.0.0-preview-20161024-02</Version>
-    </PackageReference>
-    <PackageReference Include="dotnet-test-nunit">
-      <Version>3.4.0-beta-3</Version>
-    </PackageReference>
-    <PackageReference Include="NETStandard.Library">
-      <Version>1.6.1</Version>
-    </PackageReference>
-    <PackageReference Include="NUnit">
-      <Version>3.6.0</Version>
-    </PackageReference>
-    <PackageReference Include="BenchmarkDotNet">
-      <Version>0.10.13</Version>
-    </PackageReference>
-    <PackageReference Include="System.ComponentModel.TypeConverter">
-      <Version>4.3.0</Version>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp1.0' ">
-    <PackageReference Include="Microsoft.NETCore.App">
-      <Version>1.0.0-*</Version>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.2" />
+    <PackageReference Include="xunit" Version="$(xUnitVersion)" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="$(xUnitVersion)" />
+    <DotNetCliToolReference Include="dotnet-xunit" Version="$(xUnitVersion)" />
   </ItemGroup>
   <PropertyGroup Label="Configuration">
     <NoWarn>1701;1702;1705;1591</NoWarn>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <DefineConstants>$(DefineConstants);RELEASE</DefineConstants>
   </PropertyGroup>
 </Project>

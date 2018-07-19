@@ -1,15 +1,13 @@
-﻿using System;
-using NUnit.Framework;
-using System.Data;
-using FastMember;
+﻿using FastMember;
+using System;
 using System.Linq;
+using Xunit;
 
 namespace FastMemberTests
 {
-    [TestFixture]
     public class BasicTests
     {
-        [Test]
+        [Fact]
         public void BasicReadTest_PropsOnClass()
         {
             var now = DateTime.Now;
@@ -18,13 +16,13 @@ namespace FastMemberTests
 
             var access = TypeAccessor.Create(typeof(PropsOnClass));
 
-            Assert.AreEqual(123, access[obj, "A"]);
-            Assert.AreEqual("abc", access[obj, "B"]);
-            Assert.AreEqual(now, access[obj, "C"]);
-            Assert.AreEqual(null, access[obj, "D"]);
+            Assert.Equal(123, access[obj, "A"]);
+            Assert.Equal("abc", access[obj, "B"]);
+            Assert.Equal(now, access[obj, "C"]);
+            Assert.Null(access[obj, "D"]);
         }
 
-        [Test]
+        [Fact]
         public void BasicWriteTest_PropsOnClass()
         {
             var now = DateTime.Now;
@@ -38,26 +36,26 @@ namespace FastMemberTests
             access[obj, "C"] = now;
             access[obj, "D"] = null;
 
-            Assert.AreEqual(123, obj.A);
-            Assert.AreEqual("abc", obj.B);
-            Assert.AreEqual(now, obj.C);
-            Assert.AreEqual(null, obj.D);
+            Assert.Equal(123, obj.A);
+            Assert.Equal("abc", obj.B);
+            Assert.Equal(now, obj.C);
+            Assert.Null(obj.D);
         }
 
-        [Test]
+        [Fact]
         public void Getmembers()
         {
             var access = TypeAccessor.Create(typeof(PropsOnClass));
-            Assert.IsTrue(access.GetMembersSupported);
+            Assert.True(access.GetMembersSupported);
             var members = access.GetMembers();
-            Assert.AreEqual(4, members.Count);
-            Assert.AreEqual("A", members[0].Name);
-            Assert.AreEqual("B", members[1].Name);
-            Assert.AreEqual("C", members[2].Name);
-            Assert.AreEqual("D", members[3].Name);
+            Assert.Equal(4, members.Count);
+            Assert.Equal("A", members[0].Name);
+            Assert.Equal("B", members[1].Name);
+            Assert.Equal("C", members[2].Name);
+            Assert.Equal("D", members[3].Name);
         }
 
-        [Test]
+        [Fact]
         public void BasicReadTest_PropsOnClass_ViaWrapper()
         {
             var now = DateTime.Now;
@@ -66,13 +64,13 @@ namespace FastMemberTests
 
             var wrapper = ObjectAccessor.Create(obj);
 
-            Assert.AreEqual(123, wrapper["A"]);
-            Assert.AreEqual("abc", wrapper["B"]);
-            Assert.AreEqual(now, wrapper["C"]);
-            Assert.AreEqual(null, wrapper["D"]);
+            Assert.Equal(123, wrapper["A"]);
+            Assert.Equal("abc", wrapper["B"]);
+            Assert.Equal(now, wrapper["C"]);
+            Assert.Null(wrapper["D"]);
         }
 
-        [Test]
+        [Fact]
         public void BasicWriteTest_PropsOnClass_ViaWrapper()
         {
             var now = DateTime.Now;
@@ -86,13 +84,13 @@ namespace FastMemberTests
             wrapper["C"] = now;
             wrapper["D"] = null;
 
-            Assert.AreEqual(123, obj.A);
-            Assert.AreEqual("abc", obj.B);
-            Assert.AreEqual(now, obj.C);
-            Assert.AreEqual(null, obj.D);
+            Assert.Equal(123, obj.A);
+            Assert.Equal("abc", obj.B);
+            Assert.Equal(now, obj.C);
+            Assert.Null(obj.D);
         }
 
-        [Test]
+        [Fact]
         public void BasicReadTest_FieldsOnClass()
         {
             var now = DateTime.Now;
@@ -101,13 +99,13 @@ namespace FastMemberTests
 
             var access = TypeAccessor.Create(typeof(FieldsOnClass));
 
-            Assert.AreEqual(123, access[obj, "A"]);
-            Assert.AreEqual("abc", access[obj, "B"]);
-            Assert.AreEqual(now, access[obj, "C"]);
-            Assert.AreEqual(null, access[obj, "D"]);
+            Assert.Equal(123, access[obj, "A"]);
+            Assert.Equal("abc", access[obj, "B"]);
+            Assert.Equal(now, access[obj, "C"]);
+            Assert.Null(access[obj, "D"]);
         }
 
-        [Test]
+        [Fact]
         public void BasicWriteTest_FieldsOnClass()
         {
             var now = DateTime.Now;
@@ -121,13 +119,13 @@ namespace FastMemberTests
             access[obj, "C"] = now;
             access[obj, "D"] = null;
 
-            Assert.AreEqual(123, obj.A);
-            Assert.AreEqual("abc", obj.B);
-            Assert.AreEqual(now, obj.C);
-            Assert.AreEqual(null, obj.D);
+            Assert.Equal(123, obj.A);
+            Assert.Equal("abc", obj.B);
+            Assert.Equal(now, obj.C);
+            Assert.Null(obj.D);
         }
 
-        [Test]
+        [Fact]
         public void BasicReadTest_PropsOnStruct()
         {
             var now = DateTime.Now;
@@ -136,13 +134,13 @@ namespace FastMemberTests
 
             var access = TypeAccessor.Create(typeof(PropsOnStruct));
 
-            Assert.AreEqual(123, access[obj, "A"]);
-            Assert.AreEqual("abc", access[obj, "B"]);
-            Assert.AreEqual(now, access[obj, "C"]);
-            Assert.AreEqual(null, access[obj, "D"]);
+            Assert.Equal(123, access[obj, "A"]);
+            Assert.Equal("abc", access[obj, "B"]);
+            Assert.Equal(now, access[obj, "C"]);
+            Assert.Null(access[obj, "D"]);
         }
 
-        [Test]
+        [Fact]
         public void BasicWriteTest_PropsOnStruct()
         {
             var now = DateTime.Now;
@@ -153,10 +151,10 @@ namespace FastMemberTests
 
             access[obj, "A"] = 123;
             
-            Assert.AreEqual(123, ((PropsOnStruct)obj).A);
+            Assert.Equal(123, ((PropsOnStruct)obj).A);
         }
 
-        [Test]
+        [Fact]
         public void BasicReadTest_FieldsOnStruct()
         {
             var now = DateTime.Now;
@@ -165,13 +163,13 @@ namespace FastMemberTests
 
             var access = TypeAccessor.Create(typeof(FieldsOnStruct));
 
-            Assert.AreEqual(123, access[obj, "A"]);
-            Assert.AreEqual("abc", access[obj, "B"]);
-            Assert.AreEqual(now, access[obj, "C"]);
-            Assert.AreEqual(null, access[obj, "D"]);
+            Assert.Equal(123, access[obj, "A"]);
+            Assert.Equal("abc", access[obj, "B"]);
+            Assert.Equal(now, access[obj, "C"]);
+            Assert.Null(access[obj, "D"]);
         }
 
-        [Test]
+        [Fact]
         public void BasicWriteTest_FieldsOnStruct()
         {
             var now = DateTime.Now;
@@ -181,10 +179,10 @@ namespace FastMemberTests
             var access = TypeAccessor.Create(typeof(FieldsOnStruct));
 
             access[obj, "A"] = 123;
-            Assert.AreEqual(123, ((FieldsOnStruct)obj).A);
+            Assert.Equal(123, ((FieldsOnStruct)obj).A);
         }
 
-        [Test]
+        [Fact]
         public void WriteInvalidMember()
         {
             Assert.Throws<ArgumentOutOfRangeException>(() =>
@@ -195,7 +193,7 @@ namespace FastMemberTests
             });
         }
 
-        [Test]
+        [Fact]
         public void ReadInvalidMember()
         {
             Assert.Throws<ArgumentOutOfRangeException>(() =>
@@ -206,12 +204,12 @@ namespace FastMemberTests
             });
         }
 
-        [Test]
+        [Fact]
         public void GetSameAccessor()
         {
             var x = TypeAccessor.Create(typeof(PropsOnClass));
             var y = TypeAccessor.Create(typeof(PropsOnClass));
-            Assert.AreSame(x, y);
+            Assert.Same(x, y);
         }
 
         public class PropsOnClass
@@ -248,46 +246,46 @@ namespace FastMemberTests
         public class HasNoDefaultCtor { public HasNoDefaultCtor(string s) { } }
         public abstract class IsAbstract { }   
 
-        [Test]
+        [Fact]
         public void TestCtor()
         {
             var accessor = TypeAccessor.Create(typeof(HasNoDefaultCtor));
-            Assert.IsFalse(accessor.CreateNewSupported);
+            Assert.False(accessor.CreateNewSupported);
 
             accessor = TypeAccessor.Create(typeof(IsAbstract));
-            Assert.IsFalse(accessor.CreateNewSupported);
+            Assert.False(accessor.CreateNewSupported);
 
-            Assert.AreNotEqual("DynamicAccessor", accessor.GetType().Name);
-            Assert.AreNotEqual("DelegateAccessor", accessor.GetType().Name);
+            Assert.NotEqual("DynamicAccessor", accessor.GetType().Name);
+            Assert.NotEqual("DelegateAccessor", accessor.GetType().Name);
 
             accessor = TypeAccessor.Create(typeof (HasDefaultCtor));
-            Assert.IsTrue(accessor.CreateNewSupported);
+            Assert.True(accessor.CreateNewSupported);
             object obj = accessor.CreateNew();
-            Assert.IsInstanceOf(typeof(HasDefaultCtor), obj);
+            Assert.IsType<HasDefaultCtor>(obj);
         }
 
         public class HasGetterNoSetter
         {
             public int Foo { get { return 5; } }
         }
-        [Test]
+        [Fact]
         public void TestHasGetterNoSetter()
         {
             var obj = new HasGetterNoSetter();
             var acc = TypeAccessor.Create(typeof (HasGetterNoSetter));
-            Assert.AreEqual(5, acc[obj, "Foo"]);
+            Assert.Equal(5, acc[obj, "Foo"]);
         }
         public class HasGetterPrivateSetter
         {
             public int Foo { get; private set; }
             public HasGetterPrivateSetter(int value) { Foo = value; }
         }
-        [Test]
+        [Fact]
         public void TestHasGetterPrivateSetter()
         {
             var obj = new HasGetterPrivateSetter(5);
             var acc = TypeAccessor.Create(typeof(HasGetterPrivateSetter));
-            Assert.AreEqual(5, acc[obj, "Foo"]);
+            Assert.Equal(5, acc[obj, "Foo"]);
         }
 
         public class MixedAccess
@@ -300,42 +298,36 @@ namespace FastMemberTests
             public int Bar { private get; set; }
         }
 
-        [Test]
+        [Fact]
         public void TestMixedAccess()
         {
             TypeAccessor acc0 = TypeAccessor.Create(typeof(MixedAccess)),
                          acc1 = TypeAccessor.Create(typeof(MixedAccess), false),
                          acc2 = TypeAccessor.Create(typeof(MixedAccess), true);
 
-            Assert.AreSame(acc0, acc1);
-            Assert.AreNotSame(acc0, acc2);
+            Assert.Same(acc0, acc1);
+            Assert.NotSame(acc0, acc2);
 
             var obj = new MixedAccess();
-            Assert.AreEqual(2, acc0[obj, "Foo"]);
-            Assert.AreEqual(2, acc2[obj, "Foo"]);
-            Assert.AreEqual(2, acc2[obj, "Bar"]);
+            Assert.Equal(2, acc0[obj, "Foo"]);
+            Assert.Equal(2, acc2[obj, "Foo"]);
+            Assert.Equal(2, acc2[obj, "Bar"]);
 
             acc0[obj, "Bar"] = 3;
-            Assert.AreEqual(3, acc2[obj, "Bar"]);
+            Assert.Equal(3, acc2[obj, "Bar"]);
             acc2[obj, "Bar"] = 4;
-            Assert.AreEqual(4, acc2[obj, "Bar"]);
+            Assert.Equal(4, acc2[obj, "Bar"]);
             acc2[obj, "Foo"] = 5;
-            Assert.AreEqual(5, acc0[obj, "Foo"]);
+            Assert.Equal(5, acc0[obj, "Foo"]);
 
-            try
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
             {
                 int i = (int)acc0[obj, "Bar"];
-                Assert.Fail();
-            }
-            catch (ArgumentOutOfRangeException)
-            { } // fine
-            try
+            });
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
             {
                 acc0[obj, "Foo"] = 6;
-                Assert.Fail();
-            }
-            catch (ArgumentOutOfRangeException)
-            { } // fine
+            });
         }
 
         public class ObjectReaderType {
@@ -345,7 +337,7 @@ namespace FastMemberTests
             public int? D { get; set; }
         }
 #if !COREFX
-        [Test]
+        [Fact]
         public void TestReaderAllColumns()
         {
             var source = new[] {
@@ -359,11 +351,11 @@ namespace FastMemberTests
                 table.Load(reader);
             }
 
-            Assert.AreEqual(4, table.Columns.Count, "col count");
-            Assert.AreEqual("A", table.Columns["A"].ColumnName, "A/name");
-            Assert.AreEqual("B", table.Columns["B"].ColumnName, "B/name");
-            Assert.AreEqual("C", table.Columns["C"].ColumnName, "C/name");
-            Assert.AreEqual("D", table.Columns["D"].ColumnName, "D/name");
+            Assert.Equal(4, table.Columns.Count, "col count");
+            Assert.Equal("A", table.Columns["A"].ColumnName, "A/name");
+            Assert.Equal("B", table.Columns["B"].ColumnName, "B/name");
+            Assert.Equal("C", table.Columns["C"].ColumnName, "C/name");
+            Assert.Equal("D", table.Columns["D"].ColumnName, "D/name");
             Assert.AreSame(typeof(int), table.Columns["A"].DataType, "A/type");
             Assert.AreSame(typeof(string), table.Columns["B"].DataType, "B/type");
             Assert.AreSame(typeof(byte), table.Columns["C"].DataType, "C/type");
@@ -373,22 +365,22 @@ namespace FastMemberTests
             Assert.IsFalse(table.Columns["C"].AllowDBNull, "C/null");
             Assert.IsTrue(table.Columns["D"].AllowDBNull, "D/null");
 
-            Assert.AreEqual(3, table.Rows.Count, "row count");
-            Assert.AreEqual(123, table.Rows[0]["A"], "0,A");
-            Assert.AreEqual("abc", table.Rows[0]["B"], "0,B");
-            Assert.AreEqual((byte)1, table.Rows[0]["C"], "0,C");
-            Assert.AreEqual(123, table.Rows[0]["D"], "0,D");
-            Assert.AreEqual(456, table.Rows[1]["A"], "1,A");
-            Assert.AreEqual("def", table.Rows[1]["B"], "1,B");
-            Assert.AreEqual((byte)2, table.Rows[1]["C"], "1,C");
-            Assert.AreEqual(DBNull.Value, table.Rows[1]["D"], "1,D");
-            Assert.AreEqual(789, table.Rows[2]["A"], "2,A");
-            Assert.AreEqual("ghi", table.Rows[2]["B"], "2,B");
-            Assert.AreEqual((byte)3, table.Rows[2]["C"], "2,C");
-            Assert.AreEqual(789, table.Rows[2]["D"], "2,D");
+            Assert.Equal(3, table.Rows.Count, "row count");
+            Assert.Equal(123, table.Rows[0]["A"], "0,A");
+            Assert.Equal("abc", table.Rows[0]["B"], "0,B");
+            Assert.Equal((byte)1, table.Rows[0]["C"], "0,C");
+            Assert.Equal(123, table.Rows[0]["D"], "0,D");
+            Assert.Equal(456, table.Rows[1]["A"], "1,A");
+            Assert.Equal("def", table.Rows[1]["B"], "1,B");
+            Assert.Equal((byte)2, table.Rows[1]["C"], "1,C");
+            Assert.Equal(DBNull.Value, table.Rows[1]["D"], "1,D");
+            Assert.Equal(789, table.Rows[2]["A"], "2,A");
+            Assert.Equal("ghi", table.Rows[2]["B"], "2,B");
+            Assert.Equal((byte)3, table.Rows[2]["C"], "2,C");
+            Assert.Equal(789, table.Rows[2]["D"], "2,D");
         }
 
-        [Test]
+        [Fact]
         public void TestReaderSpecifiedColumns()
         {
             var source = new[] {
@@ -402,10 +394,10 @@ namespace FastMemberTests
                 table.Load(reader);
             }
 
-            Assert.AreEqual(3, table.Columns.Count, "col count");
-            Assert.AreEqual("B", table.Columns[0].ColumnName, "B/name");
-            Assert.AreEqual("A", table.Columns[1].ColumnName, "A/name");
-            Assert.AreEqual("D", table.Columns[2].ColumnName, "D/name");
+            Assert.Equal(3, table.Columns.Count, "col count");
+            Assert.Equal("B", table.Columns[0].ColumnName, "B/name");
+            Assert.Equal("A", table.Columns[1].ColumnName, "A/name");
+            Assert.Equal("D", table.Columns[2].ColumnName, "D/name");
             Assert.AreSame(typeof(string), table.Columns[0].DataType, "B/type");
             Assert.AreSame(typeof(int), table.Columns[1].DataType, "A/type");
             Assert.AreSame(typeof(int), table.Columns[2].DataType, "D/type");
@@ -414,16 +406,16 @@ namespace FastMemberTests
             Assert.IsTrue(table.Columns[2].AllowDBNull, "D/null");
 
 
-            Assert.AreEqual(3, table.Rows.Count, "row count");
-            Assert.AreEqual("abc", table.Rows[0][0],"0,0");
-            Assert.AreEqual(123, table.Rows[0][1], "0,1");
-            Assert.AreEqual(123, table.Rows[0][2], "0,2");
-            Assert.AreEqual("def", table.Rows[1][0], "1,0");
-            Assert.AreEqual(456, table.Rows[1][1], "1,1");
-            Assert.AreEqual(DBNull.Value, table.Rows[1][2], "1,2");
-            Assert.AreEqual("ghi", table.Rows[2][0], "2,0");
-            Assert.AreEqual(789, table.Rows[2][1], "2,1");
-            Assert.AreEqual(789, table.Rows[2][2], "2,2");
+            Assert.Equal(3, table.Rows.Count, "row count");
+            Assert.Equal("abc", table.Rows[0][0],"0,0");
+            Assert.Equal(123, table.Rows[0][1], "0,1");
+            Assert.Equal(123, table.Rows[0][2], "0,2");
+            Assert.Equal("def", table.Rows[1][0], "1,0");
+            Assert.Equal(456, table.Rows[1][1], "1,1");
+            Assert.Equal(DBNull.Value, table.Rows[1][2], "1,2");
+            Assert.Equal("ghi", table.Rows[2][0], "2,0");
+            Assert.Equal(789, table.Rows[2][1], "2,1");
+            Assert.Equal(789, table.Rows[2][2], "2,2");
 
         }
 #endif
@@ -437,13 +429,13 @@ namespace FastMemberTests
             public static int Bar2 => 4;
         }
 
-        [Test]
+        [Fact]
         public void IgnoresStaticProperty()
         {
             var obj = new HazStaticProperty();
             var acc = TypeAccessor.Create(typeof(HazStaticProperty));
             var memberNames = string.Join(",", acc.GetMembers().Select(x => x.Name).OrderBy(_ => _));
-            Assert.AreEqual("Foo,Foo2", memberNames);
+            Assert.Equal("Foo,Foo2", memberNames);
         }
     }
 }

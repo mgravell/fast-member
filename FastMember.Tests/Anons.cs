@@ -1,51 +1,46 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using NUnit.Framework;
-using FastMember;
+﻿using FastMember;
+using Xunit;
 
 namespace FastMemberTests
 {
-    [TestFixture]
     public class Anons
     {
-        [Test]
+        [Fact]
         public void TestAnonTypeAccess()
         {
             var obj = new {A = 123, B = "def"};
 
             var accessor = ObjectAccessor.Create(obj);
-            Assert.AreEqual(123, accessor["A"]);
-            Assert.AreEqual("def", accessor["B"]);
+            Assert.Equal(123, accessor["A"]);
+            Assert.Equal("def", accessor["B"]);
         }
-        [Test]
+        [Fact]
         public void TestAnonCtor()
         {
             var obj = new {A = 123, B = "def"};
 
             var accessor = TypeAccessor.Create(obj.GetType());
-            Assert.IsFalse(accessor.CreateNewSupported);
+            Assert.False(accessor.CreateNewSupported);
         }
 
-        [Test]
+        [Fact]
         public void TestPrivateTypeAccess()
         {
             var obj = new Private { A = 123, B = "def" };
 
             var accessor = ObjectAccessor.Create(obj);
-            Assert.AreEqual(123, accessor["A"]);
-            Assert.AreEqual("def", accessor["B"]);
+            Assert.Equal(123, accessor["A"]);
+            Assert.Equal("def", accessor["B"]);
         }
 
-        [Test]
+        [Fact]
         public void TestPrivateTypeCtor()
         {
             var accessor = TypeAccessor.Create(typeof (Private));
-            Assert.IsTrue(accessor.CreateNewSupported);
+            Assert.True(accessor.CreateNewSupported);
             object obj = accessor.CreateNew();
-            Assert.IsNotNull(obj);
-            Assert.IsInstanceOf(typeof(Private), obj);
+            Assert.NotNull(obj);
+            Assert.IsType<Private>(obj);
         }
 
         private sealed class Private

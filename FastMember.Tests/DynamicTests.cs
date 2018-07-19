@@ -1,15 +1,14 @@
 ﻿#if !NO_DYNAMIC
-using System.Dynamic;
-using Microsoft.CSharp.RuntimeBinder;
-using NUnit.Framework;
 using FastMember;
+using Microsoft.CSharp.RuntimeBinder;
+using System.Dynamic;
+using Xunit;
 
 namespace FastMemberTests
 {
-    [TestFixture]
     public class DynamicTests
     {
-        [Test]
+        [Fact]
         public void TestReadValid()
         {
             dynamic expando = new ExpandoObject();
@@ -17,20 +16,20 @@ namespace FastMemberTests
             expando.B = "def";
             var wrap = ObjectAccessor.Create((object)expando);
 
-            Assert.AreEqual(123, wrap["A"]);
-            Assert.AreEqual("def", wrap["B"]);
+            Assert.Equal(123, wrap["A"]);
+            Assert.Equal("def", wrap["B"]);
         }
-        [Test]
+        [Fact]
         public void TestReadInvalid()
         {
             Assert.Throws<RuntimeBinderException>(() =>
             {
                 dynamic expando = new ExpandoObject();
                 var wrap = ObjectAccessor.Create((object)expando);
-                Assert.AreEqual(123, wrap["C"]);
+                Assert.Equal(123, wrap["C"]);
             });
         }
-        [Test]
+        [Fact]
         public void TestWrite()
         {
             dynamic expando = new ExpandoObject();
@@ -38,21 +37,21 @@ namespace FastMemberTests
             wrap["A"] = 123;
             wrap["B"] = "def";
             
-            Assert.AreEqual(123, expando.A);
-            Assert.AreEqual("def", expando.B);
+            Assert.Equal(123, expando.A);
+            Assert.Equal("def", expando.B);
         }
 
-        [Test]
+        [Fact]
         public void DynamicByTypeWrapper()
         {
             var obj = new ExpandoObject();
             ((dynamic)obj).Foo = "bar";
             var accessor = TypeAccessor.Create(obj.GetType());
 
-            Assert.AreEqual("bar", accessor[obj, "Foo"]);
+            Assert.Equal("bar", accessor[obj, "Foo"]);
             accessor[obj, "Foo"] = "BAR";
             string result = ((dynamic) obj).Foo;
-            Assert.AreEqual("BAR", result);
+            Assert.Equal("BAR", result);
         }
     }
 }
