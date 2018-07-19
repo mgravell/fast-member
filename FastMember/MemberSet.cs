@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-#if !NET20
 using System.Linq;
-#endif
 using System.Reflection;
 
 namespace FastMember
@@ -16,15 +14,8 @@ namespace FastMember
         internal MemberSet(Type type)
         {
             const BindingFlags PublicInstance = BindingFlags.Public | BindingFlags.Instance;
-#if NET20
-            List<MemberInfo> properties = new List<MemberInfo>(type.GetProperties(PublicInstance));
-            properties.AddRange(new List<MemberInfo>(type.GetFields(PublicInstance)));
-            properties.Sort((p1, p2) => p1.Name.CompareTo(p2.Name));
-            members = properties.ConvertAll<Member>(mi => new Member(mi)).ToArray();
-#else
             members = type.GetProperties(PublicInstance).Cast<MemberInfo>().Concat(type.GetFields(PublicInstance).Cast<MemberInfo>()).OrderBy(x => x.Name)
                 .Select(member => new Member(member)).ToArray();
-#endif
         }
         /// <summary>
         /// Return a sequence of all defined members
@@ -57,20 +48,7 @@ namespace FastMember
         void IList<Member>.RemoveAt(int index) { throw new NotSupportedException(); }
         void IList<Member>.Insert(int index, Member item) { throw new NotSupportedException(); }
 
-        bool ICollection<Member>.Contains(Member item) {
-#if NET20
-            foreach (var _item in members)
-            {
-                if (item == _item)
-                {
-                    return true;
-                }
-            }
-            return false;
-#else
-            return members.Contains(item);
-#endif
-        }
+        bool ICollection<Member>.Contains(Member item)  => members.Contains(item);
         void ICollection<Member>.CopyTo(Member[] array, int arrayIndex) { members.CopyTo(array, arrayIndex); }
         bool ICollection<Member>.IsReadOnly { get { return true; } }
         int IList<Member>.IndexOf(Member member) { return Array.IndexOf<Member>(members, member); }
@@ -109,28 +87,14 @@ namespace FastMember
         public bool IsDefined(Type attributeType)
         {
             if (attributeType == null) throw new ArgumentNullException(nameof(attributeType));
-#if COREFX
-            foreach(var attrib in member.CustomAttributes)
-            {
-                if (attrib.AttributeType == attributeType) return true;
-            }
-            return false;
-#else
             return Attribute.IsDefined(member, attributeType);
-#endif
         }
 
         /// <summary>
         /// Getting Attribute Type
         /// </summary>
         public Attribute GetAttribute(Type attributeType, bool inherit)
-        {
-#if COREFX
-	        return attributeType.GetTypeInfo().GetCustomAttribute(attributeType, inherit);
-#else
-			return Attribute.GetCustomAttribute(member, attributeType, inherit);
-#endif
-		}
+            => Attribute.GetCustomAttribute(member, attributeType, inherit);
 
 		/// <summary>
 		/// Property Can Write

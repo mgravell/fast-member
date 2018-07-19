@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 
-using static FastMember.TypeHelpers;
-
 namespace FastMember
 {
     /// <summary>
@@ -74,7 +72,7 @@ namespace FastMember
                                 var tmp = member.Type;
                                 memberType = Nullable.GetUnderlyingType(tmp) ?? tmp;
 
-                                allowNull = !(_IsValueType(memberType) && memberType == tmp);
+                                allowNull = !(memberType.IsValueType && memberType == tmp);
 
                                 // but keep checking, in case of duplicates
                             }
@@ -108,7 +106,6 @@ namespace FastMember
             get { return 0; }
         }
 
-#if !NO_SCHEMA_TABLE
         public override DataTable GetSchemaTable()
         {
             // these are the columns used by DataTable load
@@ -139,7 +136,6 @@ namespace FastMember
         {
             Shutdown();
         }
-#endif
 
         public override bool HasRows
         {
@@ -220,7 +216,7 @@ namespace FastMember
             int available = s.Length - (int)fieldOffset;
             if (available <= 0) return 0;
 
-            int count = TypeHelpers.Min(length, available);
+            int count = Math.Min(length, available);
             Buffer.BlockCopy(s, (int)fieldOffset, buffer, bufferoffset, count);
             return count;
         }
@@ -236,7 +232,7 @@ namespace FastMember
             int available = s.Length - (int)fieldoffset;
             if (available <= 0) return 0;
 
-            int count = TypeHelpers.Min(length, available);
+            int count = Math.Min(length, available);
             s.CopyTo((int)fieldoffset, buffer, bufferoffset, count);
             return count;
         }
@@ -316,14 +312,7 @@ namespace FastMember
             return this[i];
         }
 
-        public override IEnumerator GetEnumerator()
-        {
-#if NO_DB_ENUMERATOR
-            throw new NotImplementedException(); // https://github.com/dotnet/corefx/issues/4646
-#else
-            return new DbEnumerator(this);
-#endif
-        }
+        public override IEnumerator GetEnumerator() => new DbEnumerator(this);
 
         public override int GetValues(object[] values)
         {
@@ -332,7 +321,7 @@ namespace FastMember
             var current = this.current;
             var accessor = this.accessor;
 
-            int count = TypeHelpers.Min(values.Length, members.Length);
+            int count = Math.Min(values.Length, members.Length);
             for (int i = 0; i < count; i++) values[i] = accessor[current, members[i]] ?? DBNull.Value;
             return count;
         }

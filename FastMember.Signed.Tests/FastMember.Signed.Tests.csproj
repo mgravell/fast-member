@@ -26,6 +26,7 @@
     <DotNetCliToolReference Include="dotnet-xunit" Version="$(xUnitVersion)" />
 
     <PackageReference Include="BenchmarkDotNet" Version="0.10.14" />
+    <PackageReference Include="System.Data.Common" Version="4.3.0" />
   </ItemGroup>
   <PropertyGroup Label="Configuration">
     <NoWarn>1701;1702;1705;1591</NoWarn>

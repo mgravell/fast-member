@@ -1,5 +1,4 @@
-﻿#if !NO_DYNAMIC
-using FastMember;
+﻿using FastMember;
 using Microsoft.CSharp.RuntimeBinder;
 using System.Dynamic;
 using Xunit;
@@ -55,4 +54,3 @@ namespace FastMemberTests
         }
     }
 }
-#endif

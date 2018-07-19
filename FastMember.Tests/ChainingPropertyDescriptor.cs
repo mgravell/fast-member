@@ -1,4 +1,3 @@
-#if !COREFX
 using System;
 using System.ComponentModel;
 
@@ -107,4 +106,3 @@ namespace Hyper.ComponentModel {
         }
     }
 }
-#endif

@@ -1,5 +1,6 @@
 ﻿using FastMember;
 using System;
+using System.Data;
 using System.Linq;
 using Xunit;
 
@@ -336,7 +337,7 @@ namespace FastMemberTests
             public byte C {get;set;}
             public int? D { get; set; }
         }
-#if !COREFX
+
         [Fact]
         public void TestReaderAllColumns()
         {
@@ -351,33 +352,33 @@ namespace FastMemberTests
                 table.Load(reader);
             }
 
-            Assert.Equal(4, table.Columns.Count, "col count");
-            Assert.Equal("A", table.Columns["A"].ColumnName, "A/name");
-            Assert.Equal("B", table.Columns["B"].ColumnName, "B/name");
-            Assert.Equal("C", table.Columns["C"].ColumnName, "C/name");
-            Assert.Equal("D", table.Columns["D"].ColumnName, "D/name");
-            Assert.AreSame(typeof(int), table.Columns["A"].DataType, "A/type");
-            Assert.AreSame(typeof(string), table.Columns["B"].DataType, "B/type");
-            Assert.AreSame(typeof(byte), table.Columns["C"].DataType, "C/type");
-            Assert.AreSame(typeof(int), table.Columns["D"].DataType, "D/type");
-            Assert.IsFalse(table.Columns["A"].AllowDBNull, "A/null");
-            Assert.IsTrue(table.Columns["B"].AllowDBNull, "B/null");
-            Assert.IsFalse(table.Columns["C"].AllowDBNull, "C/null");
-            Assert.IsTrue(table.Columns["D"].AllowDBNull, "D/null");
+            Assert.Equal(4, table.Columns.Count); //, "col count");
+            Assert.Equal("A", table.Columns["A"].ColumnName); //, "A/name");
+            Assert.Equal("B", table.Columns["B"].ColumnName); //, "B/name");
+            Assert.Equal("C", table.Columns["C"].ColumnName); //, "C/name");
+            Assert.Equal("D", table.Columns["D"].ColumnName); //, "D/name");
+            Assert.Same(typeof(int), table.Columns["A"].DataType); //, "A/type");
+            Assert.Same(typeof(string), table.Columns["B"].DataType); //, "B/type");
+            Assert.Same(typeof(byte), table.Columns["C"].DataType); //, "C/type");
+            Assert.Same(typeof(int), table.Columns["D"].DataType); //, "D/type");
+            Assert.False(table.Columns["A"].AllowDBNull, "A/null");
+            Assert.True(table.Columns["B"].AllowDBNull, "B/null");
+            Assert.False(table.Columns["C"].AllowDBNull, "C/null");
+            Assert.True(table.Columns["D"].AllowDBNull, "D/null");
 
-            Assert.Equal(3, table.Rows.Count, "row count");
-            Assert.Equal(123, table.Rows[0]["A"], "0,A");
-            Assert.Equal("abc", table.Rows[0]["B"], "0,B");
-            Assert.Equal((byte)1, table.Rows[0]["C"], "0,C");
-            Assert.Equal(123, table.Rows[0]["D"], "0,D");
-            Assert.Equal(456, table.Rows[1]["A"], "1,A");
-            Assert.Equal("def", table.Rows[1]["B"], "1,B");
-            Assert.Equal((byte)2, table.Rows[1]["C"], "1,C");
-            Assert.Equal(DBNull.Value, table.Rows[1]["D"], "1,D");
-            Assert.Equal(789, table.Rows[2]["A"], "2,A");
-            Assert.Equal("ghi", table.Rows[2]["B"], "2,B");
-            Assert.Equal((byte)3, table.Rows[2]["C"], "2,C");
-            Assert.Equal(789, table.Rows[2]["D"], "2,D");
+            Assert.Equal(3, table.Rows.Count); //, "row count");
+            Assert.Equal(123, table.Rows[0]["A"]); //, "0,A");
+            Assert.Equal("abc", table.Rows[0]["B"]); //, "0,B");
+            Assert.Equal((byte)1, table.Rows[0]["C"]); //, "0,C");
+            Assert.Equal(123, table.Rows[0]["D"]); //, "0,D");
+            Assert.Equal(456, table.Rows[1]["A"]); //, "1,A");
+            Assert.Equal("def", table.Rows[1]["B"]); //, "1,B");
+            Assert.Equal((byte)2, table.Rows[1]["C"]); //, "1,C");
+            Assert.Equal(DBNull.Value, table.Rows[1]["D"]); //, "1,D");
+            Assert.Equal(789, table.Rows[2]["A"]); //, "2,A");
+            Assert.Equal("ghi", table.Rows[2]["B"]); //, "2,B");
+            Assert.Equal((byte)3, table.Rows[2]["C"]); //, "2,C");
+            Assert.Equal(789, table.Rows[2]["D"]); //, "2,D");
         }
 
         [Fact]
@@ -394,31 +395,30 @@ namespace FastMemberTests
                 table.Load(reader);
             }
 
-            Assert.Equal(3, table.Columns.Count, "col count");
-            Assert.Equal("B", table.Columns[0].ColumnName, "B/name");
-            Assert.Equal("A", table.Columns[1].ColumnName, "A/name");
-            Assert.Equal("D", table.Columns[2].ColumnName, "D/name");
-            Assert.AreSame(typeof(string), table.Columns[0].DataType, "B/type");
-            Assert.AreSame(typeof(int), table.Columns[1].DataType, "A/type");
-            Assert.AreSame(typeof(int), table.Columns[2].DataType, "D/type");
-            Assert.IsTrue(table.Columns[0].AllowDBNull, "B/null");
-            Assert.IsFalse(table.Columns[1].AllowDBNull, "A/null");
-            Assert.IsTrue(table.Columns[2].AllowDBNull, "D/null");
+            Assert.Equal(3, table.Columns.Count); //, "col count");
+            Assert.Equal("B", table.Columns[0].ColumnName); //, "B/name");
+            Assert.Equal("A", table.Columns[1].ColumnName); //, "A/name");
+            Assert.Equal("D", table.Columns[2].ColumnName); //, "D/name");
+            Assert.Same(typeof(string), table.Columns[0].DataType); //, "B/type");
+            Assert.Same(typeof(int), table.Columns[1].DataType); //, "A/type");
+            Assert.Same(typeof(int), table.Columns[2].DataType); //, "D/type");
+            Assert.True(table.Columns[0].AllowDBNull, "B/null");
+            Assert.False(table.Columns[1].AllowDBNull, "A/null");
+            Assert.True(table.Columns[2].AllowDBNull, "D/null");
 
 
-            Assert.Equal(3, table.Rows.Count, "row count");
-            Assert.Equal("abc", table.Rows[0][0],"0,0");
-            Assert.Equal(123, table.Rows[0][1], "0,1");
-            Assert.Equal(123, table.Rows[0][2], "0,2");
-            Assert.Equal("def", table.Rows[1][0], "1,0");
-            Assert.Equal(456, table.Rows[1][1], "1,1");
-            Assert.Equal(DBNull.Value, table.Rows[1][2], "1,2");
-            Assert.Equal("ghi", table.Rows[2][0], "2,0");
-            Assert.Equal(789, table.Rows[2][1], "2,1");
-            Assert.Equal(789, table.Rows[2][2], "2,2");
+            Assert.Equal(3, table.Rows.Count); //, "row count");
+            Assert.Equal("abc", table.Rows[0][0]); //,"0,0");
+            Assert.Equal(123, table.Rows[0][1]); //, "0,1");
+            Assert.Equal(123, table.Rows[0][2]); //, "0,2");
+            Assert.Equal("def", table.Rows[1][0]); //, "1,0");
+            Assert.Equal(456, table.Rows[1][1]); //, "1,1");
+            Assert.Equal(DBNull.Value, table.Rows[1][2]); //, "1,2");
+            Assert.Equal("ghi", table.Rows[2][0]); //, "2,0");
+            Assert.Equal(789, table.Rows[2][1]); //, "2,1");
+            Assert.Equal(789, table.Rows[2][2]); //, "2,2");
 
         }
-#endif
 
         public class HazStaticProperty
         {

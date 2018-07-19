@@ -1,4 +1,3 @@
-#if !COREFX
 using System;
 using System.ComponentModel;
 using System.Reflection.Emit;
@@ -47,7 +46,7 @@ namespace Hyper.ComponentModel {
         static int counter;
         static HyperTypeDescriptor() {
             AssemblyName an = new AssemblyName("Hyper.ComponentModel.dynamic");
-            AssemblyBuilder ab = AppDomain.CurrentDomain.DefineDynamicAssembly(an, AssemblyBuilderAccess.Run);
+            AssemblyBuilder ab = AssemblyBuilder.DefineDynamicAssembly(an, AssemblyBuilderAccess.Run);
             moduleBuilder = ab.DefineDynamicModule("Hyper.ComponentModel.dynamic.dll");
 
         }
@@ -217,4 +216,3 @@ namespace Hyper.ComponentModel {
         }
     }
 }
-#endif

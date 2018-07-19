@@ -1,4 +1,3 @@
-#if !COREFX
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -47,9 +46,9 @@ namespace Hyper.ComponentModel {
                 return descriptor;
             }
         }
-#pragma warning disable 0618
+#pragma warning disable CS0618, CS0612
         [ReflectionPermission( SecurityAction.Assert, Flags = ReflectionPermissionFlag.AllFlags)]
-#pragma warning restore 0618
+#pragma warning restore CS0618, CS0612
         private ICustomTypeDescriptor BuildDescriptor(Type objectType)
         {
             // NOTE: "descriptors" already locked here
@@ -75,4 +74,3 @@ namespace Hyper.ComponentModel {
         }
     }
 }
-#endif
