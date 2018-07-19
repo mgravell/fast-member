@@ -24,6 +24,8 @@
     <PackageReference Include="xunit" Version="$(xUnitVersion)" />
     <PackageReference Include="xunit.runner.visualstudio" Version="$(xUnitVersion)" />
     <DotNetCliToolReference Include="dotnet-xunit" Version="$(xUnitVersion)" />
+
+    <PackageReference Include="BenchmarkDotNet" Version="0.10.14" />
   </ItemGroup>
   <PropertyGroup Label="Configuration">
     <NoWarn>1701;1702;1705;1591</NoWarn>
