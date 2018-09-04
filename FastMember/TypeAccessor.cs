@@ -262,7 +262,7 @@ namespace FastMember
                 return DynamicAccessor.Singleton;
             }
 
-            PropertyInfo[] props = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            PropertyInfo[] props = type.GetTypeAndInterfaceProperties(BindingFlags.Public | BindingFlags.Instance);
             FieldInfo[] fields = type.GetFields(BindingFlags.Public | BindingFlags.Instance);
             Dictionary<string, int> map = new Dictionary<string, int>();
             List<MemberInfo> members = new List<MemberInfo>(props.Length + fields.Length);

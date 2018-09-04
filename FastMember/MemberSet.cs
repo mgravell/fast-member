@@ -14,7 +14,7 @@ namespace FastMember
         internal MemberSet(Type type)
         {
             const BindingFlags PublicInstance = BindingFlags.Public | BindingFlags.Instance;
-            members = type.GetProperties(PublicInstance).Cast<MemberInfo>().Concat(type.GetFields(PublicInstance).Cast<MemberInfo>()).OrderBy(x => x.Name)
+            members = type.GetTypeAndInterfaceProperties(PublicInstance).Cast<MemberInfo>().Concat(type.GetFields(PublicInstance).Cast<MemberInfo>()).OrderBy(x => x.Name)
                 .Select(member => new Member(member)).ToArray();
         }
         /// <summary>
