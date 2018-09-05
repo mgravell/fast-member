@@ -8,8 +8,6 @@
     <AssemblyOriginatorKeyFile>../FastMember.snk</AssemblyOriginatorKeyFile>
     <SignAssembly>true</SignAssembly>
     <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
-    
-    <xUnitVersion>2.4.0</xUnitVersion>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="**\*.cs" Exclude="Properties;project.*.json;bin\**;obj\**;**\*.xproj;packages\**" />
@@ -21,9 +19,9 @@
     <ProjectReference Include="..\FastMember.Signed\FastMember.Signed.csproj" />
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.8.0" />
-    <PackageReference Include="xunit" Version="$(xUnitVersion)" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="$(xUnitVersion)" />
-    <DotNetCliToolReference Include="dotnet-xunit" Version="$(xUnitVersion)" />
+    <PackageReference Include="xunit" Version="2.4.0" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
+    <DotNetCliToolReference Include="dotnet-xunit" Version="2.4.0" />
 
     <PackageReference Include="BenchmarkDotNet" Version="0.10.14" />
     <PackageReference Include="System.Data.Common" Version="4.3.0" />
