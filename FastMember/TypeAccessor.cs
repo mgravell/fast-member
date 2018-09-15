@@ -150,28 +150,58 @@ namespace FastMember
                 }
                 else if ((prop = member as PropertyInfo) != null)
                 {
-                    MethodInfo accessor;
-                    if (prop.CanRead && (accessor = isGet ? prop.GetGetMethod(allowNonPublicAccessors) : prop.GetSetMethod(allowNonPublicAccessors)) != null)
+                    if (prop.CanRead)
                     {
-                        il.Emit(obj);
-                        Cast(il, type, true);
-                        if (isGet)
+                        var accessor = isGet
+                            ? prop.GetGetMethod(allowNonPublicAccessors)
+                            : prop.GetSetMethod(allowNonPublicAccessors);
+                        if (accessor != null)
                         {
-                            il.EmitCall(type.IsValueType ? OpCodes.Call : OpCodes.Callvirt, accessor, null);
-                            if (prop.PropertyType.IsValueType) il.Emit(OpCodes.Box, prop.PropertyType);
+                            il.Emit(obj);
+                            Cast(il, type, true);
+                            if (isGet)
+                            {
+                                il.EmitCall(type.IsValueType ? OpCodes.Call : OpCodes.Callvirt, accessor, null);
+                                if (prop.PropertyType.IsValueType) il.Emit(OpCodes.Box, prop.PropertyType);
+                            }
+                            else
+                            {
+                                il.Emit(value);
+                                Cast(il, prop.PropertyType, false);
+                                il.EmitCall(type.IsValueType ? OpCodes.Call : OpCodes.Callvirt, accessor, null);
+                            }
+                            il.Emit(OpCodes.Ret);
+                            isFail = false;
                         }
-                        else
+                        else if (allowNonPublicAccessors)
                         {
-                            il.Emit(value);
-                            Cast(il, prop.PropertyType, false);
-                            il.EmitCall(type.IsValueType ? OpCodes.Call : OpCodes.Callvirt, accessor, null);
+                            // No getter/setter, use backing field instead if it exists
+                            var backingField = $"<{prop.Name}>k__BackingField";
+                            field = prop.DeclaringType?.GetField(backingField, BindingFlags.Instance | BindingFlags.NonPublic);
+
+                            if (field != null)
+                            {
+                                il.Emit(obj);
+                                Cast(il, type, true);
+                                if (isGet)
+                                {
+                                    il.Emit(OpCodes.Ldfld, field);
+                                    if (field.FieldType.IsValueType) il.Emit(OpCodes.Box, field.FieldType);
+                                }
+                                else
+                                {
+                                    il.Emit(value);
+                                    Cast(il, field.FieldType, false);
+                                    il.Emit(OpCodes.Stfld, field);
+                                }
+                                il.Emit(OpCodes.Ret);
+                                isFail = false;
+                            }
                         }
-                        il.Emit(OpCodes.Ret);
-                        isFail = false;
                     }
                 }
                 if (isFail) il.Emit(OpCodes.Br, fail);
-            }
+}
         }
 
         private static readonly MethodInfo strinqEquals = typeof(string).GetMethod("op_Equality", new Type[] { typeof(string), typeof(string) });
