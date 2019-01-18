@@ -43,3 +43,7 @@ using(var reader = ObjectReader.Create(data, "Id", "Name", "Description"))
   bcp.WriteToServer(reader); 
 }
 ```
+
+### Ahead of Time
+Library emits IL code during runtime. Will not work in constrained Ahead of Time environments. Xamarin iOS and Unity IL2CPP are such.
+
