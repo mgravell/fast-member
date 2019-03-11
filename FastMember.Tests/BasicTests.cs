@@ -437,5 +437,33 @@ namespace FastMemberTests
             var memberNames = string.Join(",", acc.GetMembers().Select(x => x.Name).OrderBy(_ => _));
             Assert.Equal("Foo,Foo2", memberNames);
         }
+
+        public class HazNonPublicPropAndField
+        {
+            private int Foo { get; set; }
+            private int Bar;
+        }
+
+        [Fact]
+        public void BasicReadTest_NonPublicAccessorMembers()
+        {
+            var acc = TypeAccessor.Create(typeof(HazNonPublicPropAndField), allowNonPublicAccessors: true);
+            var memberNames = string.Join(",", acc.GetMembers().Select(x => x.Name).OrderBy(_ => _));
+            Assert.Equal("Bar,Foo", memberNames);
+        }
+
+        [Fact]
+        public void BasicWriteTest_NonPublicAccessorMembers()
+        {
+            var obj = new HazNonPublicPropAndField();
+
+            var access = TypeAccessor.Create(typeof(HazNonPublicPropAndField), allowNonPublicAccessors: true);
+
+            access[obj, "Foo"] = 123;
+            access[obj, "Bar"] = 321;
+
+            Assert.Equal(123, access[obj, "Foo"]);
+            Assert.Equal(321, access[obj, "Bar"]);
+        }
     }
 }

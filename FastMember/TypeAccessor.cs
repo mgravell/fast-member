@@ -5,6 +5,7 @@ using System.Reflection.Emit;
 using System.Threading;
 using System.Collections.Generic;
 using System.Dynamic;
+using System.Runtime.CompilerServices;
 
 namespace FastMember
 {
@@ -33,6 +34,11 @@ namespace FastMember
         /// Query the members available for this type
         /// </summary>
         public virtual MemberSet GetMembers() { throw new NotSupportedException(); }
+
+        /// <summary>
+        /// Query the reflected members discovered for this type and scope
+        /// </summary>
+        public virtual MemberInfo[] CachedMembers { get; private set; }
 
         /// <summary>
         /// Provides a type-specific accessor, allowing by-name access for all objects of that type
@@ -196,7 +202,7 @@ namespace FastMember
             /// </summary>
             public override MemberSet GetMembers()
             {
-                return members ?? (members = new MemberSet(Type));
+                return members ?? (members = new MemberSet(CachedMembers));
             }
         }
         sealed class DelegateAccessor : RuntimeTypeAccessor
@@ -255,6 +261,7 @@ namespace FastMember
 
             return true;
         }
+        
         static TypeAccessor CreateNew(Type type, bool allowNonPublicAccessors)
         {
             if (typeof(IDynamicMetaObjectProvider).IsAssignableFrom(type))
@@ -262,8 +269,11 @@ namespace FastMember
                 return DynamicAccessor.Singleton;
             }
 
-            PropertyInfo[] props = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
-            FieldInfo[] fields = type.GetFields(BindingFlags.Public | BindingFlags.Instance);
+            BindingFlags flags = allowNonPublicAccessors
+                ? BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance
+                : BindingFlags.Public | BindingFlags.Instance;
+            PropertyInfo[] props = type.GetProperties(flags);
+            FieldInfo[] fields = type.GetFields(flags);
             Dictionary<string, int> map = new Dictionary<string, int>();
             List<MemberInfo> members = new List<MemberInfo>(props.Length + fields.Length);
             int i = 0;
@@ -275,7 +285,7 @@ namespace FastMember
                     members.Add(prop);
                 }
             }
-            foreach (var field in fields) if (!map.ContainsKey(field.Name)) { map.Add(field.Name, i++); members.Add(field); }
+            foreach (var field in fields) if (!map.ContainsKey(field.Name) && !Attribute.IsDefined(field, typeof(CompilerGeneratedAttribute))) { map.Add(field.Name, i++); members.Add(field); }
 
             ConstructorInfo ctor = null;
             if (type.IsClass && !type.IsAbstract)
@@ -297,11 +307,14 @@ namespace FastMember
                     il.Emit(OpCodes.Newobj, ctor);
                     il.Emit(OpCodes.Ret);
                 }
-                return new DelegateAccessor(
+
+                var delegateAccessor = new DelegateAccessor(
                     map,
                     (Func<int, object, object>)dynGetter.CreateDelegate(typeof(Func<int, object, object>)),
                     (Action<int, object, object>)dynSetter.CreateDelegate(typeof(Action<int, object, object>)),
                     dynCtor == null ? null : (Func<object>)dynCtor.CreateDelegate(typeof(Func<object>)), type);
+                delegateAccessor.CachedMembers = members.ToArray();
+                return delegateAccessor;
             }
 
             // note this region is synchronized; only one is being created at a time so we don't need to stress about the builders
@@ -364,6 +377,7 @@ namespace FastMember
             tb.DefineMethodOverride(body, baseMethod);
 
             var accessor = (TypeAccessor)Activator.CreateInstance(tb.CreateTypeInfo().AsType(), map);
+            accessor.CachedMembers = members.ToArray();
             return accessor;
         }
 

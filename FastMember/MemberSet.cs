@@ -11,11 +11,9 @@ namespace FastMember
     public sealed class MemberSet : IEnumerable<Member>, IList<Member>
     {
         Member[] members;
-        internal MemberSet(Type type)
+        internal MemberSet(MemberInfo[] members)
         {
-            const BindingFlags PublicInstance = BindingFlags.Public | BindingFlags.Instance;
-            members = type.GetProperties(PublicInstance).Cast<MemberInfo>().Concat(type.GetFields(PublicInstance).Cast<MemberInfo>()).OrderBy(x => x.Name)
-                .Select(member => new Member(member)).ToArray();
+            this.members = members.OrderBy(x => x.Name).Select(member => new Member(member)).ToArray();
         }
         /// <summary>
         /// Return a sequence of all defined members
