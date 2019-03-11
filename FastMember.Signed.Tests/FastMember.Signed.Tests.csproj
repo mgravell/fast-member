@@ -8,8 +8,6 @@
     <AssemblyOriginatorKeyFile>../FastMember.snk</AssemblyOriginatorKeyFile>
     <SignAssembly>true</SignAssembly>
     <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
-    
-    <xUnitVersion>2.4.0-beta.2.build3981</xUnitVersion>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="**\*.cs" Exclude="Properties;project.*.json;bin\**;obj\**;**\*.xproj;packages\**" />
@@ -20,12 +18,13 @@
   <ItemGroup>
     <ProjectReference Include="..\FastMember.Signed\FastMember.Signed.csproj" />
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.2" />
-    <PackageReference Include="xunit" Version="$(xUnitVersion)" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="$(xUnitVersion)" />
-    <DotNetCliToolReference Include="dotnet-xunit" Version="$(xUnitVersion)" />
-
-    <PackageReference Include="BenchmarkDotNet" Version="0.10.14" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.0.1" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="BenchmarkDotNet" Version="0.11.4" />
     <PackageReference Include="System.Data.Common" Version="4.3.0" />
   </ItemGroup>
   <PropertyGroup Label="Configuration">
