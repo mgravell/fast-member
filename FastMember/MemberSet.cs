@@ -80,7 +80,7 @@ namespace FastMember
                 }
 
                 // OrdinalAttribute class must have only one constructor with a single argument.
-                return (int) ordinalAttr.ConstructorArguments.First().Value;
+                return Convert.ToInt32(ordinalAttr.ConstructorArguments.First().Value);
             }
         }
         /// <summary>

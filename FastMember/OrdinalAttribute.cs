@@ -10,7 +10,7 @@
         /// Creates a new instance of <see cref="OrdinalAttribute"/> class.
         /// </summary>
         /// <param name="ordinal"></param>
-        public OrdinalAttribute(int ordinal)
+        public OrdinalAttribute(ushort ordinal)
         {
             Ordinal = ordinal;
         }
@@ -18,6 +18,6 @@
         /// <summary>
         /// Column ordinal used in <see cref="System.Data.IDataReader"/> instance.
         /// </summary>
-        public int Ordinal { get; private set; }
+        public ushort Ordinal { get; private set; }
     }
 }
