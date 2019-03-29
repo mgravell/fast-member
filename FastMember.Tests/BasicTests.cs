@@ -338,6 +338,189 @@ namespace FastMemberTests
             public int? D { get; set; }
         }
 
+        public class ObjectReaderWithDefinedColumnsOrderType
+        {
+            [Ordinal(3)]
+            public int A { get; set; }
+            [Ordinal(2)]
+            public string B { get; set; }
+            [Ordinal(1)]
+            public byte C { get; set; }
+            [Ordinal(0)]
+            public int? D { get; set; }
+        }
+
+        public class ObjectReaderWithPartiallyDefinedColumnsOrderType
+        {
+            // Column A is supposed to be added in the end since
+            // it is the only column with the ordinal set.
+            [Ordinal(10)]
+            public int A { get; set; }
+
+            public string B { get; set; }
+
+            public byte C { get; set; }
+
+            public int? D { get; set; }
+        }
+
+        /// <summary>
+        /// Tests <see cref="ObjectReader"/> class when the columns are not explicitly provided.
+        /// In this case <see cref="OrdinalAttribute"/> attribute is used to define column order.
+        /// </summary>
+        [Fact]
+        public void TestReaderAllColumnsWithPartiallyDefinedOrder()
+        {
+            var source = new[] {
+                new ObjectReaderWithPartiallyDefinedColumnsOrderType { A = 123, B = "abc", C = 1, D = 123},
+                new ObjectReaderWithPartiallyDefinedColumnsOrderType { A = 456, B = "def", C = 2, D = null},
+                new ObjectReaderWithPartiallyDefinedColumnsOrderType { A = 789, B = "ghi", C = 3, D = 789}
+            };
+            var table = new DataTable();
+            using (var reader = ObjectReader.Create(source))
+            {
+                table.Load(reader);
+            }
+
+            Assert.Equal(4, table.Columns.Count); //, "col count");
+            Assert.Equal("A", table.Columns["A"].ColumnName); //, "A/name");
+            Assert.Equal("B", table.Columns["B"].ColumnName); //, "B/name");
+            Assert.Equal("C", table.Columns["C"].ColumnName); //, "C/name");
+            Assert.Equal("D", table.Columns["D"].ColumnName); //, "D/name");
+            Assert.Same(typeof(int), table.Columns["A"].DataType); //, "A/type");
+            Assert.Same(typeof(string), table.Columns["B"].DataType); //, "B/type");
+            Assert.Same(typeof(byte), table.Columns["C"].DataType); //, "C/type");
+            Assert.Same(typeof(int), table.Columns["D"].DataType); //, "D/type");
+            Assert.False(table.Columns["A"].AllowDBNull, "A/null");
+            Assert.True(table.Columns["B"].AllowDBNull, "B/null");
+            Assert.False(table.Columns["C"].AllowDBNull, "C/null");
+            Assert.True(table.Columns["D"].AllowDBNull, "D/null");
+
+            // Check column order
+            Assert.Equal(3, table.Columns["A"].Ordinal); //, "A/ordinal");
+            Assert.Equal(0, table.Columns["B"].Ordinal); //, "B/ordinal");
+            Assert.Equal(1, table.Columns["C"].Ordinal); //, "C/ordinal");
+            Assert.Equal(2, table.Columns["D"].Ordinal); //, "D/ordinal");
+
+
+            Assert.Equal(3, table.Rows.Count); //, "row count");
+            Assert.Equal("abc", table.Rows[0][0]); //,"0,0");       // B column
+            Assert.Equal((byte)1, table.Rows[0][1]); //, "0,1")     // C column;
+            Assert.Equal(123, table.Rows[0][2]); //, "0,2")         // D column;
+            Assert.Equal(123, table.Rows[0][3]); //, "0,2");        // A column
+            Assert.Equal("def", table.Rows[1][0]); //, "1,0");          // B column
+            Assert.Equal((byte)2, table.Rows[1][1]); //, "1,1");        // C column
+            Assert.Equal(DBNull.Value, table.Rows[1][2]); //, "1,2");   // D column
+            Assert.Equal(456, table.Rows[1][3]); //, "1,2");            // A column
+            Assert.Equal("ghi", table.Rows[2][0]); //, "2,0");      // B column
+            Assert.Equal((byte)3, table.Rows[2][1]); //, "2,1");    // C column
+            Assert.Equal(789, table.Rows[2][2]); //, "2,2");        // D column
+            Assert.Equal(789, table.Rows[2][3]); //, "2,2");        // A column
+
+        }
+
+        /// <summary>
+        /// Tests <see cref="ObjectReader"/> class when the columns are not explicitly provided.
+        /// In this case <see cref="OrdinalAttribute"/> attribute is used to define column order.
+        /// </summary>
+        [Fact]
+        public void TestReaderAllColumnsWithDefinedOrder()
+        {
+            var source = new[] {
+                new ObjectReaderWithDefinedColumnsOrderType { A = 123, B = "abc", C = 1, D = 123},
+                new ObjectReaderWithDefinedColumnsOrderType { A = 456, B = "def", C = 2, D = null},
+                new ObjectReaderWithDefinedColumnsOrderType { A = 789, B = "ghi", C = 3, D = 789}
+            };
+            var table = new DataTable();
+            using (var reader = ObjectReader.Create(source))
+            {
+                table.Load(reader);
+            }
+
+            Assert.Equal(4, table.Columns.Count); //, "col count");
+            Assert.Equal("A", table.Columns["A"].ColumnName); //, "A/name");
+            Assert.Equal("B", table.Columns["B"].ColumnName); //, "B/name");
+            Assert.Equal("C", table.Columns["C"].ColumnName); //, "C/name");
+            Assert.Equal("D", table.Columns["D"].ColumnName); //, "D/name");
+            Assert.Same(typeof(int), table.Columns["A"].DataType); //, "A/type");
+            Assert.Same(typeof(string), table.Columns["B"].DataType); //, "B/type");
+            Assert.Same(typeof(byte), table.Columns["C"].DataType); //, "C/type");
+            Assert.Same(typeof(int), table.Columns["D"].DataType); //, "D/type");
+            Assert.False(table.Columns["A"].AllowDBNull, "A/null");
+            Assert.True(table.Columns["B"].AllowDBNull, "B/null");
+            Assert.False(table.Columns["C"].AllowDBNull, "C/null");
+            Assert.True(table.Columns["D"].AllowDBNull, "D/null");
+
+            // Check column order
+            Assert.Equal(3, table.Columns["A"].Ordinal); //, "A/ordinal");
+            Assert.Equal(2, table.Columns["B"].Ordinal); //, "B/ordinal");
+            Assert.Equal(1, table.Columns["C"].Ordinal); //, "C/ordinal");
+            Assert.Equal(0, table.Columns["D"].Ordinal); //, "D/ordinal");
+
+
+            Assert.Equal(3, table.Rows.Count); //, "row count");
+            Assert.Equal(123, table.Rows[0][0]); //,"0,0");     // D column
+            Assert.Equal((byte)1, table.Rows[0][1]); //, "0,1") // C column;
+            Assert.Equal("abc", table.Rows[0][2]); //, "0,2")   // B column;
+            Assert.Equal(123, table.Rows[0][3]); //, "0,2");    // A column
+            Assert.Equal(DBNull.Value, table.Rows[1][0]); //, "1,0");   // D column
+            Assert.Equal((byte)2, table.Rows[1][1]); //, "1,1");        // C column
+            Assert.Equal("def", table.Rows[1][2]); //, "1,2");          // B column
+            Assert.Equal(456, table.Rows[1][3]); //, "1,2");            // A column
+            Assert.Equal(789, table.Rows[2][0]); //, "2,0");        // D column
+            Assert.Equal((byte)3, table.Rows[2][1]); //, "2,1");    // C column
+            Assert.Equal("ghi", table.Rows[2][2]); //, "2,2");      // B column
+            Assert.Equal(789, table.Rows[2][3]); //, "2,2");        // A column
+
+        }
+
+        /// <summary>
+        /// Tests <see cref="ObjectReader"/> class when the columns are explicitly provided.
+        /// In this case <see cref="OrdinalAttribute"/> attribute is ignored.
+        /// </summary>
+        [Fact]
+        public void TestReaderSpecifiedColumnsWithDefinedOrder()
+        {
+            var source = new[] {
+                new ObjectReaderWithDefinedColumnsOrderType { A = 123, B = "abc", C = 1, D = 123},
+                new ObjectReaderWithDefinedColumnsOrderType { A = 456, B = "def", C = 2, D = null},
+                new ObjectReaderWithDefinedColumnsOrderType { A = 789, B = "ghi", C = 3, D = 789}
+            };
+            var table = new DataTable();
+            using (var reader = ObjectReader.Create(source, "B", "A", "D"))
+            {
+                table.Load(reader);
+            }
+
+            Assert.Equal(3, table.Columns.Count); //, "col count");
+            Assert.Equal("B", table.Columns[0].ColumnName); //, "B/name");
+            Assert.Equal("A", table.Columns[1].ColumnName); //, "A/name");
+            Assert.Equal("D", table.Columns[2].ColumnName); //, "D/name");
+            Assert.Same(typeof(string), table.Columns[0].DataType); //, "B/type");
+            Assert.Same(typeof(int), table.Columns[1].DataType); //, "A/type");
+            Assert.Same(typeof(int), table.Columns[2].DataType); //, "D/type");
+            Assert.True(table.Columns[0].AllowDBNull, "B/null");
+            Assert.False(table.Columns[1].AllowDBNull, "A/null");
+            Assert.True(table.Columns[2].AllowDBNull, "D/null");
+
+            // Check column order
+            Assert.Equal(1, table.Columns["A"].Ordinal); //, "A/ordinal");
+            Assert.Equal(0, table.Columns["B"].Ordinal); //, "B/ordinal");
+            Assert.Equal(2, table.Columns["D"].Ordinal); //, "D/ordinal");
+
+            Assert.Equal(3, table.Rows.Count); //, "row count");
+            Assert.Equal("abc", table.Rows[0][0]); //,"0,0");
+            Assert.Equal(123, table.Rows[0][1]); //, "0,1");
+            Assert.Equal(123, table.Rows[0][2]); //, "0,2");
+            Assert.Equal("def", table.Rows[1][0]); //, "1,0");
+            Assert.Equal(456, table.Rows[1][1]); //, "1,1");
+            Assert.Equal(DBNull.Value, table.Rows[1][2]); //, "1,2");
+            Assert.Equal("ghi", table.Rows[2][0]); //, "2,0");
+            Assert.Equal(789, table.Rows[2][1]); //, "2,1");
+            Assert.Equal(789, table.Rows[2][2]); //, "2,2");
+
+        }
+
         [Fact]
         public void TestReaderAllColumns()
         {
