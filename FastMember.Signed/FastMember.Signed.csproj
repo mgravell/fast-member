@@ -4,7 +4,7 @@
     <Copyright>Copyright © Marc Gravell 2012-2016</Copyright>
     <Version>1.4.1</Version>
     <Authors>Marc Gravell</Authors>
-    <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net461;netcoreapp2.1</TargetFrameworks>
     <AssemblyName>FastMember</AssemblyName>
     <PackageTags>Reflection;Dynamic;Member;Access</PackageTags>
     <PackageReleaseNotes>core-clr support (rtm)</PackageReleaseNotes>
@@ -29,7 +29,7 @@
   <ItemGroup Condition="'$(TargetFramework)'=='net461'">
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)'!='net461'">
+  <ItemGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
     <PackageReference Include="System.Data.Common" Version="4.3.0" />
     <PackageReference Include="System.Reflection" Version="4.3.0" />
     <PackageReference Include="System.Reflection.Emit" Version="4.3.0" />

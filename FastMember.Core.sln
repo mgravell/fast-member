@@ -1,15 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26020.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28917.182
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FastMember", "FastMember\FastMember.csproj", "{DD3ED221-35A0-4D79-9474-24B3C52EE881}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FastMember.Signed", "FastMember.Signed\FastMember.Signed.csproj", "{5FE4EB80-CCFA-4325-8432-0F700728FD58}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FastMember.Tests", "FastMember.Tests\FastMember.Tests.csproj", "{9A8E6E72-305C-479E-A46C-63F4FF16223E}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FastMember.Signed.Tests", "FastMember.Signed.Tests\FastMember.Signed.Tests.csproj", "{E02331B7-151B-4D2E-861A-9CA51FD58872}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,18 +55,6 @@ Global
 		{9A8E6E72-305C-479E-A46C-63F4FF16223E}.Release|x64.Build.0 = Release|Any CPU
 		{9A8E6E72-305C-479E-A46C-63F4FF16223E}.Release|x86.ActiveCfg = Release|Any CPU
 		{9A8E6E72-305C-479E-A46C-63F4FF16223E}.Release|x86.Build.0 = Release|Any CPU
-		{E02331B7-151B-4D2E-861A-9CA51FD58872}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E02331B7-151B-4D2E-861A-9CA51FD58872}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E02331B7-151B-4D2E-861A-9CA51FD58872}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{E02331B7-151B-4D2E-861A-9CA51FD58872}.Debug|x64.Build.0 = Debug|Any CPU
-		{E02331B7-151B-4D2E-861A-9CA51FD58872}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{E02331B7-151B-4D2E-861A-9CA51FD58872}.Debug|x86.Build.0 = Debug|Any CPU
-		{E02331B7-151B-4D2E-861A-9CA51FD58872}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E02331B7-151B-4D2E-861A-9CA51FD58872}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E02331B7-151B-4D2E-861A-9CA51FD58872}.Release|x64.ActiveCfg = Release|Any CPU
-		{E02331B7-151B-4D2E-861A-9CA51FD58872}.Release|x64.Build.0 = Release|Any CPU
-		{E02331B7-151B-4D2E-861A-9CA51FD58872}.Release|x86.ActiveCfg = Release|Any CPU
-		{E02331B7-151B-4D2E-861A-9CA51FD58872}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

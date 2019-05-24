@@ -1,11 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFrameworks>netcoreapp2.0;netcoreapp2.1;net461</TargetFrameworks>
     <DefineConstants>$(DefineConstants);COREFX</DefineConstants>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <AssemblyName>FastMember.Tests</AssemblyName>
-    <OutputType>Exe</OutputType>
-    <xUnitVersion>2.4.0-beta.2.build3981</xUnitVersion>
+    <OutputType>Library</OutputType>
+    <ApplicationIcon />
+    <StartupObject />
   </PropertyGroup>
   <ItemGroup>
     <EmbeddedResource Include="**\*.resx" />
@@ -16,10 +17,11 @@
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
     <PackageReference Include="BenchmarkDotNet" Version="0.10.14" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.2" />
-    <PackageReference Include="xunit" Version="$(xUnitVersion)" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="$(xUnitVersion)" />
-    <DotNetCliToolReference Include="dotnet-xunit" Version="$(xUnitVersion)" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
+    <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
     <PackageReference Include="System.Data.Common" Version="4.3.0" />
+    <PackageReference Include="System.Security.Permissions" Version="4.5.0" />
   </ItemGroup>
   <PropertyGroup Label="Configuration">
     <NoWarn>1701;1702;1705;1591</NoWarn>
