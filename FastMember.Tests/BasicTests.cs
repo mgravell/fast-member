@@ -330,10 +330,13 @@ namespace FastMemberTests
         {
             public MixedAccess()
             {
-                Foo = Bar = 2;
+                Foo = Bar = Alpha = Beta = 2;
             }
             public int Foo { get; private set; }
             public int Bar { private get; set; }
+            public readonly int Alpha;
+            public int Beta { get; }
+            public int Theta { get { return 5; } }
         }
 
         [Fact]
@@ -357,6 +360,10 @@ namespace FastMemberTests
             Assert.Equal(4, acc2[obj, "Bar"]);
             acc2[obj, "Foo"] = 5;
             Assert.Equal(5, acc0[obj, "Foo"]);
+            acc2[obj, "Alpha"] = 6;
+            Assert.Equal(6, acc2[obj, "Alpha"]);
+            acc2[obj, "Beta"] = 7;
+            Assert.Equal(7, acc2[obj, "Beta"]);
 
             Assert.Throws<ArgumentOutOfRangeException>(() =>
             {
@@ -365,6 +372,14 @@ namespace FastMemberTests
             Assert.Throws<ArgumentOutOfRangeException>(() =>
             {
                 acc0[obj, "Foo"] = 6;
+            });
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                acc0[obj, "Beta"] = 7;
+            });
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                acc0[obj, "Theta"] = 8;
             });
         }
 
