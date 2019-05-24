@@ -23,9 +23,6 @@
     <EmbeddedResource Include="**\*.resx" />
     <EmbeddedResource Include="compiler\resources\**\*" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="..\FastMember\TypeHelpers.cs" />
-  </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)'=='net461'">
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
