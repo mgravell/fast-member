@@ -65,6 +65,25 @@ namespace FastMember
             this.member = member;
         }
         /// <summary>
+        /// The ordinal of this member among other members.
+        /// Returns -1 in case the ordinal is not set.
+        /// </summary>
+        public int Ordinal
+        {
+            get
+            {
+                var ordinalAttr = member.CustomAttributes.FirstOrDefault(p => p.AttributeType == typeof(OrdinalAttribute));
+
+                if (ordinalAttr == null)
+                {
+                    return -1;
+                }
+
+                // OrdinalAttribute class must have only one constructor with a single argument.
+                return Convert.ToInt32(ordinalAttr.ConstructorArguments.Single().Value);
+            }
+        }
+        /// <summary>
         /// The name of this member
         /// </summary>
         public string Name { get { return member.Name; } }

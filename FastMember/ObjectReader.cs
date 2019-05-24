@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Linq;
 
 namespace FastMember
 {
@@ -45,7 +46,8 @@ namespace FastMember
             this.accessor = TypeAccessor.Create(type);
             if (accessor.GetMembersSupported)
             {
-                var typeMembers = this.accessor.GetMembers();
+                // Sort members by ordinal first and then by name.
+                var typeMembers = this.accessor.GetMembers().OrderBy(p => p.Ordinal).ThenBy(p => p.Name).ToList();
 
                 if (allMembers)
                 {
