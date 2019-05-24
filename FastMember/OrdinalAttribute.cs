@@ -3,7 +3,7 @@
     /// <summary>
     /// Emphasizes column position used in <see cref="System.Data.IDataReader"/> instance.
     /// </summary>
-    [System.AttributeUsage(System.AttributeTargets.Property | System.AttributeTargets.Field)]
+    [System.AttributeUsage(System.AttributeTargets.Property | System.AttributeTargets.Field, AllowMultiple = false)]
     public class OrdinalAttribute : System.Attribute
     {
         /// <summary>

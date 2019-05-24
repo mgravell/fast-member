@@ -47,7 +47,7 @@ namespace FastMember
             if (accessor.GetMembersSupported)
             {
                 // Sort members by ordinal first and then by name.
-                var typeMembers = this.accessor.GetMembers().OrderBy(p => p.Ordinal).ThenBy(p => p.Name).ToList();
+                var typeMembers = this.accessor.GetMembers().OrderBy(p => p.Ordinal).ToList();
 
                 if (allMembers)
                 {
