@@ -5,6 +5,7 @@ using System.Reflection.Emit;
 using System.Threading;
 using System.Collections.Generic;
 using System.Dynamic;
+using System.Linq;
 
 namespace FastMember
 {
@@ -151,20 +152,45 @@ namespace FastMember
                 else if ((prop = member as PropertyInfo) != null)
                 {
                     MethodInfo accessor;
-                    if (prop.CanRead && (accessor = isGet ? prop.GetGetMethod(allowNonPublicAccessors) : prop.GetSetMethod(allowNonPublicAccessors)) != null)
+                    var propType = prop.PropertyType;
+                    bool isByRef = propType.IsByRef, isValid = true;
+                    if (isByRef)
+                    {
+                        if (!isGet && prop.CustomAttributes.Any(x => x.AttributeType.FullName == "System.Runtime.CompilerServices.IsReadOnlyAttribute"))
+                        {
+                            isValid = false; // can't assign indirectly to ref-readonly
+                        }
+                        propType = propType.GetElementType(); // from "ref Foo" to "Foo"
+                    }
+
+                    if (isValid && prop.CanRead && (accessor = (isGet | isByRef) ? prop.GetGetMethod(allowNonPublicAccessors) : prop.GetSetMethod(allowNonPublicAccessors)) != null)
                     {
                         il.Emit(obj);
-                        Cast(il, type, true);
+                        Cast(il, type, true); // cast the input object to the right target type
+                        
                         if (isGet)
                         {
                             il.EmitCall(type.IsValueType ? OpCodes.Call : OpCodes.Callvirt, accessor, null);
-                            if (prop.PropertyType.IsValueType) il.Emit(OpCodes.Box, prop.PropertyType);
+                            if (isByRef) il.Emit(OpCodes.Ldobj, propType); // defererence if needed
+                            if (propType.IsValueType) il.Emit(OpCodes.Box, propType); // box the value if needed
                         }
                         else
                         {
+                            // when by-ref, we get the target managed pointer *first*, i.e. put obj.TheRef on the stack
+                            if (isByRef) il.EmitCall(type.IsValueType ? OpCodes.Call : OpCodes.Callvirt, accessor, null);
+
+                            // load the new value, and type it
                             il.Emit(value);
-                            Cast(il, prop.PropertyType, false);
-                            il.EmitCall(type.IsValueType ? OpCodes.Call : OpCodes.Callvirt, accessor, null);
+                            Cast(il, propType, false);
+
+                            if (isByRef)
+                            {   // assign to the managed pointer
+                                il.Emit(OpCodes.Stobj, propType);
+                            }
+                            else
+                            {   // call the setter
+                                il.EmitCall(type.IsValueType ? OpCodes.Call : OpCodes.Callvirt, accessor, null);
+                            }
                         }
                         il.Emit(OpCodes.Ret);
                         isFail = false;
