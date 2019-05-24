@@ -1,5 +1,6 @@
 ﻿using FastMember;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using Xunit;
@@ -240,6 +241,42 @@ namespace FastMemberTests
             public string B;
             public DateTime? C;
             public decimal? D;
+        }
+
+        public interface IPropsOnInterfaceBase
+        {
+            int A { get; set; }
+            string B { get; set; }
+            DateTime? C { get; set; }
+            decimal? D { get; set; }
+        }
+        public interface IPropsOnInterfaceBase2
+        {
+            int E { get; set; }
+            string F { get; set; }
+            DateTime? G { get; set; }
+            decimal? H { get; set; }
+        }
+        public interface IPropsOnInheritedInterface : IPropsOnInterfaceBase
+        {
+            int I { get; set; }
+            string J { get; set; }
+            DateTime? K { get; set; }
+            decimal? L { get; set; }
+        }
+        public interface IPropseOnComposedInterface : IPropsOnInterfaceBase, IPropsOnInterfaceBase2
+        {
+            int M { get; set; }
+            string N { get; set; }
+            DateTime? O { get; set; }
+            decimal? P { get; set; }
+        }
+        public interface IPropseOnInheritedComposedInterface : IPropsOnInheritedInterface, IPropsOnInterfaceBase2
+        {
+            int M { get; set; }
+            string N { get; set; }
+            DateTime? O { get; set; }
+            decimal? P { get; set; }
         }
 
 
@@ -620,5 +657,82 @@ namespace FastMemberTests
             var memberNames = string.Join(",", acc.GetMembers().Select(x => x.Name).OrderBy(_ => _));
             Assert.Equal("Foo,Foo2", memberNames);
         }
+
+        [Fact]
+        public void TestGetMembersOnInterface()
+        {
+            var access = TypeAccessor.Create(typeof(IPropsOnInterfaceBase));
+            Assert.True(access.GetMembersSupported);
+            var members = access.GetMembers();
+            Assert.Equal(4, members.Count);
+            Assert.Equal("A", members[0].Name);
+            Assert.Equal("B", members[1].Name);
+            Assert.Equal("C", members[2].Name);
+            Assert.Equal("D", members[3].Name);
+        }
+
+        [Fact]
+        public void TestGetMembersOnInheritedInterface()
+        {
+            var access = TypeAccessor.Create(typeof(IPropsOnInheritedInterface));
+            Assert.True(access.GetMembersSupported);
+            var members = access.GetMembers();
+            Assert.Equal(8, members.Count);
+            Assert.Equal("A", members[0].Name);
+            Assert.Equal("B", members[1].Name);
+            Assert.Equal("C", members[2].Name);
+            Assert.Equal("D", members[3].Name);
+            Assert.Equal("I", members[4].Name);
+            Assert.Equal("J", members[5].Name);
+            Assert.Equal("K", members[6].Name);
+            Assert.Equal("L", members[7].Name);
+        }
+
+        [Fact]
+        public void TestGetMembersOnComposedInterface()
+        {
+            var access = TypeAccessor.Create(typeof(IPropseOnComposedInterface));
+            Assert.True(access.GetMembersSupported);
+            var members = access.GetMembers();
+            Assert.Equal(12, members.Count);
+            Assert.Equal("A", members[0].Name);
+            Assert.Equal("B", members[1].Name);
+            Assert.Equal("C", members[2].Name);
+            Assert.Equal("D", members[3].Name);
+            Assert.Equal("E", members[4].Name);
+            Assert.Equal("F", members[5].Name);
+            Assert.Equal("G", members[6].Name);
+            Assert.Equal("H", members[7].Name);
+            Assert.Equal("M", members[8].Name);
+            Assert.Equal("N", members[9].Name);
+            Assert.Equal("O", members[10].Name);
+            Assert.Equal("P", members[11].Name);
+        }
+
+        [Fact]
+        public void TestGetMembersOnInheritedComposedInterface()
+        {
+            var access = TypeAccessor.Create(typeof(IPropseOnInheritedComposedInterface));
+            Assert.True(access.GetMembersSupported);
+            var members = access.GetMembers();
+            Assert.Equal(16, members.Count);
+            Assert.Equal("A", members[0].Name);
+            Assert.Equal("B", members[1].Name);
+            Assert.Equal("C", members[2].Name);
+            Assert.Equal("D", members[3].Name);
+            Assert.Equal("E", members[4].Name);
+            Assert.Equal("F", members[5].Name);
+            Assert.Equal("G", members[6].Name);
+            Assert.Equal("H", members[7].Name);
+            Assert.Equal("I", members[8].Name);
+            Assert.Equal("J", members[9].Name);
+            Assert.Equal("K", members[10].Name);
+            Assert.Equal("L", members[11].Name);
+            Assert.Equal("M", members[12].Name);
+            Assert.Equal("N", members[13].Name);
+            Assert.Equal("O", members[14].Name);
+            Assert.Equal("P", members[15].Name);
+        }
+
     }
 }
