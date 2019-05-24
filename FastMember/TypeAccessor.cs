@@ -112,7 +112,7 @@ namespace FastMember
                 il.Emit(OpCodes.Ldloca_S, (byte)0);
                 il.EmitCall(OpCodes.Callvirt, tryGetValue, null);
                 il.Emit(OpCodes.Brfalse, fail);
-            }            
+            }
             Label[] labels = new Label[members.Count];
             for (int i = 0; i < labels.Length; i++)
             {
@@ -129,29 +129,34 @@ namespace FastMember
                 il.MarkLabel(labels[i]);
                 var member = members[i];
                 bool isFail = true;
-                FieldInfo field;
-                PropertyInfo prop;
-                if((field = member as FieldInfo) != null)
+
+                void WriteField(FieldInfo fieldToWrite)
                 {
-                    il.Emit(obj);
-                    Cast(il, type, true);
-                    if (isGet)
+                    if (!fieldToWrite.FieldType.IsByRef)
                     {
-                        il.Emit(OpCodes.Ldfld, field);
-                        if (field.FieldType.IsValueType) il.Emit(OpCodes.Box, field.FieldType);
+                        il.Emit(obj);
+                        Cast(il, type, true);
+                        if (isGet)
+                        {
+                            il.Emit(OpCodes.Ldfld, fieldToWrite);
+                            if (fieldToWrite.FieldType.IsValueType) il.Emit(OpCodes.Box, fieldToWrite.FieldType);
+                        }
+                        else
+                        {
+                            il.Emit(value);
+                            Cast(il, fieldToWrite.FieldType, false);
+                            il.Emit(OpCodes.Stfld, fieldToWrite);
+                        }
+                        il.Emit(OpCodes.Ret);
+                        isFail = false;
                     }
-                    else
-                    {
-                        il.Emit(value);
-                        Cast(il, field.FieldType, false);
-                        il.Emit(OpCodes.Stfld, field);
-                    }
-                    il.Emit(OpCodes.Ret);
-                    isFail = false;
                 }
-                else if ((prop = member as PropertyInfo) != null)
+                if (member is FieldInfo field)
                 {
-                    MethodInfo accessor;
+                    WriteField(field);
+                }
+                else if (member is PropertyInfo prop)
+                {
                     var propType = prop.PropertyType;
                     bool isByRef = propType.IsByRef, isValid = true;
                     if (isByRef)
@@ -163,11 +168,23 @@ namespace FastMember
                         propType = propType.GetElementType(); // from "ref Foo" to "Foo"
                     }
 
-                    if (isValid && prop.CanRead && (accessor = (isGet | isByRef) ? prop.GetGetMethod(allowNonPublicAccessors) : prop.GetSetMethod(allowNonPublicAccessors)) != null)
+                    var accessor = (isGet | isByRef) ? prop.GetGetMethod(allowNonPublicAccessors) : prop.GetSetMethod(allowNonPublicAccessors);
+                    if (accessor == null && allowNonPublicAccessors && !isByRef)
+                    {
+                        // No getter/setter, use backing field instead if it exists
+                        var backingField = $"<{prop.Name}>k__BackingField";
+                        field = prop.DeclaringType?.GetField(backingField, BindingFlags.Instance | BindingFlags.NonPublic);
+
+                        if (field != null)
+                        {
+                            WriteField(field);
+                        }
+                    }
+                    else if (isValid && prop.CanRead && accessor != null)
                     {
                         il.Emit(obj);
                         Cast(il, type, true); // cast the input object to the right target type
-                        
+
                         if (isGet)
                         {
                             il.EmitCall(type.IsValueType ? OpCodes.Call : OpCodes.Callvirt, accessor, null);
