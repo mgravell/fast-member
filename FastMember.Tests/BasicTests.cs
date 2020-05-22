@@ -302,6 +302,37 @@ namespace FastMemberTests
             Assert.IsType<HasDefaultCtor>(obj);
         }
 
+
+        [Fact]
+        public void TestHasPrivateField()
+        {
+            var obj = new HasPrivateField(5);
+            var acc = TypeAccessor.Create(typeof(HasPrivateField), true);
+            Assert.Equal(5, acc[obj, "Foo"]);
+        }
+
+        public class HasPrivateField
+        {
+            public HasPrivateField(int foo)
+            {
+                Foo = foo;
+            }
+            private int Foo = 5;
+        }
+
+        public class HasInternalField
+        {
+            internal int Foo;
+        }
+
+        [Fact]
+        public void TestHasInternalField()
+        {
+            var obj = new HasInternalField { Foo = 5 };
+            var acc = TypeAccessor.Create(typeof(HasInternalField), true);
+            Assert.Equal(5, acc[obj, "Foo"]);
+        }
+
         public class HasGetterNoSetter
         {
             public int Foo { get { return 5; } }
