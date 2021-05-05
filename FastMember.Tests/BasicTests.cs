@@ -185,6 +185,22 @@ namespace FastMemberTests
         }
 
         [Fact]
+        public void CanReadTest_FieldsOnClass()
+        {
+            var access = TypeAccessor.Create(typeof(FieldsOnClass));
+
+            Assert.True(access.GetMembers().First().CanRead);
+        }
+
+        [Fact]
+        public void CanWriteTest_FieldsOnClass()
+        {
+            var access = TypeAccessor.Create(typeof(FieldsOnClass));
+
+            Assert.True(access.GetMembers().First().CanWrite);
+        }
+
+        [Fact]
         public void WriteInvalidMember()
         {
             Assert.Throws<ArgumentOutOfRangeException>(() =>
