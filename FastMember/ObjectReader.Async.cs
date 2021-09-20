@@ -13,7 +13,7 @@ namespace FastMember
     public abstract partial class ObjectReader : DbDataReader
     {
         static readonly Task<bool> s_True = Task.FromResult(true), s_False = Task.FromResult(false);
-        private sealed class AsyncObjectReader<T> : ObjectReader
+        private sealed class AsyncObjectReader<T> : ObjectReader, IAsyncDisposable
         {
             private IAsyncEnumerator<T> source;
             internal AsyncObjectReader(Type type, IAsyncEnumerable<T> source, string[] members, CancellationToken cancellationToken) : base(type, members)
@@ -25,12 +25,19 @@ namespace FastMember
                 
             }
 
+            ValueTask IAsyncDisposable.DisposeAsync()
+            {
+                base.Shutdown();
+                var tmp = source;
+                return tmp?.DisposeAsync() ?? default;
+            }
+
             protected override void Shutdown()
             {
                 base.Shutdown();
-                var tmp = source as IDisposable;
+                var tmp = source;
                 source = null;
-                if (tmp != null) tmp.Dispose();
+                tmp?.DisposeAsync().AsTask().Wait();
             }
 
             public override bool IsClosed => source == null;
