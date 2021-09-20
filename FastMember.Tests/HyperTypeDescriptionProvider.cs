@@ -29,11 +29,12 @@ namespace Hyper.ComponentModel {
                 descriptors.Clear();
             }
         }
-        private static readonly Dictionary<Type, ICustomTypeDescriptor> descriptors = new Dictionary<Type, ICustomTypeDescriptor>();
+        private static readonly Dictionary<Type, ICustomTypeDescriptor> descriptors = new();
         public sealed override ICustomTypeDescriptor GetTypeDescriptor(Type objectType, object instance) {
-            ICustomTypeDescriptor descriptor;
-            lock (descriptors) {
-                if (!descriptors.TryGetValue(objectType, out descriptor)) {
+            lock (descriptors)
+            {
+                if (!descriptors.TryGetValue(objectType, out ICustomTypeDescriptor descriptor))
+                {
                     try
                     {
                         descriptor = BuildDescriptor(objectType);
@@ -46,9 +47,9 @@ namespace Hyper.ComponentModel {
                 return descriptor;
             }
         }
-#pragma warning disable CS0618, CS0612
+#pragma warning disable CS0618, CS0612, SYSLIB0003
         [ReflectionPermission( SecurityAction.Assert, Flags = ReflectionPermissionFlag.AllFlags)]
-#pragma warning restore CS0618, CS0612
+#pragma warning restore CS0618, CS0612, SYSLIB0003
         private ICustomTypeDescriptor BuildDescriptor(Type objectType)
         {
             // NOTE: "descriptors" already locked here

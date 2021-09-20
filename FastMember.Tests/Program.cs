@@ -30,14 +30,14 @@ namespace FastMemberTests
 
             private Type type;
 
-            public static void Main2(string[] args)
+            public static void Main2()
             {
                 var summary = BenchmarkRunner.Run<FastMemberPerformance>(new Config());
                 Console.WriteLine();
 				// Display a summary to match the output of the original Performance test
-				foreach (var report in summary.Reports.OrderBy(r => r.Benchmark.Target.MethodDisplayInfo))
+				foreach (var report in summary.Reports.OrderBy(r => r.BenchmarkCase.Descriptor.WorkloadMethodDisplayInfo))
 				{
-					Console.WriteLine("{0}: {1:N2} ns", report.Benchmark.Target.MethodDisplayInfo, report.ResultStatistics.Median);
+					Console.WriteLine("{0}: {1:N2} ns", report.BenchmarkCase.Descriptor.WorkloadMethodDisplayInfo, report.ResultStatistics.Median);
 				}
 				Console.WriteLine();
             }
@@ -100,7 +100,11 @@ namespace FastMemberTests
             }
 
             [Benchmark(Description = "7. c# new()")]
+#pragma warning disable IDE0079 // Remove unnecessary suppression
+#pragma warning disable CA1822 // Mark members as static
             public FastMemberPerformance CSharpNew()
+#pragma warning restore CA1822 // Mark members as static
+#pragma warning restore IDE0079 // Remove unnecessary suppression
             {
                 return new FastMemberPerformance();
             }
@@ -123,10 +127,10 @@ namespace FastMemberTests
         {
             public Config()
             {
-                Add(Job.Default.WithLaunchCount(1));
-                Add(StatisticColumn.Median, StatisticColumn.StdDev);
-                Add(CsvExporter.Default, MarkdownExporter.Default, MarkdownExporter.GitHub);
-                Add(new ConsoleLogger());
+                AddJob(Job.Default.WithLaunchCount(1));
+                AddColumn(StatisticColumn.Median, StatisticColumn.StdDev);
+                AddExporter(CsvExporter.Default, MarkdownExporter.Default, MarkdownExporter.GitHub);
+                AddLogger(new ConsoleLogger());
             }
         }
     }
