@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FastMember
 {
@@ -11,13 +14,58 @@ namespace FastMember
     /// Provides a means of reading a sequence of objects as a data-reader, for example
     /// for use with SqlBulkCopy or other data-base oriented code
     /// </summary>
-    public class ObjectReader : DbDataReader
+    public abstract partial class ObjectReader : DbDataReader
+#if !NETFRAMEWORK
+        , IDbColumnSchemaGenerator
+#endif
     {
-        private IEnumerator source;
         private readonly TypeAccessor accessor;
         private readonly string[] memberNames;
         private readonly Type[] effectiveTypes;
         private readonly BitArray allowNull;
+
+
+        private sealed class SyncObjectReader : ObjectReader
+        {
+            private IEnumerator source;
+            internal SyncObjectReader(Type type, IEnumerable source, string[] members) : base(type, members)
+            {
+                if (source == null) throw new ArgumentOutOfRangeException(nameof(source));
+
+                this.source = source.GetEnumerator();
+            }
+
+            protected override void Shutdown()
+            {
+                base.Shutdown();
+                var tmp = source as IDisposable;
+                source = null;
+                if (tmp != null) tmp.Dispose();
+            }
+
+            public override bool IsClosed => source == null;
+
+            public override bool Read()
+            {
+                if (active)
+                {
+                    var tmp = source;
+                    if (tmp != null && tmp.MoveNext())
+                    {
+                        current = tmp.Current;
+                        return true;
+                    }
+                    else
+                    {
+                        active = false;
+                    }
+                }
+                current = null;
+                return false;
+            }
+        }
+
+
 
         /// <summary>
         /// Creates a new ObjectReader instance for reading the supplied data
@@ -25,9 +73,7 @@ namespace FastMember
         /// <param name="source">The sequence of objects to represent</param>
         /// <param name="members">The members that should be exposed to the reader</param>
         public static ObjectReader Create<T>(IEnumerable<T> source, params string[] members)
-        {
-            return new ObjectReader(typeof(T), source, members);
-        }
+            => new SyncObjectReader(typeof(T), source, members);
 
         /// <summary>
         /// Creates a new ObjectReader instance for reading the supplied data
@@ -35,12 +81,8 @@ namespace FastMember
         /// <param name="type">The expected Type of the information to be read</param>
         /// <param name="source">The sequence of objects to represent</param>
         /// <param name="members">The members that should be exposed to the reader</param>
-        public ObjectReader(Type type, IEnumerable source, params string[] members)
+        internal ObjectReader(Type type, params string[] members)
         {
-            if (source == null) throw new ArgumentOutOfRangeException("source");
-
-            
-
             bool allMembers = members == null || members.Length == 0;
 
             this.accessor = TypeAccessor.Create(type);
@@ -96,8 +138,6 @@ namespace FastMember
 
             this.current = null;
             this.memberNames = (string[])members.Clone();
-
-            this.source = source.GetEnumerator();
         }
 
         object current;
@@ -108,10 +148,40 @@ namespace FastMember
             get { return 0; }
         }
 
+#if !NETFRAMEWORK
+        private ReadOnlyCollection<DbColumn> _columnSchema;
+        private ReadOnlyCollection<DbColumn> BuildColumnSchema()
+        {
+            var arr = new DbColumn[memberNames.Length];
+            for (int i = 0; i < memberNames.Length; i++)
+            {
+                arr[i] = new ObjectReaderDbColumn(i, memberNames[i],
+                    effectiveTypes == null ? typeof(object) : effectiveTypes[i],
+                    allowNull == null || allowNull[i]);
+            }
+            return _columnSchema = new ReadOnlyCollection<DbColumn>(arr);
+        }
+        private sealed class ObjectReaderDbColumn : DbColumn
+        {
+            internal ObjectReaderDbColumn(int ordinal, string name, Type type, bool allowNull)
+            {
+                ColumnOrdinal = ordinal;
+                ColumnName = name;
+                DataType = type;
+                ColumnSize = -1;
+                AllowDBNull = allowNull;
+            }
+        }
+
+        ReadOnlyCollection<DbColumn> IDbColumnSchemaGenerator.GetColumnSchema() => _columnSchema ?? BuildColumnSchema();
+#endif
+
+
+
         public override DataTable GetSchemaTable()
         {
             // these are the columns used by DataTable load
-            DataTable table = new DataTable
+            DataTable table = new()
             {
                 Columns =
                 {
@@ -129,7 +199,7 @@ namespace FastMember
                 rowData[1] = memberNames[i];
                 rowData[2] = effectiveTypes == null ? typeof(object) : effectiveTypes[i];
                 rowData[3] = -1;
-                rowData[4] = allowNull == null ? true : allowNull[i];
+                rowData[4] = allowNull == null || allowNull[i];
                 table.Rows.Add(rowData);
             }
             return table;
@@ -152,24 +222,6 @@ namespace FastMember
             active = false;
             return false;
         }
-        public override bool Read()
-        {
-            if (active)
-            {
-                var tmp = source;
-                if (tmp != null && tmp.MoveNext())
-                {
-                    current = tmp.Current;
-                    return true;
-                }
-                else
-                {
-                    active = false;
-                }
-            }
-            current = null;
-            return false;
-        }
 
         public override int RecordsAffected
         {
@@ -181,25 +233,15 @@ namespace FastMember
             base.Dispose(disposing);
             if (disposing) Shutdown();
         }
-        private void Shutdown()
+        protected virtual void Shutdown()
         {
             active = false;
             current = null;
-            var tmp = source as IDisposable;
-            source = null;
-            if (tmp != null) tmp.Dispose();
         }
 
         public override int FieldCount
         {
             get { return memberNames.Length; }
-        }
-        public override bool IsClosed
-        {
-            get
-            {
-                return source == null;
-            }
         }
 
         public override bool GetBoolean(int i)
