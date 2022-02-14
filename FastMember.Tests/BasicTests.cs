@@ -325,6 +325,32 @@ namespace FastMemberTests
             var acc = TypeAccessor.Create(typeof(HasGetterPrivateSetter));
             Assert.Equal(5, acc[obj, "Foo"]);
         }
+        public class HasInternalGetterSetter
+        {
+            internal int Foo { get; set; }
+        }
+        [Fact]
+        public void TestHasInternalGetterSetter()
+        {
+            var obj = new HasInternalGetterSetter{Foo = 5};
+            var acc = TypeAccessor.Create(typeof(HasInternalGetterSetter), true);
+            Assert.Equal(5, acc[obj, "Foo"]);
+        }
+        public class HasPrivateGetterSetter
+        {
+            public HasPrivateGetterSetter(int foo)
+            {
+                Foo = foo;
+            }
+            private int Foo { get; set; }
+        }
+        [Fact]
+        public void TestHasPrivateGetterSetter()
+        {
+            var obj = new HasPrivateGetterSetter(5);
+            var acc = TypeAccessor.Create(typeof(HasPrivateGetterSetter), true);
+            Assert.Equal(5, acc[obj, "Foo"]);
+        }
 
         public class MixedAccess
         {
