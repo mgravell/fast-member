@@ -124,6 +124,7 @@ namespace FastMember
             {
                 switch (member.MemberType)
                 {
+                    case MemberTypes.Field: return true;
                     case MemberTypes.Property: return ((PropertyInfo)member).CanWrite;
                     default: throw new NotSupportedException(member.MemberType.ToString());
                 }
@@ -139,6 +140,7 @@ namespace FastMember
             {
                 switch (member.MemberType)
                 {
+                    case MemberTypes.Field: return true;
                     case MemberTypes.Property: return ((PropertyInfo)member).CanRead;
                     default: throw new NotSupportedException(member.MemberType.ToString());
                 }
