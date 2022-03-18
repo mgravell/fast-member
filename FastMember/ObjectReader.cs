@@ -18,6 +18,18 @@ namespace FastMember
         private readonly string[] memberNames;
         private readonly Type[] effectiveTypes;
         private readonly BitArray allowNull;
+        private readonly string keyPropertyName;
+        
+        /// <summary>
+        /// Creates a new ObjectReader instance for reading the supplied data
+        /// </summary>
+        /// <param name="source">The sequence of objects to represent</param>
+        /// <param name="keyPropertyName">Current object property name to set IsKey column value for schema table</param>
+        /// <param name="members">The members that should be exposed to the reader</param>
+        public static ObjectReader Create<TSource>(IEnumerable<TSource> source, string keyPropertyName, params string[] members)
+        {
+            return new ObjectReader(typeof(TSource), source, keyPropertyName, members);
+        }
 
         /// <summary>
         /// Creates a new ObjectReader instance for reading the supplied data
@@ -26,7 +38,7 @@ namespace FastMember
         /// <param name="members">The members that should be exposed to the reader</param>
         public static ObjectReader Create<T>(IEnumerable<T> source, params string[] members)
         {
-            return new ObjectReader(typeof(T), source, members);
+            return new ObjectReader(typeof(T), source, members: members);
         }
 
         /// <summary>
@@ -34,12 +46,13 @@ namespace FastMember
         /// </summary>
         /// <param name="type">The expected Type of the information to be read</param>
         /// <param name="source">The sequence of objects to represent</param>
+        /// <param name="keyPropertyName">Current object property name to set IsKey column value for schema table</param>
         /// <param name="members">The members that should be exposed to the reader</param>
-        public ObjectReader(Type type, IEnumerable source, params string[] members)
+        public ObjectReader(Type type, IEnumerable source, string keyPropertyName = "", params string[] members)
         {
-            if (source == null) throw new ArgumentOutOfRangeException("source");
-
+            if (source == null) throw new ArgumentOutOfRangeException(nameof(source));
             
+            this.keyPropertyName = keyPropertyName;
 
             bool allMembers = members == null || members.Length == 0;
 
@@ -119,17 +132,21 @@ namespace FastMember
                     {"ColumnName", typeof(string)},
                     {"DataType", typeof(Type)},
                     {"ColumnSize", typeof(int)},
-                    {"AllowDBNull", typeof(bool)}
+                    {"AllowDBNull", typeof(bool)},
+                    {"IsKey", typeof(bool)}
                 }
             };
             object[] rowData = new object[5];
             for (int i = 0; i < memberNames.Length; i++)
             {
+                var memberName = memberNames[i];
+
                 rowData[0] = i;
-                rowData[1] = memberNames[i];
+                rowData[1] = memberName;
                 rowData[2] = effectiveTypes == null ? typeof(object) : effectiveTypes[i];
                 rowData[3] = -1;
                 rowData[4] = allowNull == null ? true : allowNull[i];
+                rowData[5] = memberName == keyPropertyName;
                 table.Rows.Add(rowData);
             }
             return table;
@@ -147,6 +164,7 @@ namespace FastMember
             }
         }
         private bool active = true;
+
         public override bool NextResult()
         {
             active = false;
