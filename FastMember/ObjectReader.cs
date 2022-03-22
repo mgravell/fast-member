@@ -26,7 +26,7 @@ namespace FastMember
         /// Creates a new ObjectReader instance for reading the supplied data
         /// </summary>
         /// <param name="source">The sequence of objects to represent</param>
-        /// <param name="keyPropertyName">Current object property name to set IsKey column value for schema table</param>
+        /// <param name="keyPropertyExpression">Current object property expression to set IsKey column value for schema table</param>
         /// <param name="members">The members that should be exposed to the reader</param>
         public static ObjectReader Create<TSource, TProperty>(IEnumerable<TSource> source, Expression<Func<TSource, TProperty>> keyPropertyExpression, params string[] members)
         {
@@ -55,7 +55,7 @@ namespace FastMember
         /// </summary>
         /// <param name="type">The expected Type of the information to be read</param>
         /// <param name="source">The sequence of objects to represent</param>
-        /// <param name="keyPropertyName">Current object property name to set IsKey column value for schema table</param>
+        /// <param name="keyPropertyMemberInfo">Current object property info to set IsKey column value for schema table</param>
         /// <param name="members">The members that should be exposed to the reader</param>
         public ObjectReader(Type type, IEnumerable source, MemberInfo keyPropertyMemberInfo, params string[] members) :
             this(type, source, members)
