@@ -38,7 +38,7 @@ namespace FastMember
         /// <param name="members">The members that should be exposed to the reader</param>
         public static ObjectReader Create<T>(IEnumerable<T> source, params string[] members)
         {
-            return new ObjectReader(typeof(T), source, members: members);
+            return new ObjectReader(typeof(T), source, members);
         }
 
         /// <summary>
@@ -48,11 +48,21 @@ namespace FastMember
         /// <param name="source">The sequence of objects to represent</param>
         /// <param name="keyPropertyName">Current object property name to set IsKey column value for schema table</param>
         /// <param name="members">The members that should be exposed to the reader</param>
-        public ObjectReader(Type type, IEnumerable source, string keyPropertyName = "", params string[] members)
+        public ObjectReader(Type type, IEnumerable source, string keyPropertyName = "", params string[] members) :
+            this(type, source, members)
+        {
+            this.keyPropertyName = keyPropertyName;
+        }
+
+        /// <summary>
+        /// Creates a new ObjectReader instance for reading the supplied data
+        /// </summary>
+        /// <param name="type">The expected Type of the information to be read</param>
+        /// <param name="source">The sequence of objects to represent</param>
+        /// <param name="members">The members that should be exposed to the reader</param>
+        public ObjectReader(Type type, IEnumerable source, params string[] members)
         {
             if (source == null) throw new ArgumentOutOfRangeException(nameof(source));
-            
-            this.keyPropertyName = keyPropertyName;
 
             bool allMembers = members == null || members.Length == 0;
 
