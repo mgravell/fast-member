@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 
 namespace FastMember
 {
@@ -26,9 +28,16 @@ namespace FastMember
         /// <param name="source">The sequence of objects to represent</param>
         /// <param name="keyPropertyName">Current object property name to set IsKey column value for schema table</param>
         /// <param name="members">The members that should be exposed to the reader</param>
-        public static ObjectReader Create<TSource>(IEnumerable<TSource> source, string keyPropertyName, params string[] members)
+        public static ObjectReader Create<TSource, TProperty>(IEnumerable<TSource> source, Expression<Func<TSource, TProperty>> keyPropertyExpression, params string[] members)
         {
-            return new ObjectReader(typeof(TSource), source, keyPropertyName, members);
+            if(keyPropertyExpression == null) throw new ArgumentNullException(nameof(keyPropertyExpression));
+
+            var memberExpression = keyPropertyExpression.Body as MemberExpression
+                                   ?? throw new ArgumentException("Expression is not valid");
+            
+            var keyPropertyMemberInfo = memberExpression.Member;
+                
+            return new ObjectReader(typeof(TSource), source, keyPropertyMemberInfo, members);
         }
 
         /// <summary>
@@ -48,10 +57,12 @@ namespace FastMember
         /// <param name="source">The sequence of objects to represent</param>
         /// <param name="keyPropertyName">Current object property name to set IsKey column value for schema table</param>
         /// <param name="members">The members that should be exposed to the reader</param>
-        public ObjectReader(Type type, IEnumerable source, string keyPropertyName = "", params string[] members) :
+        public ObjectReader(Type type, IEnumerable source, MemberInfo keyPropertyMemberInfo, params string[] members) :
             this(type, source, members)
         {
-            this.keyPropertyName = keyPropertyName;
+            if (keyPropertyMemberInfo == null) throw new ArgumentNullException(nameof(keyPropertyMemberInfo));
+            
+            this.keyPropertyName = keyPropertyMemberInfo.Name;
         }
 
         /// <summary>
