@@ -14,7 +14,8 @@ namespace FastMember
         internal MemberSet(Type type)
         {
             const BindingFlags PublicInstance = BindingFlags.Public | BindingFlags.Instance;
-            members = type.GetTypeAndInterfaceProperties(PublicInstance).Cast<MemberInfo>().Concat(type.GetFields(PublicInstance).Cast<MemberInfo>()).OrderBy(x => x.Name)
+            members = type.GetTypeAndInterfaceProperties(PublicInstance).Cast<MemberInfo>().Concat(type.GetFields(PublicInstance).Cast<MemberInfo>())
+                .OrderBy(x => x.Name, StringComparer.InvariantCulture)
                 .Select(member => new Member(member)).ToArray();
         }
         /// <summary>
@@ -52,7 +53,7 @@ namespace FastMember
         void ICollection<Member>.CopyTo(Member[] array, int arrayIndex) { members.CopyTo(array, arrayIndex); }
         bool ICollection<Member>.IsReadOnly { get { return true; } }
         int IList<Member>.IndexOf(Member member) { return Array.IndexOf<Member>(members, member); }
-        
+
     }
     /// <summary>
     /// Represents an abstracted view of an individual member defined for a type
