@@ -119,10 +119,11 @@ namespace FastMember
                     {"ColumnName", typeof(string)},
                     {"DataType", typeof(Type)},
                     {"ColumnSize", typeof(int)},
-                    {"AllowDBNull", typeof(bool)}
+                    {"AllowDBNull", typeof(bool)},
+                    {"IsKey", typeof (bool)}
                 }
             };
-            object[] rowData = new object[5];
+            object[] rowData = new object[6];
             for (int i = 0; i < memberNames.Length; i++)
             {
                 rowData[0] = i;
@@ -130,6 +131,7 @@ namespace FastMember
                 rowData[2] = effectiveTypes == null ? typeof(object) : effectiveTypes[i];
                 rowData[3] = -1;
                 rowData[4] = allowNull == null ? true : allowNull[i];
+                rowData[5] = false;
                 table.Rows.Add(rowData);
             }
             return table;
