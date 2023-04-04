@@ -144,5 +144,17 @@ namespace FastMember
                 }
             }
         }
+
+        public bool IsIndexer
+        {
+            get
+            {
+                switch (member.MemberType)
+                {
+                    case MemberTypes.Property: return ((PropertyInfo)member).GetIndexParameters().Length > 0;
+                    default: return false;
+                }
+            }
+        }
     }
 }
