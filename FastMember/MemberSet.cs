@@ -60,6 +60,7 @@ namespace FastMember
     public sealed class Member
     {
         private readonly MemberInfo member;
+        private bool? isIndexer;
         internal Member(MemberInfo member)
         {
             this.member = member;
@@ -145,14 +146,21 @@ namespace FastMember
             }
         }
 
+        /// <summary>
+        /// Gets a value indicating whether this member is indexer.
+        /// </summary>
         public bool IsIndexer
         {
             get
             {
                 switch (member.MemberType)
                 {
-                    case MemberTypes.Property: return ((PropertyInfo)member).GetIndexParameters().Length > 0;
-                    default: return false;
+                    case MemberTypes.Property:
+                        if (isIndexer == null)
+                            isIndexer = ((PropertyInfo)member).GetIndexParameters().Length > 0;
+                        return isIndexer.Value; 
+                    default:
+                        return false;
                 }
             }
         }
