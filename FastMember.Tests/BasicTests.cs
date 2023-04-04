@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Xunit;
 
 namespace FastMemberTests
@@ -55,6 +56,29 @@ namespace FastMemberTests
             Assert.Equal("B", members[1].Name);
             Assert.Equal("C", members[2].Name);
             Assert.Equal("D", members[3].Name);
+        }
+
+        [Fact]
+        public void IsIndexer()
+        {
+            var access = TypeAccessor.Create(typeof(RegularIndexers));
+            Assert.True(access.GetMembersSupported);
+            var members = access.GetMembers();
+            Assert.True(members[0].IsIndexer);
+            Assert.Equal("Item", members[0].Name);
+        }
+
+        [Fact]
+        public void IsIndexerViaCustomAttribute()
+        {
+            var access = TypeAccessor.Create(typeof(IndexerViaAttribute));
+            Assert.True(access.GetMembersSupported);
+            var members = access.GetMembers();
+            Assert.Equal(2, members.Count);
+            Assert.False(members[0].IsIndexer);
+            Assert.Equal("Item", members[0].Name);
+            Assert.True(members[1].IsIndexer);
+            Assert.Equal("MyIndexer", members[1].Name);
         }
 
         [Fact]
@@ -279,6 +303,17 @@ namespace FastMemberTests
             decimal? P { get; set; }
         }
 
+        public class RegularIndexers
+        {
+            public int this[int id] { get => 0; set {} }
+        }
+
+        public class IndexerViaAttribute
+        {
+            [IndexerName("MyIndexer")]
+            public int this[int id] { get => 0; set {} }
+            public string Item { get; set; }
+        }
 
         public class HasDefaultCtor { }
         public class HasNoDefaultCtor { public HasNoDefaultCtor(string s) { } }
