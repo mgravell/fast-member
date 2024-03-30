@@ -17,6 +17,7 @@
     <AssemblyName>FastMember.Signed</AssemblyName>
     <AssemblyOriginatorKeyFile>../FastMember.snk</AssemblyOriginatorKeyFile>
     <AssemblyTitle>FastMember.Signed</AssemblyTitle>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\FastMember\*.cs" Exclude="Properties;project.*.json;bin\**;obj\**;**\*.xproj;packages\**" />
@@ -34,5 +35,8 @@
     <PackageReference Include="System.Reflection.Emit.Lightweight" Version="4.3.0" />
     <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
     <PackageReference Include="System.Security.Permissions" Version="4.5.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 </Project>
